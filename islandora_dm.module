@@ -1,0 +1,83 @@
+<?php
+
+module_load_include('inc', 'islandora_dm', 'inc/menu');
+module_load_include('inc', 'islandora_dm', 'inc/pages');
+module_load_include('inc', 'islandora_dm', 'inc/islandora');
+module_load_include('inc', 'islandora_dm', 'inc/poservice');
+module_load_include('inc', 'islandora_dm', 'inc/curl');
+
+/**
+ * TODO: Display help and module information.
+ */
+function islandora_dm_help($path, $arg) {
+  $output = '';
+  
+  switch ($path) {
+    case "admin/help#islandora_dm":
+      $output = '<p>' . t("todo: implement help text") . '</p>';
+      break;
+  }
+  
+  return $output;
+}
+
+/**
+ * Valid permissions for this module.
+ */
+function islandora_dm_perm() {
+  return array(
+    // configure module settings
+    'admin islandora_dm', 
+    
+    // view module pages and documents (subject to fedora authorization)
+    'access islandora_dm',
+    
+    // import new documents
+    'import islandora_dm' 
+    );
+}
+
+/**
+ * TODO: determine requirements for settings page
+ */
+function islandora_dm_admin() {
+  $form = array();
+  
+  $form['po_service'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Purchase order service'),
+    '#collapsible' => TRUE,
+  );
+  
+  $form['po_service']['islandora_dm_po_service_url'] = array(
+    '#type' => 'textfield',
+    '#title' => t('URL'),
+    '#default_value' => variable_get('islandora_dm_po_service_url', 'http://localhost/po-service.php'),
+    '#size' => 40,
+    '#maxlength' => 255,
+    '#description' => t('URL for the purchase order web service'),
+    '#required' => TRUE
+  );
+  
+  $form['po_service']['islandora_dm_po_service_user'] = array(
+    '#type' => 'textfield',
+    '#title' => t('User name'),
+    '#default_value' => variable_get('islandora_dm_po_service_user', ''),
+    '#size' => 15,
+    '#maxlength' => 15,
+    '#description' => t('User name for the purchase order web service (optional)'),
+    '#required' => FALSE
+  );
+  
+  $form['po_service']['islandora_dm_po_service_pass'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Password'),
+    '#default_value' => variable_get('islandora_dm_po_service_pass', ''),
+    '#size' => 15,
+    '#maxlength' => 15,
+    '#description' => t('Password for the purchase order web service (optional)'),
+    '#required' => FALSE
+  );
+  
+  return system_settings_form($form);
+}

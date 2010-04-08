@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<foxml:digitalObject PID="islandora-dm:po-example" VERSION="1.1" xmlns:foxml="info:fedora/fedora-system:def/foxml#"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd">
+  <foxml:objectProperties>
+    <foxml:property NAME="info:fedora/fedora-system:def/model#state" VALUE="Active"/>
+    <foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="Purchase Order Example"/>
+    <foxml:property NAME="info:fedora/fedora-system:def/model#ownerId" VALUE="fedoraAdmin"/>
+    <foxml:property NAME="info:fedora/fedora-system:def/model#createdDate" VALUE="2010-04-03T13:56:43.642Z"/>
+    <foxml:property NAME="info:fedora/fedora-system:def/view#lastModifiedDate" VALUE="2010-04-03T13:57:58.796Z"/>
+  </foxml:objectProperties>
+  <foxml:datastream CONTROL_GROUP="X" ID="DC" STATE="A" VERSIONABLE="false">
+    <foxml:datastreamVersion CREATED="2010-04-03T13:56:43.642Z" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/"
+      ID="DC1.0" LABEL="Dublin Core Record for this object" MIMETYPE="text/xml" SIZE="404">
+      <foxml:xmlContent>
+        <oai_dc:dc xmlns:dc="http://purl.org/dc/elements/1.1/"
+          xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+          <dc:title>Purchase Order Example</dc:title>
+          <dc:identifier>islandora-dm:po-example</dc:identifier>
+        </oai_dc:dc>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+  </foxml:datastream>
+  <foxml:datastream CONTROL_GROUP="X" ID="RELS-EXT" STATE="A" VERSIONABLE="false">
+    <foxml:datastreamVersion CREATED="2010-04-03T13:57:58.796Z" FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0"
+      ID="RELS-EXT.0" LABEL="RDF Statements about this object" MIMETYPE="application/rdf+xml" SIZE="290">
+      <foxml:xmlContent>
+        <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+          <rdf:Description rdf:about="info:fedora/islandora-dm:po-example">
+            <hasModel rdf:resource="islandora-dm:po-cmodel" xmlns="info:fedora/fedora-system:def/model#"/>
+            <isMemberOf rdf:resource="islandora-dm:po-collection" xmlns="info:fedora/fedora-system:def/relations-external#"/>
+          </rdf:Description>
+        </rdf:RDF>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+  </foxml:datastream>
+  <foxml:datastream CONTROL_GROUP="X" ID="dminfo" STATE="A" VERSIONABLE="false">
+    <foxml:datastreamVersion CREATED="2010-04-03T18:21:46.910Z" ID="dminfo.0" LABEL="Enter a label here."
+      MIMETYPE="text/xml" SIZE="69">
+      <foxml:xmlContent>
+        <dminfo>
+          <status>unknown</status>
+          <owner>user</owner>
+        </dminfo>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+  </foxml:datastream>
+  <foxml:datastream CONTROL_GROUP="X" ID="uisinfo" STATE="A" VERSIONABLE="false">
+    <foxml:datastreamVersion CREATED="2010-04-03T18:21:46.910Z" ID="uisinfo.0" LABEL="Enter a label here."
+      MIMETYPE="text/xml" SIZE="69">
+      <foxml:xmlContent>
+        <po>
+          <poNumber>example</poNumber>
+          <poDate>2008-06-17</poDate>
+
+          <requisitionNumber>172120</requisitionNumber>
+
+          <fiscalYear>2008/09</fiscalYear>
+
+          <department>
+            <number>460000</number>
+            <name>Computer Services</name>
+            <deliverTo>Mike Reid</deliverTo>
+          </department>
+
+          <supplier>
+            <number>3863</number>
+            <name>Human Resource Testing</name>
+            <address>7601 East Treasure Drive
+        #2322</address>
+          </supplier>
+
+          <distributed>N</distributed>
+          <expenditure>682.31</expenditure>
+          <status>PROCESSED</status>
+          <total>0.00</total> 
+          <receivedDate></receivedDate>
+
+          <items>
+            <item>
+              <quantity>30.00</quantity>
+              <type>only</type>
+              <description>Online Meters (Reasoning, Cognitive
+        )
+
+        Attn. Jesse liobet, PhD</description>
+              <price>20.00</price>
+              <total>600.00</total>  
+            </item>
+          </items>
+        </po>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+  </foxml:datastream>
+</foxml:digitalObject>
