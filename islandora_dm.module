@@ -1,10 +1,13 @@
 <?php
 
-module_load_include('inc', 'islandora_dm', 'inc/menu');
-module_load_include('inc', 'islandora_dm', 'inc/pages');
-module_load_include('inc', 'islandora_dm', 'inc/islandora');
-module_load_include('inc', 'islandora_dm', 'inc/poservice');
-module_load_include('inc', 'islandora_dm', 'inc/curl');
+array_walk(
+ glob(dirname(__FILE__) . '/inc/*'),
+ create_function('$v,$i', 'return require_once($v);')
+); 
+
+function islandora_dm_init() {
+  drupal_add_css(drupal_get_path('module', 'islandora_dm') .'/css/islandora-dm.css');
+}
 
 /**
  * TODO: Display help and module information.
@@ -37,47 +40,10 @@ function islandora_dm_perm() {
     );
 }
 
-/**
- * TODO: determine requirements for settings page
- */
-function islandora_dm_admin() {
-  $form = array();
-  
-  $form['po_service'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Purchase order service'),
-    '#collapsible' => TRUE,
+function islandora_dm_theme($existing, $type, $theme, $path) {
+  return array(
+    'islandora_dm_import_files_checkboxes' => array(
+      'arguments' => array('form' => NULL),
+    ),
   );
-  
-  $form['po_service']['islandora_dm_po_service_url'] = array(
-    '#type' => 'textfield',
-    '#title' => t('URL'),
-    '#default_value' => variable_get('islandora_dm_po_service_url', 'http://localhost/po-service.php'),
-    '#size' => 40,
-    '#maxlength' => 255,
-    '#description' => t('URL for the purchase order web service'),
-    '#required' => TRUE
-  );
-  
-  $form['po_service']['islandora_dm_po_service_user'] = array(
-    '#type' => 'textfield',
-    '#title' => t('User name'),
-    '#default_value' => variable_get('islandora_dm_po_service_user', ''),
-    '#size' => 15,
-    '#maxlength' => 15,
-    '#description' => t('User name for the purchase order web service (optional)'),
-    '#required' => FALSE
-  );
-  
-  $form['po_service']['islandora_dm_po_service_pass'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Password'),
-    '#default_value' => variable_get('islandora_dm_po_service_pass', ''),
-    '#size' => 15,
-    '#maxlength' => 15,
-    '#description' => t('Password for the purchase order web service (optional)'),
-    '#required' => FALSE
-  );
-  
-  return system_settings_form($form);
 }

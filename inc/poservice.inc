@@ -6,7 +6,7 @@ module_load_include('inc', 'Fedora_Repository', 'api/fedora_utils');
  * Connect to the purchase order service, and retrieve information 
  * for the given $po_number. Returns a SimpleXmlElement.
  */
-function get_purchase_order($po_number) {
+function fetch_uis_po($po_number) {
   $url = variable_get('islandora_dm_po_service_url', null);
   $user = variable_get('islandora_dm_po_service_user', null);
   $pass = variable_get('islandora_dm_po_service_pass', null);

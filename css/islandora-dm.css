@@ -1,0 +1,77 @@
+/* ------------------------------------
+   global 
+*/
+.thumbnail {
+  border: 1px solid #ccc; 
+  margin: 10px 0;
+  height: 110px;
+  width: 85px;
+}
+
+.thumbnail.right {
+  margin-left: 20px;
+  float: right;
+}
+
+.thumbnail.left {
+  margin-right: 20px;
+  float: left;
+}
+
+div.clickable.active {
+  cursor: pointer;
+}
+
+div.clickable.active:hover {
+  background-color: #eee;
+}
+
+/*.text-right {
+  text-align: right;
+}
+
+.text-center {
+  text-align: center;
+}*/
+
+/* end global */
+
+/* ------------------------------------
+   /search 
+*/
+
+#islandora-dm-search-form div {
+  display: inline;  
+}
+
+#islandora-dm-search-form label {
+  display: none;
+}
+
+.islandora-dm-search-results div.po {
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+.islandora-dm-search-results .po-number {
+  font-weight: bold;
+}
+
+.islandora-dm-search-results table {
+  width: auto;
+}
+
+.islandora-dm-search-results tbody {
+  border: none;
+}
+
+.islandora-dm-search-results td {
+  padding: 0 1em;
+}
+
+.islandora-dm-search-results .no-results  {
+  margin: 1em 0;
+}
+
+/* end /search */

@@ -8,8 +8,8 @@ function islandora_dm_menu() {
 
   // admin page
   $items['admin/settings/islandora_dm'] = array(
-    'title' => 'Islandora Document Management',
-    'description' => 'Configure the Islandora Document Management module',
+    'title' => 'Islandora document management',
+    'description' => 'Configure the Islandora document management module',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('islandora_dm_admin'),
     'access arguments' => array('admin islandora_dm'),
@@ -32,7 +32,7 @@ function islandora_dm_menu() {
 
   // home page
   $items['islandora_dm'] = array (
-      'title' => 'Islandora Document Management',
+      'title' => 'Islandora document management',
       'page callback' => 'islandora_dm_home',
       'access arguments' => array('access islandora_dm'),
   );
@@ -51,11 +51,35 @@ function islandora_dm_menu() {
       'access arguments' => array('import islandora_dm'),
   );
   
-  // purchase order search
-  $items['islandora_dm/po/search'] = array (
+  // search
+  $items['islandora_dm/search'] = array (
       'title' => 'Search',
-      'page callback' => 'islandora_dm_po_search_form',
+      'page callback' => 'islandora_dm_search',
       'access arguments' => array('access islandora_dm'),
+  );
+  
+  // my purchase orders
+  $items['islandora_dm/search/owner/mine'] = array (
+      'title' => 'My Purchase Orders',
+      'page callback' => 'islandora_dm_search_owner_mine',
+      'access arguments' => array('access islandora_dm'),
+      'weight' => 1,
+  );
+  
+  // unassigned purchase orders
+  $items['islandora_dm/search/owner/unassigned'] = array (
+      'title' => 'Unassigned',
+      'page callback' => 'islandora_dm_search_owner_unassigned',
+      'access arguments' => array('access islandora_dm'),
+      'weight' => 2,
+  );
+  
+  // processed
+  $items['islandora_dm/search/status/processed'] = array (
+      'title' => 'Processed',
+      'page callback' => 'islandora_dm_search_status_processed',
+      'access arguments' => array('access islandora_dm'),
+      'weight' => 3,
   );
   
   // purchase order view

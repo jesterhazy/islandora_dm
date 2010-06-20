@@ -1,4 +1,4 @@
-name = Islandora Document Management
+name = Islandora document management
 description = A document management application built on Islandora
 core = 6.x
 dependencies[] = fedora_repository

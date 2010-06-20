@@ -6,9 +6,9 @@
  * isolate the Document Management module from changes in that API.
  */
 
-module_load_include('php', 'Fedora_Repository', 'ObjectHelper');
-module_load_include('php', 'Fedora_Repository', 'api/fedora_item');
-module_load_include('php', 'Fedora_Repository', 'api/fedora_collection');
+module_load_include('inc', 'Fedora_Repository', 'ObjectHelper');
+module_load_include('inc', 'Fedora_Repository', 'api/fedora_item');
+module_load_include('inc', 'Fedora_Repository', 'api/fedora_collection');
 
 function get_object_helper() {  
   $objectHelper = new ObjectHelper();
@@ -20,25 +20,17 @@ function ingest_object_from_foxml($file) {
   
   // purge the item if it exists
   $item = new Fedora_Item($pid);
-  if (fedora_item_exists($item)) {
+  if ($item->exists()) {
     $item->purge();
   }
     
   $item = Fedora_Item::ingest_from_FOXML_file($file);
   
-  if (!fedora_item_exists($item)) {
+  if (!$item->exists()) {
     throw new Exception('Ingest failed for ' . $pid . '.');
   }
   
   return $item;
-}
-
-/*
- * Logic copied from static method in Fedora_Item, but without object reload.
- * Core logic ought to be made available as instance method in Fedora_Item.
- */
-function fedora_item_exists($item) {
-  return (!empty($item->object_profile));
 }
 
 function pid_from_file($file) {
@@ -50,10 +42,10 @@ function pid_from_file($file) {
   return 'islandora-dm:' . basename($file, '.xml');
 }
 
-function get_fedora_item($pid) {
+function fetch_fedora_item($pid) {
   $item = new Fedora_Item($pid);
   
-  if (!fedora_item_exists($item)) {
+  if (!$item->exists()) {
     watchdog(t('islandora_dm'), t('Unable to retrieve ' . $pid . '.'), null, WATCHDOG_ERROR);
     return null;
   }
@@ -61,9 +53,9 @@ function get_fedora_item($pid) {
   return $item;
 }
 
-function get_children($pid) {
+function fetch_document_pids($pid) {
   // TODO may need to allow filtering by content model (depending on how attachments are handled)
-  $child_pids = get_related_items_as_array($pid, 'isMemberOf');
+  $child_pids = get_related_items_as_array($pid, 'isMemberOf');  
   return $child_pids;
 }
 
