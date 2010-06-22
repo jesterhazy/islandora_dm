@@ -7,9 +7,11 @@ module_load_include('inc', 'Fedora_Repository', 'api/fedora_utils');
  * for the given $po_number. Returns a SimpleXmlElement.
  */
 function fetch_uis_po($po_number) {
-  $url = variable_get('islandora_dm_po_service_url', null);
+  $base_url = variable_get('islandora_dm_po_service_url', null);
   $user = variable_get('islandora_dm_po_service_user', null);
   $pass = variable_get('islandora_dm_po_service_pass', null);
+  
+  $url = $base_url . '/' . $po_number;
   
   try {
     $xml_data = curl_fetch($url, $user, $pass);

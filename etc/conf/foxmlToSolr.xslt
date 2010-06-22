@@ -57,13 +57,17 @@
 			</xsl:if>
 		</xsl:for-each>		
 		
-		<xsl:for-each select="foxml:datastream/foxml:datastreamVersion[last()]/foxml:xmlContent/dminfo/*">
+		<xsl:for-each select="foxml:datastream/foxml:datastreamVersion[last()]/foxml:xmlContent/dm/*">
 			<xsl:if test="name() = 'owner'">
 				<field>
 					<xsl:attribute name="name">islandora-dm.po.owner</xsl:attribute>
 					<xsl:value-of select="."/>
 				</field>
 			</xsl:if>
+			<field>
+				<xsl:attribute name="name">islandora-dm.po</xsl:attribute>
+				<xsl:value-of select="."/>
+			</field>
 		</xsl:for-each>	
 
 		<xsl:for-each select="foxml:datastream/foxml:datastreamVersion[last()]/foxml:xmlContent/po/*">

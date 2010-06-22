@@ -39,6 +39,8 @@ class ImportPage {
       $options[$file->basename] = $file;
     }
     
+    ksort($options, SORT_NUMERIC);
+    
     return $options;
   }
   
@@ -106,6 +108,8 @@ class ImportPage {
   }
   
   function importFile($file) {
+    // TODO cache fedora and uis lookups. maybe.
+    
     // extract po number
     $this->attachPONumber($file);
     if (!$file->poNumber) {
@@ -141,7 +145,7 @@ class ImportPage {
     }
     
     // create document record, test success
-    $document = $this->createDocumentRecord($po, $file);
+    $document = $this->createDocumentRecord($po, $fedora, $file->filename);
     if (!$document) {
       drupal_set_message(t('Can\'t import <b>') . $file->basename . t('</b>, because an error occurred while storing the document.'), 'error');              
       return;
@@ -158,13 +162,11 @@ class ImportPage {
   }
   
   protected function createPurchaseOrderRecord($po) {
-    // TODO implement
-    return true;
+    return create_purchase_order_fedora_item($po);
   }
   
-  protected function createDocumentRecord($po, $file) {
-    // TODO implement
-    return true;
+  protected function createDocumentRecord($po, $fedora, $file) {
+    return create_document_fedora_item($po, $fedora, $file);
   }
   
   protected function archiveFile($file) {

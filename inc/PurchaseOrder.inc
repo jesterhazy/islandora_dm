@@ -22,14 +22,14 @@ class PurchaseOrder {
   protected $uis;
   
   /**
-   * SimpleXMLElement object containing dminfoDatastream from fedora
+   * SimpleXMLElement object containing dmDatastream from fedora
    */
-  protected $dminfoDatastream;
+  protected $dmDatastream;
   
   /**
-   * SimpleXMLElement object containing uisinfoDatastream from fedora
+   * SimpleXMLElement object containing uisDatastream from fedora
    */
-  protected $uisinfoDatastream;
+  protected $uisDatastream;
   
   /**
    * array of strings containing pids of related (child) documents
@@ -44,33 +44,37 @@ class PurchaseOrder {
   }
   
   function getDate() {
-    return $this->uisinfoDatastream->poDate;
+    return $this->uisDatastream->poDate;
   }
   
   function getDepartment() {
-    return $this->uisinfoDatastream->department->name;
+    return $this->uisDatastream->department->name;
   }
   
-  protected function getPid() {
+  function getPid() {
     return 'islandora-dm:po-' . $this->number;
   }
   
+  function getTitle() {
+    return t('Purchase Order ') . $this->number;
+  }
+  
   function getSupplier() {
-    return $this->uisinfoDatastream->supplier->name;
+    return $this->uisDatastream->supplier->name;
   }
   
   function getRequisitionNumber() {
-    return $this->uisinfoDatastream->requisitionNumber;
+    return $this->uisDatastream->requisitionNumber;
   }
   
   function getStatus() {
-    $status = ($this->uis) ? $this->uis->status : $this->dminfoDatastream->status;
+    $status = ($this->uis) ? $this->uis->status : $this->dmDatastream->status;
     $status = ucfirst(strtolower($status));
     return $status;
   }
   
   function getOwner() {
-    return $this->dminfoDatastream->owner;
+    return $this->dmDatastream->owner;
   }
   
   function getReceivedDate() {
@@ -83,6 +87,10 @@ class PurchaseOrder {
   
   function getUIS() {
     return $this->uis;
+  }
+  
+  function documentCount() {
+    return count($this->documentPids);
   }
   
   /**
@@ -102,8 +110,8 @@ class PurchaseOrder {
     $rows = array(
       array(t('Date:'), check_plain($this->getDate()), null),
       array(t('Requisition:'), check_plain($this->getRequisitionNumber()), null),
-      array(t('Department:'), check_plain($this->getDepartment() . ' (' . $this->uisinfoDatastream->department->number .')'), null),
-      array(t('Supplier:'), check_plain($this->getSupplier() . ' (' . $this->uisinfoDatastream->supplier->number .')'), null),
+      array(t('Department:'), check_plain($this->getDepartment() . ' (' . $this->uisDatastream->department->number .')'), null),
+      array(t('Supplier:'), check_plain($this->getSupplier() . ' (' . $this->uisDatastream->supplier->number .')'), null),
       array(t('Owner:'), check_plain($this->getOwner()), null),
       array(t('Status:'), check_plain($this->getStatus()), null),
       array(t('Received Date:'), check_plain($this->getReceivedDate()), null),
@@ -160,10 +168,22 @@ class PurchaseOrder {
     
     return $view;
   }
-  
+    
   function getDocumentThumbnailImgTag($document_pid) {
     // TODO pull url components from settings
-    return '<img src="http://islandora.local:8080/fedora/get/' . $document_pid . '/tn" width="85" height="110" alt="' . t('document image') . '">';
+    // TODO proxy/curl to avoid extra authentication?
+    
+    $doc = fetch_fedora_item($document_pid);
+    $ds_list = $doc->get_datastreams_list_as_array();
+    
+    
+    $tn_url = base_path() . drupal_get_path('module', 'islandora_dm')  . '/img/tn-placeholder.gif';
+    
+    if (!empty($ds_list['tn'])) {
+      $tn_url = 'http://islandora.local:8080/fedora/get/' . $document_pid . '/tn';
+    }
+    
+    return '<img src="' . $tn_url . '" width="85" height="110" alt="' . t('document image') . '">';
   }
   
   function addViewErrors() {
@@ -196,8 +216,8 @@ class PurchaseOrder {
     // only continue populating if fedora fetch succeeded
     if ($po->fedora) {
       // convert fedora streams to xml
-      $po->dminfoDatastream = self::datastreamToXml('dminfo', $po->fedora);
-      $po->uisinfoDatastream = self::datastreamToXml('uisinfo', $po->fedora); 
+      $po->dmDatastream = self::datastreamToXml('dm', $po->fedora);
+      $po->uisDatastream = self::datastreamToXml('uis', $po->fedora); 
       
       // load document ids
       $po->documentPids = fetch_document_pids($po->getPid());

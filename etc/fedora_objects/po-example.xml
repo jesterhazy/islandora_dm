@@ -34,19 +34,18 @@
       </foxml:xmlContent>
     </foxml:datastreamVersion>
   </foxml:datastream>
-  <foxml:datastream CONTROL_GROUP="X" ID="dminfo" STATE="A" VERSIONABLE="false">
-    <foxml:datastreamVersion CREATED="2010-04-03T18:21:46.910Z" ID="dminfo.0" LABEL="Enter a label here."
+  <foxml:datastream CONTROL_GROUP="X" ID="dm" STATE="A" VERSIONABLE="false">
+    <foxml:datastreamVersion CREATED="2010-04-03T18:21:46.910Z" ID="dm.0" LABEL="Enter a label here."
       MIMETYPE="text/xml" SIZE="69">
       <foxml:xmlContent>
-        <dminfo>
-          <status>unknown</status>
+        <dm>
           <owner>unassigned</owner>
-        </dminfo>
+        </dm>
       </foxml:xmlContent>
     </foxml:datastreamVersion>
   </foxml:datastream>
-  <foxml:datastream CONTROL_GROUP="X" ID="uisinfo" STATE="A" VERSIONABLE="false">
-    <foxml:datastreamVersion CREATED="2010-04-03T18:21:46.910Z" ID="uisinfo.0" LABEL="Enter a label here."
+  <foxml:datastream CONTROL_GROUP="X" ID="uis" STATE="A" VERSIONABLE="false">
+    <foxml:datastreamVersion CREATED="2010-04-03T18:21:46.910Z" ID="uis.0" LABEL="Enter a label here."
       MIMETYPE="text/xml" SIZE="69">
       <foxml:xmlContent>
         <po>

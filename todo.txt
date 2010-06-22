@@ -1,0 +1,46 @@
+Search
+- fielded search?
+
+Search results
+- pagination
+- result counts
+- sorting
+
+Indexing
+- other datastreams in document objects
+- annotations??
+
+Viewer integration
+
+JMS ingest actions
+
+Classification/Retention data
+
+Define requirements for editing
+
+Security
+
+View PO page
+- out of date vs. uis warning
+- take ownership action
+- add document action
+- proxy thumbnail retrieval to avoid reauthentication
+
+Ingest 
+
+- JMS down warning.
+- add 'reingest' action to view page
+- confirm filename pattern
+- validate filenames
+- escape filenames in form
+- what format are docs scanned in? jp2? tiff?
+
+Ingest Form 
+- group by PO number (currently just sorting)
+- ajax lookups to validate filename against uis
+- ajax lookups to see if po number already has record dm
+- show list of invalid files separately w/out checkbox.
+
+Attachments
+- define functionality
+- compare with attachments module
