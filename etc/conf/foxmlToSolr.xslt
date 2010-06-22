@@ -71,7 +71,7 @@
 		</xsl:for-each>	
 
 		<xsl:for-each select="foxml:datastream/foxml:datastreamVersion[last()]/foxml:xmlContent/po/*">
-			<xsl:if test="name() = 'status'">
+			<xsl:if test="name() = 'processed'">
 				<field>
 					<xsl:attribute name="name">islandora-dm.po.status</xsl:attribute>
 					<xsl:value-of select="."/>
@@ -81,6 +81,6 @@
 				<xsl:attribute name="name">islandora-dm.po</xsl:attribute>
 				<xsl:value-of select="."/>
 			</field>
-		</xsl:for-each>	
+		</xsl:for-each>
 
 	</xsl:template>

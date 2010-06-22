@@ -44,11 +44,11 @@ class PurchaseOrder {
   }
   
   function getDate() {
-    return $this->uisDatastream->poDate;
+    return substr($this->uisDatastream->podate, 0, strpos($this->uisDatastream->podate, 'T'));
   }
   
   function getDepartment() {
-    return $this->uisDatastream->department->name;
+    return $this->uisDatastream->dept;
   }
   
   function getPid() {
@@ -64,21 +64,15 @@ class PurchaseOrder {
   }
   
   function getRequisitionNumber() {
-    return $this->uisDatastream->requisitionNumber;
+    return substr($this->uisDatastream->re, strpos($this->uisDatastream->re, '#') + 1);
   }
   
   function getStatus() {
-    $status = ($this->uis) ? $this->uis->status : $this->dmDatastream->status;
-    $status = ucfirst(strtolower($status));
-    return $status;
+    return 'processed';
   }
   
   function getOwner() {
     return $this->dmDatastream->owner;
-  }
-  
-  function getReceivedDate() {
-    return $this->uis->receivedDate;
   }
   
   function getFedora() {
@@ -110,13 +104,12 @@ class PurchaseOrder {
     $rows = array(
       array(t('Date:'), check_plain($this->getDate()), null),
       array(t('Requisition:'), check_plain($this->getRequisitionNumber()), null),
-      array(t('Department:'), check_plain($this->getDepartment() . ' (' . $this->uisDatastream->department->number .')'), null),
-      array(t('Supplier:'), check_plain($this->getSupplier() . ' (' . $this->uisDatastream->supplier->number .')'), null),
+      array(t('Department:'), check_plain($this->getDepartment() . ' (' . $this->uisDatastream->idept .')'), null),
+      array(t('Supplier:'), check_plain($this->getSupplier() . ' (' . $this->uisDatastream->supplier->isup .')'), null),
       array(t('Owner:'), check_plain($this->getOwner()), null),
       array(t('Status:'), check_plain($this->getStatus()), null),
-      array(t('Received Date:'), check_plain($this->getReceivedDate()), null),
     );
-    
+        
     $view .= theme('table', null, $rows);
 
     $view .= '<h3>Documents</h3>';

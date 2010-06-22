@@ -1,0 +1,45 @@
+<?xml version="1.0" standalone="yes"?> 
+<po>
+  <poNumber>example</poNumber>
+  <poDate>2008-06-17</poDate>
+  
+  <requisitionNumber>172120</requisitionNumber>
+  
+  <fiscalYear>2008/09</fiscalYear>
+  
+  <department>
+    <number>460000</number>
+    <!-- is class (400) part of the requestor/department information? -->
+    <name>Computer Services</name>
+    <deliverTo>Mike Reid</deliverTo>
+  </department>
+  
+  <supplier>
+    <number>3863</number>
+    <!-- what's the 0 next to the supplier number? -->
+    <name>Human Resource Testing</name>
+    <address>7601 East Treasure Drive
+#2322</address>
+  </supplier>
+  
+  <distributed>N</distributed>
+  <expenditure>682.31</expenditure> <!-- single or multiple? -->
+  <status>PROCESSED</status>
+  <total>0.00</total> <!-- why 0? is this the amount remaining rather than the order total? -->
+  <receivedDate></receivedDate> <!-- most recent only? or multiple? -->
+    
+  <items>
+    <item>
+      <quantity>30.00</quantity>
+      <type>only</type>
+      <description>Online Meters (Reasoning, Cognitive
+)
+
+Attn. Jesse liobet, PhD</description>
+      <price>20.00</price>
+      <total>600.00</total>  
+    </item>
+  </items>
+</po>
+
+

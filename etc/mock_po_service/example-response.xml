@@ -1,45 +1,103 @@
-<?xml version="1.0" standalone="yes"?> 
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <po>
-  <poNumber>example</poNumber>
-  <poDate>2008-06-17</poDate>
-  
-  <requisitionNumber>172120</requisitionNumber>
-  
-  <fiscalYear>2008/09</fiscalYear>
-  
-  <department>
-    <number>460000</number>
-    <!-- is class (400) part of the requestor/department information? -->
-    <name>Computer Services</name>
-    <deliverTo>Mike Reid</deliverTo>
-  </department>
-  
-  <supplier>
-    <number>3863</number>
-    <!-- what's the 0 next to the supplier number? -->
-    <name>Human Resource Testing</name>
-    <address>7601 East Treasure Drive
-#2322</address>
-  </supplier>
-  
-  <distributed>N</distributed>
-  <expenditure>682.31</expenditure> <!-- single or multiple? -->
-  <status>PROCESSED</status>
-  <total>0.00</total> <!-- why 0? is this the amount remaining rather than the order total? -->
-  <receivedDate></receivedDate> <!-- most recent only? or multiple? -->
-    
+  <buddept>
+    <actBud>1578611.00</actBud>
+    <actCom>1261088</actCom>
+    <actExp>526655.14</actExp>
+    <authorizer>giberson</authorizer>
+    <commitment>1336475</commitment>
+    <curBud>1578611.00</curBud>
+    <dept>Biology</dept>
+    <discret>118779.02</discret>
+    <expend>524097.59</expend>
+    <iaccnt>42</iaccnt>
+    <idept>420000</idept>
+    <ifund>4</ifund>
+    <initial>1508906.00</initial>
+    <printExp>N</printExp>
+  </buddept>
   <items>
     <item>
-      <quantity>30.00</quantity>
-      <type>only</type>
-      <description>Online Meters (Reasoning, Cognitive
-)
-
-Attn. Jesse liobet, PhD</description>
-      <price>20.00</price>
-      <total>600.00</total>  
+      <description>INSTALL 2 INTERIOR ACCESS CONTROLER</description>
+      <ponum>129183</ponum>
+      <price>213600.0</price>
+      <quantity>1.0</quantity>
+      <seqnum>1</seqnum>
+      <total>213600.0</total>
+      <type>ONLY</type>
+    </item>
+    <item>
+      <description/>
+      <ponum>129183</ponum>
+      <price>0.0</price>
+      <quantity>0.0</quantity>
+      <seqnum>3</seqnum>
+      <total>0.0</total>
+      <type/>
+    </item>
+    <item>
+      <description/>
+      <ponum>129183</ponum>
+      <price>0.0</price>
+      <quantity>0.0</quantity>
+      <seqnum>99999</seqnum>
+      <total>0.0</total>
+      <type/>
+    </item>
+    <item>
+      <description/>
+      <ponum>129183</ponum>
+      <price>0.0</price>
+      <quantity>0.0</quantity>
+      <seqnum>4</seqnum>
+      <total>0.0</total>
+      <type/>
+    </item>
+    <item>
+      <description/>
+      <ponum>129183</ponum>
+      <price>0.0</price>
+      <quantity>0.0</quantity>
+      <seqnum>2</seqnum>
+      <total>0.0</total>
+      <type/>
     </item>
   </items>
+  <supplier>
+    <chqcnt>6</chqcnt>
+    <credit>0</credit>
+    <idn>0</idn>
+    <imessage>0</imessage>
+    <isup>1844</isup>
+    <itype>1</itype>
+    <lstchq>2008-10-02T00:00:00-03:00</lstchq>
+    <name>SECURITY FIRST LTD</name>
+    <supKey>SECURITY FIRST LTD</supKey>
+    <ytdchq>615484</ytdchq>
+  </supplier>
+  <addrCode>0</addrCode>
+  <commitment>240471</commitment>
+  <deliverTo>BIOLOGY - DUFFY</deliverTo>
+  <dept>Biology</dept>
+  <distributed>N</distributed>
+  <expend>0.0</expend>
+  <gstAmt>12816</gstAmt>
+  <gstCode>1</gstCode>
+  <iclass>731</iclass>
+  <idept>420000</idept>
+  <idn>0</idn>
+  <isup>1844</isup>
+  <orderPerson/>
+  <podate>2007-04-26T00:00:00-03:00</podate>
+  <ponum>129183</ponum>
+  <printFlag>F</printFlag>
+  <printed>Y</printed>
+  <processed>PROCESSED</processed>
+  <re>REQ#239300</re>
+  <reqnum>140304</reqnum>
+  <seqnum>0</seqnum>
+  <tax>22642</tax>
+  <taxCommit/>
+  <timeStamp>2007-04-26T11:46:27-03:00</timeStamp>
+  <totalCommit>240471</totalCommit>
 </po>
-
-
