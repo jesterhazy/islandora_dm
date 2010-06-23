@@ -24,7 +24,6 @@ View PO page
 - out of date vs. uis warning
 - take ownership action
 - add document action
-- proxy thumbnail retrieval to avoid reauthentication
 
 Ingest 
 

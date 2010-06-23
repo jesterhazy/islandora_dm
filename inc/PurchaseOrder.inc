@@ -162,18 +162,15 @@ class PurchaseOrder {
     return $view;
   }
     
-  function getDocumentThumbnailImgTag($document_pid) {
-    // TODO pull url components from settings
-    // TODO proxy/curl to avoid extra authentication?
-    
+  function getDocumentThumbnailImgTag($document_pid) {    
     $doc = fetch_fedora_item($document_pid);
     $ds_list = $doc->get_datastreams_list_as_array();
-    
     
     $tn_url = base_path() . drupal_get_path('module', 'islandora_dm')  . '/img/tn-placeholder.gif';
     
     if (!empty($ds_list['tn'])) {
-      $tn_url = 'http://islandora.local:8080/fedora/get/' . $document_pid . '/tn';
+      global $base_url;
+      $tn_url = $base_url . '/fedora/repository/' . $document_pid . '/tn';
     }
     
     return '<img src="' . $tn_url . '" width="85" height="110" alt="' . t('document image') . '">';

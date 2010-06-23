@@ -1,4 +1,6 @@
 <?php
+define('ISLANDORA_DM_ARCHIVE_DIR_DATE_FORMAT', 'Ymd-Hi');
+
 
 class ImportPage {
   const BTN_IMPORT_ALL = 'import_all';
@@ -45,7 +47,7 @@ class ImportPage {
   }
   
   function getFiles() {
-    $dir = variable_get('islandora_dm_import_folder_path', null);
+    $dir = variable_get(ISLANDORA_DM_IMPORT_FOLDER_PATH, null);
     return Files::listFiles($dir);
   }
     
@@ -154,11 +156,17 @@ class ImportPage {
     $archived = $this->archiveFile($file);
     if (!$archived) {
       drupal_set_message(t('Imported <b>') . $file->basename . t('</b>, but an error occurred while archiving the file.'), 'warn');
-      watchdog(t('islandora_dm'), t('Error archiving file after successful import: ' . $file->basename), null, WATCHDOG_WARN);
       return;
     }
     
     drupal_set_message(t('Added file <b>') . $file->basename . t('</b> to purchase order <b>') . $file->poNumber . t('</b>.'));
+  }
+  
+  protected function getArchiveDir() {
+    $base_dir = variable_get(ISLANDORA_DM_IMPORT_ARCHIVE_PATH, null);
+    $date = date(ISLANDORA_DM_ARCHIVE_DIR_DATE_FORMAT);
+    $archive_dir = $base_dir . '/' . $date;
+    return $archive_dir;
   }
   
   protected function createPurchaseOrderRecord($po) {
@@ -170,8 +178,26 @@ class ImportPage {
   }
   
   protected function archiveFile($file) {
-    // TODO pull archive dir from settings, and copy/delete file
-    return true;
+    $archive_dir = $this->getArchiveDir();
+    $md = mkdir($archive_dir);
+    
+    if ($md) {
+      $dest = $archive_dir . '/' . $file->basename;
+
+      $cp = copy($file->filename, $dest);
+
+      if ($cp) {
+        $del = unlink($file->filename);
+      }
+    }
+   
+    $error = $md ? 'make archive directory for' : $cp ? 'copy' : $del ? 'delete' : null;
+    
+    if ($error) {
+      watchdog(t('islandora_dm'), t('Failed to ' . $error . ' import file: ' . $file->basename), null, WATCHDOG_WARN);
+    }
+    
+    return $cp && $del;
   } 
   
   protected function attachPONumber(&$file) {

@@ -1,4 +1,6 @@
 <?php
+define('ISLANDORA_DM_IMPORT_FOLDER_PATH', 'islandora_dm_import_folder_path');
+define('ISLANDORA_DM_IMPORT_ARCHIVE_PATH', 'islandora_dm_import_archive_path');
 
 class AdminPage {
   function AdminPage() {
@@ -10,15 +12,25 @@ class AdminPage {
        '#collapsible' => TRUE,
      );
      
-     $form['import']['islandora_dm_import_folder_path'] = array(
+     $form['import'][ISLANDORA_DM_IMPORT_FOLDER_PATH] = array(
         '#type' => 'textfield',
         '#title' => t('Path'),
-        '#default_value' => variable_get('islandora_dm_import_folder_path', ''),
+        '#default_value' => variable_get(ISLANDORA_DM_IMPORT_FOLDER_PATH, ''),
         '#size' => 80,
         '#maxlength' => 255,
         '#description' => t('Path to the folder that contains scanned documents waiting for import'),
         '#required' => TRUE
       );
+      
+      $form['import'][ISLANDORA_DM_IMPORT_ARCHIVE_PATH] = array(
+         '#type' => 'textfield',
+         '#title' => t('Path'),
+         '#default_value' => variable_get(ISLANDORA_DM_IMPORT_ARCHIVE_PATH, ''),
+         '#size' => 80,
+         '#maxlength' => 255,
+         '#description' => t('Path to the folder that used to store scanned documents after import'),
+         '#required' => TRUE
+       );
     
      $form['po_service'] = array(
        '#type' => 'fieldset',
