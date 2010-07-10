@@ -39,6 +39,9 @@
       LABEL="Datastream Composite Model" MIMETYPE="text/xml" SIZE="338">
       <foxml:xmlContent>
         <dsCompositeModel xmlns="info:fedora/fedora-system:def/dsCompositeModel#">
+          <dsTypeModel ID="tiff">
+            <form MIME="image/tiff"/>
+          </dsTypeModel>          
           <dsTypeModel ID="jp2">
             <form MIME="image/jp2"/>
           </dsTypeModel>

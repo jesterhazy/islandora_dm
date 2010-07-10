@@ -13,9 +13,9 @@ define('ISLANDORA_DM_DATASTREAM_LABEL_DM', 'islandora-dm metadata');
 define('ISLANDORA_DM_DATASTREAM_LABEL_UIS', 'islandora-dm purchase order data');
 define('ISLANDORA_DM_DATASTREAM_ID_DM', 'dm');
 define('ISLANDORA_DM_DATASTREAM_ID_UIS', 'uis');
-define('ISLANDORA_DM_DSID_JP2', 'jp2');
-define('ISLANDORA_DM_DSLABEL_JP2', 'jp2 image');
-define('ISLANDORA_DM_MIME_TYPE_JP2', 'image/jp2');
+define('ISLANDORA_DM_DSID_TIFF', 'tiff');
+define('ISLANDORA_DM_DSLABEL_TIFF', 'tiff image');
+define('ISLANDORA_DM_MIME_TYPE_TIFF', 'image/tiff');
 define('ISLANDORA_DM_DC_TITLE', 'dc:title');
 define('ISLANDORA_DM_DC_IDENTIFIER', 'dc:identifier');
 
@@ -124,8 +124,8 @@ function create_document_fedora_item($po, $fedora, $file) {
     $fedora->add_relationship('isMemberOf', $po->getPID());
     $fedora->add_relationship('hasModel', ISLANDORA_DM_PID_PO_DOCUMENT_CMODEL, FEDORA_MODEL_URI);
     
-    // create jp2 datastream stream
-    $fedora->add_datastream_from_file($file, ISLANDORA_DM_DSID_JP2, ISLANDORA_DM_DSLABEL_JP2, ISLANDORA_DM_MIME_TYPE_JP2);
+    // create image datastream
+    $fedora->add_datastream_from_file($file, ISLANDORA_DM_DSID_TIFF, ISLANDORA_DM_DSLABEL_TIFF, ISLANDORA_DM_MIME_TYPE_TIFF);
   }
   
   catch (Exception $e) {

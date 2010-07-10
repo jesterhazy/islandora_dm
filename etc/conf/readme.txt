@@ -11,3 +11,7 @@
 3. fedora_repository
 
 - need to add islandora-dm: pid space to collections list in admin settings.
+
+4. fedora.fcfg
+
+- enable messaging
