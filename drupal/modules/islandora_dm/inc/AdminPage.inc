@@ -134,10 +134,9 @@ class AdminPage {
       '#collapsible' => TRUE,
     );
     
-    $pid = variable_get('islandora_dm_java_jms_pid', null);
-    $running = $this->isJmsRunning($pid);
-    
-    $status_message = $running ? 'running with PID ' . $pid . '.' : 'not running.';
+    $process = JMSProcess::createExisting();
+    $running = $process->isRunning();
+    $status_message = $running ? 'running with PID ' . $process->pid() . '.' : 'not running.';
     
     $form['process']['status']  = array(
       '#type' => 'item',
@@ -207,71 +206,15 @@ class AdminPage {
   function javaSubmit($form, &$form_state) {
     $button_name = $form_state['clicked_button']['#name'];
     if ($button_name == 'jmsstart') {
-      $this->startJms();
+      JMSProcess::start();
     }
     
     else if ($button_name == 'jmsstop') {
-      $this->stopJms();
+      JMSProcess::createExisting()->stop();
     }
     
     else {
       system_settings_form_submit($form, $form_state);
-    }
-  }
-  
-  function startJms() {
-    $cmd_path = trim(`pwd`) . '/' . drupal_get_path('module', 'islandora_dm') . '/etc/java/bin';    
-    $logfile = escapeshellcmd(variable_get('islandora_dm_java_jms_logfile', null));
-    
-    if (!$logfile) {
-      $logfile = '/dev/null';
-    }
-    
-    $pid = trim(exec("cd $cmd_path; nohup ./start.sh > $logfile 2>&1 & echo \$!")) + 2;
-    
-    if ($pid > 0 && $this->isJmsRunning($pid)) {
-      variable_set('islandora_dm_java_jms_pid', $pid);
-      drupal_set_message(t('Started JMS service with PID ') . $pid . '.');  
-    }
-    
-    else {
-      drupal_set_message(t('JMS service startup failed. Output was: ') . $pid, 'error');
-    }
-  }
-  
-  function isJmsRunning($pid) {
-    $running = false;
-    if ($pid > 0) {
-      exec("ps $pid", $output);
-      $running = (count($output) >= 2); 
-    }
-    
-    return $running;
-  }
-  
-  function stopJms() {
-    $pid = escapeshellcmd(variable_get('islandora_dm_java_jms_pid', null));
-    
-    if ($pid) {
-      if ($this->isJmsRunning($pid)) {
-         exec("kill $pid; sleep 2");
-
-         if ($this->isJmsRunning($pid)) {
-           drupal_set_message('Normal shutdown failed. Using SIGKILL.', 'warn');
-           exec("kill -9 $pid; sleep 2");
-         }
-         
-         if ($this->isJmsRunning($pid)) {
-           drupal_set_message('Shutdown failed (even SIGKILL) for PID ' . $pid, 'error');
-         }
-
-         drupal_set_message(t('Stopped JMS service with PID ') . $pid . '.');
-         variable_del('islandora_dm_java_jms_pid');
-      }
-      
-      else {
-        drupal_set_message('JMS service not running under PID ' . $pid, 'warn');
-      }
     }
   }
 }

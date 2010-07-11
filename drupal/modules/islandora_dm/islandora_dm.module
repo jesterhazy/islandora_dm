@@ -5,6 +5,11 @@ array_walk(
  create_function('$v,$i', 'return require_once($v);')
 ); 
 
+// need to add if using class inheritance
+// function __autoload($class_name) {
+//   require_once dirname(__FILE__) . '/inc/' . $class_name . '.inc';
+// }
+
 function islandora_dm_init() {
   drupal_add_css(drupal_get_path('module', 'islandora_dm') .'/css/islandora-dm.css');
 }

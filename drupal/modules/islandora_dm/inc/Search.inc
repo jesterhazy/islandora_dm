@@ -11,7 +11,7 @@ class Search {
   protected $limit;
   protected $results;
   
-  function Search($offset, $limit) {
+  function __construct($offset, $limit) {
     $this->offset = $offset;
     $this->limit = $limit;
   }
