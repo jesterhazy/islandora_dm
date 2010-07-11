@@ -16,6 +16,7 @@ public class MIMEHelper {
 		Map<String, String> m1 = new HashMap<String, String>();
 		m1.put("image/tiff", "tif");
 		m1.put("image/jp2", "jp2");
+		m1.put("image/jpeg", "jpg");
 		FILE_EXTENSION_MAP = Collections.unmodifiableMap(m1);
 		
 		Map<String, String> m2 = new HashMap<String, String>();
@@ -39,11 +40,10 @@ public class MIMEHelper {
 	}
 	
 	public static String getMimeType(File file) {
-		
 		String extension = null;
 		
-		int pos = file.getName().lastIndexOf(".");
-		if (pos > 0) {
+		int pos = file.getName().lastIndexOf(".") + 1;
+		if (pos > 0 && pos < file.getName().length()) {
 			extension = file.getName().substring(pos);
 		}
 		
