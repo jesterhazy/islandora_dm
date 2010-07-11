@@ -11,4 +11,4 @@ done
 echo 'using classpath: ' . $cp;
 
 
-java -Xmx1500M -cp  $cp ca.upei.roblib.islandora.dm.jms.Main
+java -Xmx1500M -cp  $cp ca.upei.roblib.islandora.dm.jms.Main &

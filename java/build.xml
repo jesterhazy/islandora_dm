@@ -26,10 +26,6 @@
 		</copy>
 		<zip destfile="dist/islandora_dm_java/lib/islandora_dm_java.jar" basedir="bin"/>
 		
-		<copy todir="dist/islandora_dm_java/etc/test_files">
-			<fileset dir="etc/test_files"/>
-		</copy>
-		
 		<copy todir="dist/islandora_dm_java">
 			<fileset dir="properties"/>
 		</copy>
@@ -39,6 +35,8 @@
 		<copy todir="${idm.deployDir}/java">
 			<fileset dir="dist/islandora_dm_java"/>
 		</copy>
+		
+		<chmod file="${idm.deployDir}/java/bin/start.sh" perm="755"/>
 	</target>
 
 	<target name="deploy-check">
