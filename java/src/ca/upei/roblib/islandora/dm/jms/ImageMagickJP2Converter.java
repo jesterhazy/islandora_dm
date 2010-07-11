@@ -15,21 +15,19 @@ public class ImageMagickJP2Converter implements DatastreamConverter {
 	public void convert(File input, File output) throws Exception {
 		
 		//convert 1.tiff 1.jp2
-		throw new Exception("disabled");
-
-//		String command = String.format("convert %s %s", 
-//				input.getAbsolutePath(), 
-//				output.getAbsolutePath());
-//		
-//		if (log.isDebugEnabled()) {
-//			log.debug("executing command: " + command);
-//		}
-//		
-//		Process p = Runtime.getRuntime().exec(command);
-//		int status = p.waitFor();
-//		if (status != 0) {
-//			throw new Exception("error converting image");
-//		}
+		String command = String.format("convert %s %s", 
+			input.getAbsolutePath(), 
+			output.getAbsolutePath());
+		
+		if (log.isDebugEnabled()) {
+			log.debug("executing command: " + command);
+		}
+		
+		Process p = Runtime.getRuntime().exec(command);
+		int status = p.waitFor();
+		if (status != 0) {
+			throw new Exception("error converting image");
+		}
 	}
 
 	@Override

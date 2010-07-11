@@ -2,7 +2,6 @@ package ca.upei.roblib.islandora.dm.jms;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
@@ -17,13 +16,8 @@ public class JAIJP2Converter implements DatastreamConverter {
 	
 	@Override
 	public void convert(File input, File output) throws Exception {
-		try {
-			BufferedImage sourceImage = ImageIO.read(input);
-			ImageIO.write(sourceImage, JAI_FORMAT_NAME, output);
-		} catch (IOException e) {
-			log.error("failed to convert data for dsid: " + getOutputDsid());
-			throw e;
-		}
+		BufferedImage sourceImage = ImageIO.read(input);
+		ImageIO.write(sourceImage, JAI_FORMAT_NAME, output);
 	}
 
 	@Override

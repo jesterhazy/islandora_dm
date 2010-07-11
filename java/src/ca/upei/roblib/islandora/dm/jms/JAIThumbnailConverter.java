@@ -3,7 +3,6 @@ package ca.upei.roblib.islandora.dm.jms;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
@@ -21,20 +20,14 @@ public class JAIThumbnailConverter implements DatastreamConverter {
 	
 	@Override
 	public void convert(File input, File output) throws Exception {
+		BufferedImage sourceImage = ImageIO.read(input);
+		Image thumbnail = sourceImage.getScaledInstance(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT,
+				Image.SCALE_SMOOTH);
 		
-		try {
-			BufferedImage sourceImage = ImageIO.read(input);
-			Image thumbnail = sourceImage.getScaledInstance(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT,
-					Image.SCALE_SMOOTH);
-
-			BufferedImage bi = new BufferedImage(thumbnail.getWidth(null),
-					thumbnail.getHeight(null), BufferedImage.TYPE_INT_RGB);
-			bi.getGraphics().drawImage(thumbnail, 0, 0, null);
-			ImageIO.write(bi, JAI_FORMAT_NAME, output);
-		} catch (IOException e) {
-			log.error("failed to convert data for dsid: " + getOutputDsid());
-			throw e;
-		}
+		BufferedImage bi = new BufferedImage(thumbnail.getWidth(null),
+				thumbnail.getHeight(null), BufferedImage.TYPE_INT_RGB);
+		bi.getGraphics().drawImage(thumbnail, 0, 0, null);
+		ImageIO.write(bi, JAI_FORMAT_NAME, output);
 	}
 
 	@Override

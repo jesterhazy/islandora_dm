@@ -17,6 +17,7 @@ public class MIMEHelper {
 		m1.put("image/tiff", "tif");
 		m1.put("image/jp2", "jp2");
 		m1.put("image/jpeg", "jpg");
+		m1.put("application/pdf", "pdf");
 		FILE_EXTENSION_MAP = Collections.unmodifiableMap(m1);
 		
 		Map<String, String> m2 = new HashMap<String, String>();

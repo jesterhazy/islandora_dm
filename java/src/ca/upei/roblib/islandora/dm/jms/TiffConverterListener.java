@@ -24,7 +24,8 @@ public class TiffConverterListener extends TiffDatastreamListener {
 		
 		converters = Arrays.asList(
 				new ImageMagickThumbnailConverter(),
-				new ImageMagickJP2Converter(),
+//				new ImageMagickJP2Converter(),
+//				new PdfConverter(),
 				new AbbyConverter()
 			);
 	}
