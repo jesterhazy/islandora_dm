@@ -4,24 +4,24 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-public class ThumbnailListener extends TiffDatastreamListener {
-	private static final String THUMBNAIL_DS_LABEL = "thumbnail image";
-	private static final String THUMBNAIL_JAI_FORMAT_NAME = "jpeg";
+import org.apache.log4j.Logger;
+
+public class JAIThumbnailConverter implements DatastreamConverter {
+	final Logger log = Logger.getLogger(getClass().getName());
+
+	private static final String JAI_FORMAT_NAME = "jpeg";
+	private static final String DS_LABEL = "thumbnail image";
 	private static final int THUMBNAIL_HEIGHT = 110;
 	private static final int THUMBNAIL_WIDTH = 85;
 	private static final String FILENAME_SUFFIX = "jpg";
 	private static final String OUTPUT_DSID = "tn";
-
-	public ThumbnailListener(Map<String, String> env) {
-		super(env);
-	}
-
+	
 	@Override
-	void convert(File input, File output) throws Exception {
+	public void convert(File input, File output) throws Exception {
+		
 		try {
 			BufferedImage sourceImage = ImageIO.read(input);
 			Image thumbnail = sourceImage.getScaledInstance(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT,
@@ -30,7 +30,7 @@ public class ThumbnailListener extends TiffDatastreamListener {
 			BufferedImage bi = new BufferedImage(thumbnail.getWidth(null),
 					thumbnail.getHeight(null), BufferedImage.TYPE_INT_RGB);
 			bi.getGraphics().drawImage(thumbnail, 0, 0, null);
-			ImageIO.write(bi, THUMBNAIL_JAI_FORMAT_NAME, output);
+			ImageIO.write(bi, JAI_FORMAT_NAME, output);
 		} catch (IOException e) {
 			log.error("failed to convert data for dsid: " + getOutputDsid());
 			throw e;
@@ -38,17 +38,17 @@ public class ThumbnailListener extends TiffDatastreamListener {
 	}
 
 	@Override
-	String getFilenameSuffix() {
+	public String getFilenameSuffix() {
 		return FILENAME_SUFFIX;
 	}
 
 	@Override
-	String getOutputDsid() {
+	public String getOutputDsid() {
 		return OUTPUT_DSID;
 	}
 
 	@Override
-	String getOutputDsLabel() {
-		return THUMBNAIL_DS_LABEL;
+	public String getOutputDsLabel() {
+		return DS_LABEL;
 	}
 }
