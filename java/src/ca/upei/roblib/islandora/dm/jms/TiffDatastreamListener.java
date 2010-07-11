@@ -2,6 +2,8 @@ package ca.upei.roblib.islandora.dm.jms;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,7 +17,6 @@ import org.apache.log4j.Logger;
 
 import ca.upei.roblib.islandora.dm.fedora.SimpleFedoraClient;
 import ca.upei.roblib.islandora.dm.util.Constants;
-
 import fedora.client.messaging.JmsMessagingClient;
 import fedora.client.messaging.MessagingClient;
 import fedora.client.messaging.MessagingListener;
@@ -23,7 +24,6 @@ import fedora.server.errors.MessagingException;
 import fedora.server.messaging.JMSManager;
 
 public abstract class TiffDatastreamListener implements MessagingListener {
-	
 	
 	private static final String FEDORA_EXTRACT_DSID_PATTERN = ".*<category term=\"([^\"]+)\" scheme=\"fedora-types:dsID\" label=\"xsd:string\"></category>.*";
 	private static final String FEDORA_TOPIC_PROPERTY_VALUE = "fedora.apim.*";
@@ -35,13 +35,19 @@ public abstract class TiffDatastreamListener implements MessagingListener {
 	private static final String JMS_CONNECTION_FACTORY_NAME = "ConnectionFactory";
 	private static final String JMS_MESSAGE_SELECTOR = "methodName = 'addDatastream' and pid like 'islandora-dm:%'";
 	private static final boolean JMS_DURABLE_FLAG = false;
-	private static final String FEDORA_USER = "fedoraAdmin";
-	private static final String FEDORA_PASS = "fedoraAdmin";
-	private static final String FEDORA_URL = "http://localhost:8080/fedora";
+	private static final String FEDORA_USER_KEY = "_islandora_dm_java_fedora_user";
+	private static final String FEDORA_PASS_KEY = "_islandora_dm_java_fedora_pass";
+	private static final String FEDORA_URL_KEY = "_islandora_dm_java_fedora_url";
 
-	Logger log = Logger.getLogger(getClass().getName());
+	final Logger log = Logger.getLogger(getClass().getName());
+	final Map<String, String> settings;
+	
 	private MessagingClient messagingClient;
 	private ThreadLocal<SimpleFedoraClient> client = new ThreadLocal<SimpleFedoraClient>();
+	
+	public TiffDatastreamListener(Map<String, String> settings) {
+		this.settings = Collections.unmodifiableMap(settings);
+	}
 	
 	abstract String getFilenameSuffix();
 	abstract String getOutputDsid();
@@ -139,7 +145,12 @@ public abstract class TiffDatastreamListener implements MessagingListener {
 	}
 
 	private void initializeClient() throws Exception{
-		getFedora().initialize(FEDORA_URL, FEDORA_USER, FEDORA_PASS);
+		String url = settings.get(FEDORA_URL_KEY);
+		String user = settings.get(FEDORA_USER_KEY);
+		String pass = settings.get(FEDORA_PASS_KEY);
+		log.info(String.format("Connecting to fedora at %s as user %s", url, user));
+		
+		getFedora().initialize(url, user, pass);
 	}
 
 	private SimpleFedoraClient getFedora() {
@@ -170,7 +181,8 @@ public abstract class TiffDatastreamListener implements MessagingListener {
 	}
 
 	/**
-	 * Should this message be processed? We only care about addDatastream
+	 * Should this message be processed? 
+	 * We only care about addDatastream
 	 * messages where the datastream id is "tiff".
 	 * 
 	 * @param pid

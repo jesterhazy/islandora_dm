@@ -4,6 +4,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
@@ -14,6 +15,10 @@ public class ThumbnailListener extends TiffDatastreamListener {
 	private static final int THUMBNAIL_WIDTH = 85;
 	private static final String FILENAME_SUFFIX = "jpg";
 	private static final String OUTPUT_DSID = "tn";
+
+	public ThumbnailListener(Map<String, String> env) {
+		super(env);
+	}
 
 	@Override
 	void convert(File input, File output) throws Exception {

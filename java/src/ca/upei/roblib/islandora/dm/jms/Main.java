@@ -1,5 +1,9 @@
 package ca.upei.roblib.islandora.dm.jms;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.apache.log4j.Logger;
 
 public class Main {
@@ -8,7 +12,16 @@ public class Main {
 		LOG.info("starting jms clients");
 		System.setProperty("java.awt.headless", "true");
 		
-		new ThumbnailListener().start();
+		Map<String, String> env = System.getenv();
+		Map<String, String> settings = new HashMap<String, String>();
+		
+		for (Entry<String, String> entry : env.entrySet()) {
+			if (entry.getKey().contains("islandora")) {
+				settings.put(entry.getKey(), entry.getValue());
+			}
+		}
+		
+		new ThumbnailListener(settings).start();
 		
 		LOG.info("done");
 	}
