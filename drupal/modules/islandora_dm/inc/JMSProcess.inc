@@ -19,7 +19,7 @@ class JMSProcess {
     $defaults = array(
       'cmd' => 'start.sh',
       'cwd' => trim(`pwd`) . '/' . drupal_get_path('module', 'islandora_dm') . '/etc/java/bin',
-      'output' => escapeshellcmd(variable_get('islandora_dm_java_jms_logfile', null)),
+      'log' => escapeshellcmd(variable_get('islandora_dm_java_jms_logfile', null)),
       'env' => array(
          '_islandora_dm_java_fedora_url' => variable_get('islandora_dm_java_fedora_url', ''),
          '_islandora_dm_java_fedora_user' => variable_get('islandora_dm_java_fedora_user', ''),
@@ -37,6 +37,14 @@ class JMSProcess {
     if ($p->isRunning()) {
       variable_set('islandora_dm_java_jms_pid', $p->pid());
     }
+    
+    return $p;
+  }
+  
+  static function stop() {
+    $p = self::createExisting();
+    $p->stop();
+    variable_del('islandora_dm_java_jms_pid');
     
     return $p;
   }

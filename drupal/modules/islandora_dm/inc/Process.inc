@@ -5,7 +5,7 @@ class Process {
   const ERROR = 'error';
   const STATUS = 'status';
   const MSG_KILL_ERR = 'Normal shutdown failed. Using SIGKILL.';
-  const MSG_SIGKILL_ERR = 'Shutdown failed (even SIGKILL) for PID !name.';
+  const MSG_SIGKILL_ERR = 'Shutdown failed (even SIGKILL) for !name with PID %pid.';
   const MSG_STARTED = 'Started !name with PID %pid.';
   const MSG_START_ERR = '!name startup failed.';
   const MSG_STOPPED = 'Stopped !name with PID %pid.';
@@ -14,7 +14,7 @@ class Process {
   protected $name;
   protected $cwd;
   protected $cmd;
-  protected $output;
+  protected $log;
   protected $env;
   protected $pid;
   
@@ -25,13 +25,13 @@ class Process {
   function start() {
     if ($this->cmd) {
       $exec_cmd = $this->cwd ? "cd $this->cwd; " : '';
-      $exec_cmd .= "nohup ./$this->cmd > $this->output 2>&1 & echo \$!";
+      $exec_cmd .= "nohup ./$this->cmd > $this->log 2>&1 & echo \$!";
       
       foreach($this->env as $key => $value) {
         putenv("$key=$value");
       }
       
-      $pid = trim(exec($exec_cmd)) + 2;
+      $pid = trim(exec($exec_cmd, $output));
     }
     
     if ($pid > 0) {
@@ -50,15 +50,15 @@ class Process {
   function stop () {
     if ($this->pid) {
       if ($this->isRunning()) {
-         exec("kill $this->pid; sleep 1");
+         exec("pkill -P $this->pid; sleep 1");
 
          if ($this->isRunning()) {
            $this->message(self::MSG_KILL_ERR, self::WARN);
-           exec("kill -9 $this->pid; sleep 1");
+           exec("pkill -9 -P $this->pid; sleep 1");
          }
          
          if ($this->isRunning()) {
-           $this->message(self::MSG_SIGKILL_ERR, self::WARN);
+           $this->message(self::MSG_SIGKILL_ERR, self::ERROR);
          }
          
          if (!$this->isRunning()) {
@@ -91,8 +91,6 @@ class Process {
     drupal_set_message(t($msg, $args), $level);
   }
   
-
-  
   /**
    * Create a Process object.
    */
@@ -100,7 +98,7 @@ class Process {
     
     $defaults = array( 
       'name' => 'Process',
-      'output' => '/dev/null',
+      'log' => '/dev/null',
       'env' => array(),
     );
     
@@ -112,7 +110,7 @@ class Process {
     $p->cmd = $args['cmd'];
     $p->cwd = $args['cwd'];
     $p->env = $args['env'];
-    $p->output = $args['output'];
+    $p->log = $args['log'];
     
     return $p;
   }

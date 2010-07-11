@@ -210,7 +210,7 @@ class AdminPage {
     }
     
     else if ($button_name == 'jmsstop') {
-      JMSProcess::createExisting()->stop();
+      JMSProcess::stop();
     }
     
     else {
