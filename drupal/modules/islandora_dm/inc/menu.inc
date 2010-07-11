@@ -22,11 +22,21 @@ function islandora_dm_menu() {
     'access arguments' => array('admin islandora_dm'),
   );
   
-  $items['admin/settings/islandora_dm/install_objects'] = array(
+  $items['admin/settings/islandora_dm/java'] = array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Java settings',
+    'description' => 'Configure java and jms settings.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('islandora_dm_admin_java'),
+    'access arguments' => array('admin islandora_dm'),
+  );
+  
+  $items['admin/settings/islandora_dm/objects'] = array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Install fedora objects',
     'description' => 'Install the fedora objects used by this module.',
-    'page callback' => 'islandora_dm_install_objects',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('islandora_dm_admin_objects_form'),
     'access arguments' => array('admin islandora_dm'),
   );
 
