@@ -1,9 +1,6 @@
 <?php
 
 class Process {
-  const WARN = 'warn';
-  const ERROR = 'error';
-  const STATUS = 'status';
   const MSG_KILL_ERR = 'Normal shutdown failed. Using SIGKILL.';
   const MSG_SIGKILL_ERR = 'Shutdown failed (even SIGKILL) for !name with PID %pid.';
   const MSG_STARTED = 'Started !name with PID %pid.';
@@ -43,7 +40,7 @@ class Process {
     }
      
     else {
-      $this->message(self::MSG_START_ERR, self::ERROR);
+      $this->message(self::MSG_START_ERR, Constants::DRUPAL_MESSAGE_ERROR);
     }
   }
   
@@ -53,12 +50,12 @@ class Process {
          exec("pkill -P $this->pid; sleep 1");
 
          if ($this->isRunning()) {
-           $this->message(self::MSG_KILL_ERR, self::WARN);
+           $this->message(self::MSG_KILL_ERR, Constants::DRUPAL_MESSAGE_WARNING);
            exec("pkill -9 -P $this->pid; sleep 1");
          }
          
          if ($this->isRunning()) {
-           $this->message(self::MSG_SIGKILL_ERR, self::ERROR);
+           $this->message(self::MSG_SIGKILL_ERR, Constants::DRUPAL_MESSAGE_ERROR);
          }
          
          if (!$this->isRunning()) {
@@ -67,7 +64,7 @@ class Process {
       }
       
       else {
-        $this->message(self::MSG_NOT_RUNNING, self::WARN);
+        $this->message(self::MSG_NOT_RUNNING, Constants::DRUPAL_MESSAGE_WARNING);
       }
     }
   }
@@ -82,7 +79,7 @@ class Process {
     return $running;
   }
   
-  function message($msg, $level = self::STATUS) {
+  function message($msg, $level = Constants::DRUPAL_MESSAGE_STATUS) {
     $args = array(
       '!name' => $this->name,
       '%pid' => $this->pid,

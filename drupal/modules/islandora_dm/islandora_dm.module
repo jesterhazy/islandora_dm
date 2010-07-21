@@ -11,7 +11,7 @@ array_walk(
 // }
 
 function islandora_dm_init() {
-  drupal_add_css(drupal_get_path('module', 'islandora_dm') .'/css/islandora-dm.css');
+  drupal_add_css(drupal_get_path('module', Constants::MODULE_NAME) .'/css/islandora-dm.css');
 }
 
 /**
@@ -35,13 +35,13 @@ function islandora_dm_help($path, $arg) {
 function islandora_dm_perm() {
   return array(
     // configure module settings
-    'admin islandora_dm', 
-    
-    // view module pages and documents (subject to fedora authorization)
-    'access islandora_dm',
+    Constants::PERMISSION_ADMIN, 
     
     // import new documents
-    'import islandora_dm' 
+    Constants::PERMISSION_EDIT,
+    
+    // view module pages and documents (subject to fedora authorization)
+    Constants::PERMISSION_VIEW 
     );
 }
 

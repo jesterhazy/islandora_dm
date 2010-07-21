@@ -66,14 +66,8 @@ function islandora_dm_search_status_processed() {
   return $search->getSearchResultsView();
 }
 
-// TODO build real PO view.
 function islandora_dm_po_view($po_number) {
   return PurchaseOrder::fetchByNumber($po_number)->getView();
-}
-
-// TODO delete me
-function islandora_dm_fedora_view($pid) {
-  return get_object_helper()->getQDC($pid);
 }
 
 function unimplemented_page($name) {
@@ -83,7 +77,3 @@ END;
 
   return $output;
 }
-
-
-
-?>

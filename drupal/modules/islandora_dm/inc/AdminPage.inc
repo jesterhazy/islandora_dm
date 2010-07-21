@@ -1,6 +1,4 @@
 <?php
-define('ISLANDORA_DM_IMPORT_FOLDER_PATH', 'islandora_dm_import_folder_path');
-define('ISLANDORA_DM_IMPORT_ARCHIVE_PATH', 'islandora_dm_import_archive_path');
 
 class AdminPage {
   function settingsForm() {
@@ -12,25 +10,33 @@ class AdminPage {
        '#collapsible' => TRUE,
      );
      
-     $form['import'][ISLANDORA_DM_IMPORT_FOLDER_PATH] = array(
+     $form['import'][Constants::IMPORT_FOLDER_PATH] = array(
         '#type' => 'textfield',
-        '#title' => t('Path'),
-        '#default_value' => variable_get(ISLANDORA_DM_IMPORT_FOLDER_PATH, ''),
+        '#title' => t('Import Path'),
+        '#default_value' => variable_get(Constants::IMPORT_FOLDER_PATH, ''),
         '#size' => 80,
         '#maxlength' => 255,
         '#description' => t('Path to the folder that contains scanned documents waiting for import'),
         '#required' => TRUE
       );
       
-      $form['import'][ISLANDORA_DM_IMPORT_ARCHIVE_PATH] = array(
-         '#type' => 'textfield',
-         '#title' => t('Path'),
-         '#default_value' => variable_get(ISLANDORA_DM_IMPORT_ARCHIVE_PATH, ''),
-         '#size' => 80,
-         '#maxlength' => 255,
-         '#description' => t('Path to the folder that used to store scanned documents after import'),
-         '#required' => TRUE
-       );
+     $form['import'][Constants::IMPORT_ARCHIVE_PATH] = array(
+       '#type' => 'textfield',
+       '#title' => t('Archive Path'),
+       '#default_value' => variable_get(Constants::IMPORT_ARCHIVE_PATH, ''),
+       '#size' => 80,
+       '#maxlength' => 255,
+       '#description' => t('Path to the folder that used to store scanned documents after import'),
+       '#required' => TRUE
+     );
+      
+     $form['import'][Constants::IMPORT_ARCHIVE_DISABLED] = array(
+       '#type' => 'checkbox',
+       '#title' => t('Disable archiving?'),
+       '#default_value' => variable_get(Constants::IMPORT_ARCHIVE_DISABLED, false),
+       '#description' => t('Disable archiving of imported files (useful for testing)?'),
+       '#required' => TRUE
+     ); 
     
      $form['po_service'] = array(
        '#type' => 'fieldset',
@@ -72,7 +78,7 @@ class AdminPage {
   }
   
   function objectsForm() {
-    $objects_dir = drupal_get_path('module', 'islandora_dm') . '/etc/fedora_objects';
+    $objects_dir = drupal_get_path('module', Constants::MODULE_NAME) . '/etc/foxml';
 
     $files = file_scan_directory($objects_dir, '\.xml$');
 
@@ -100,7 +106,7 @@ class AdminPage {
   }
   
   function objectsFormSubmit($form, &$form_state) {
-    $objects_dir = drupal_get_path('module', 'islandora_dm') . '/etc/fedora_objects';
+    $objects_dir = drupal_get_path('module', Constants::MODULE_NAME) . '/etc/foxml';
 
     $error = FALSE;
 
@@ -114,7 +120,7 @@ class AdminPage {
 
           catch (Exception $e) {
             $error = TRUE;
-            drupal_set_message(t($e->getMessage()), 'error');
+            drupal_set_message(t($e->getMessage()), Constants::DRUPAL_MESSAGE_ERROR);
           }
         }
       }
@@ -125,7 +131,7 @@ class AdminPage {
     }
   }
   
-  function java() {
+  function jms() {
     $form = array();
         
     $form['process'] = array(
@@ -158,40 +164,40 @@ class AdminPage {
       '#collapsible' => TRUE,
     );
     
-    $form['settings']['islandora_dm_java_jms_logfile'] = array(
+    $form['settings']['islandora_dm_jms_logfile'] = array(
       '#type' => 'textfield',
       '#title' => t('Log file'),
-      '#default_value' => variable_get('islandora_dm_java_jms_logfile', null),
+      '#default_value' => variable_get('islandora_dm_jms_logfile', '/tmp/islandora-dm-jms.log'),
       '#size' => 80,
       '#maxlength' => 255,
       '#description' => t('Location of JMS service logfile (optional).'),
       '#required' => FALSE
     );
     
-    $form['settings']['islandora_dm_java_fedora_url'] = array(
+    $form['settings']['islandora_dm_jms_fedora_url'] = array(
       '#type' => 'textfield',
       '#title' => t('User name'),
-      '#default_value' => variable_get('islandora_dm_java_fedora_url', 'http://localhost:8080/fedora'),
+      '#default_value' => variable_get('islandora_dm_jms_fedora_url', 'http://localhost:8080/fedora'),
       '#size' => 40,
       '#maxlength' => 255,
       '#description' => t('Base URL for Fedora instance.'),
       '#required' => TRUE
     );
     
-    $form['settings']['islandora_dm_java_fedora_user'] = array(
+    $form['settings']['islandora_dm_jms_fedora_user'] = array(
       '#type' => 'textfield',
       '#title' => t('User name'),
-      '#default_value' => variable_get('islandora_dm_java_fedora_user', 'fedoraAdmin'),
+      '#default_value' => variable_get('islandora_dm_jms_fedora_user', 'fedoraAdmin'),
       '#size' => 20,
       '#maxlength' => 20,
       '#description' => t('Fedora user name for JMS service. Requires admin rights.'),
       '#required' => TRUE
     );
     
-    $form['settings']['islandora_dm_java_fedora_pass'] = array(
+    $form['settings']['islandora_dm_jms_fedora_pass'] = array(
       '#type' => 'textfield',
       '#title' => t('Password'),
-      '#default_value' => variable_get('islandora_dm_java_fedora_pass', 'fedoraAdmin'),
+      '#default_value' => variable_get('islandora_dm_jms_fedora_pass', 'fedoraAdmin'),
       '#size' => 20,
       '#maxlength' => 20,
       '#description' => t('Fedora password for JMS service.'),
@@ -199,11 +205,11 @@ class AdminPage {
     );
     
     $form = system_settings_form($form);
-    $form['#submit'] = array('islandora_dm_admin_java_submit');
+    $form['#submit'] = array('islandora_dm_admin_jms_submit');
     return $form;
   }
   
-  function javaSubmit($form, &$form_state) {
+  function jmsSubmit($form, &$form_state) {
     $button_name = $form_state['clicked_button']['#name'];
     if ($button_name == 'jmsstart') {
       JMSProcess::start();
@@ -237,12 +243,12 @@ function islandora_dm_admin_objects_form_submit($form, &$form_state) {
   return $page->objectsFormSubmit($form, $form_state);
 }
 
-function islandora_dm_admin_java() {
+function islandora_dm_admin_jms() {
   $page = new AdminPage();
-  return $page->java();
+  return $page->jms();
 }
 
-function islandora_dm_admin_java_submit($form, &$form_state) {
+function islandora_dm_admin_jms_submit($form, &$form_state) {
   $page = new AdminPage();
-  return $page->javaSubmit($form, $form_state);
+  return $page->jmsSubmit($form, $form_state);
 }

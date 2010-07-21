@@ -6,28 +6,9 @@
  * isolate the Document Management module from changes in that API.
  */
 
-define('ISLANDORA_DM_PID_PO_COLLECTION', 'islandora-dm:po-collection');
-define('ISLANDORA_DM_PID_PO_CMODEL', 'islandora-dm:po-cmodel');
-define('ISLANDORA_DM_PID_PO_DOCUMENT_CMODEL', 'islandora-dm:po-document-cmodel');
-define('ISLANDORA_DM_DATASTREAM_LABEL_DM', 'islandora-dm metadata');
-define('ISLANDORA_DM_DATASTREAM_LABEL_UIS', 'islandora-dm purchase order data');
-define('ISLANDORA_DM_DATASTREAM_ID_DM', 'dm');
-define('ISLANDORA_DM_DATASTREAM_ID_UIS', 'uis');
-define('ISLANDORA_DM_DSID_TIFF', 'tiff');
-define('ISLANDORA_DM_DSLABEL_TIFF', 'tiff image');
-define('ISLANDORA_DM_MIME_TYPE_TIFF', 'image/tiff');
-define('ISLANDORA_DM_DC_TITLE', 'dc:title');
-define('ISLANDORA_DM_DC_IDENTIFIER', 'dc:identifier');
-
-module_load_include('inc', 'Fedora_Repository', 'ObjectHelper');
 module_load_include('inc', 'Fedora_Repository', 'api/fedora_item');
 module_load_include('inc', 'Fedora_Repository', 'api/fedora_collection');
 module_load_include('inc', 'Fedora_Repository', 'api/dublin_core');
-
-function get_object_helper() {  
-  $objectHelper = new ObjectHelper();
-  return $objectHelper;
-}
 
 function ingest_object_from_foxml($file) {
   $pid = pid_from_file($file);
@@ -60,7 +41,7 @@ function fetch_fedora_item($pid) {
   $item = new Fedora_Item($pid);
   
   if (!$item->exists()) {
-    watchdog(t('islandora_dm'), t('Unable to retrieve ' . $pid . '.'), null, WATCHDOG_ERROR);
+    watchdog(t(Constants::MODULE_NAME), t('Unable to retrieve ' . $pid . '.'), null, WATCHDOG_ERROR);
     return null;
   }
   
@@ -76,41 +57,106 @@ function fetch_document_pids($pid) {
 function create_purchase_order_fedora_item($po) {
   try {
     $fedora = create_fedora_item_with_dc($po->getPID(), $po->getTitle());
-   
+    
     // add relationhips
-    $fedora->add_relationship('isMemberOf', ISLANDORA_DM_PID_PO_COLLECTION);
-    $fedora->add_relationship('hasModel', ISLANDORA_DM_PID_PO_CMODEL, FEDORA_MODEL_URI);
+    $fedora->add_relationship('isMemberOf', Constants::PID_PO_COLLECTION);
+    $fedora->add_relationship('hasModel', Constants::PID_PO_CMODEL, FEDORA_MODEL_URI);
 
     // create dm stream
-    $fedora->add_datastream_from_string('<dm><owner>unassigned</owner></dm>', ISLANDORA_DM_DATASTREAM_ID_DM, ISLANDORA_DM_DATASTREAM_LABEL_DM, 'text/xml', 'X');
+    $fedora->add_datastream_from_string('<dm><owner>unassigned</owner></dm>', Constants::DSID_DM, Constants::DSLABEL_DM, Constants::MIME_TYPE_XML, 'X');
 
     // create po stream
-    $fedora->add_datastream_from_string($po->getUIS()->asXML(), ISLANDORA_DM_DATASTREAM_ID_UIS, ISLANDORA_DM_DATASTREAM_LABEL_UIS, 'text/xml', 'X');
+    $fedora->add_datastream_from_string($po->getUIS()->asXML(), Constants::DSID_UIS, Constants::DSLABEL_UIS, Constants::MIME_TYPE_XML, 'X');
+  
+    copy_collection_defaults($fedora);
   }
   
   catch (Exception $e) {
     $fedora = null;
-    watchdog(t('islandora_dm'), t('Error while creating fedora object ')  . $po->getPID() . t(': ' . $e), null, WATCHDOG_WARN);
+    watchdog(Constants::MODULE_NAME, 'Error while creating fedora object %pid: @e', array('%pid' => $po->getPID(), '@e' => $e), WATCHDOG_WARN);
   }
-  
+
   return $fedora;
 }
 
+function copy_collection_defaults($fedora_item) {
+  $collection = fetch_po_collection();
+  
+  if ($collection) {
+    copy_default_policy($collection, $fedora_item);
+    copy_default_classification($collection, $fedora_item);
+    copy_default_disposition($collection, $fedora_item);
+  }
+  
+  else {
+    throw new Exception('error retrieving collection');
+  }
+}
+
+function copy_default_policy($collection, $fedora_item) {
+  copy_collection_datastream($collection, 
+    $fedora_item, 
+    Constants::DSID_DEFAULT_POLICY, 
+    Constants::DSID_POLICY, 
+    Constants::DSLABEL_POLICY);
+}
+
+function copy_default_classification($collection, $fedora_item) {
+  copy_collection_datastream($collection, 
+    $fedora_item, 
+    Constants::DSID_DEFAULT_CLASSIFICATION, 
+    Constants::DSID_CLASSIFICATION, 
+    Constants::DSLABEL_CLASSIFICATION);
+}
+
+function copy_default_disposition($collection, $fedora_item) {
+  copy_collection_datastream($collection, 
+    $fedora_item, 
+    Constants::DSID_DEFAULT_DISPOSITION, 
+    Constants::DSID_DISPOSITION, 
+    Constants::DSLABEL_DISPOSITION);
+}
+
+function copy_collection_datastream($collection, $fedora_item, $collection_dsid, $item_dsid, $item_dslabel, $mimetype = Constants::MIME_TYPE_XML, $control_group = 'X') {  
+  $ds = $collection->get_datastream_dissemination($collection_dsid);
+    
+  if (!empty($ds)) {
+    $fedora_item->add_datastream_from_string($ds, $item_dsid, $item_dslabel, $mimetype, $control_group);
+  }
+  
+  else {
+    throw new Exception('failed to copy ' . $collection_dsid . ' to ' . $fedora_item->pid);
+  }
+}
+
+function fetch_po_collection() {
+  $collection = fetch_fedora_item(Constants::PID_PO_COLLECTION);
+  return $collection->exists() ? $collection : null;
+}
+
 function create_fedora_item_with_dc($pid, $title) {
+  // determine owner
+  global $user;
+  $owner = $user->name;
+  
   // create and store fedora item
-  $foxml = Fedora_Item::create_object_FOXML($pid, 'A', $title);
+  $foxml = Fedora_Item::create_object_FOXML($pid, 'A', $title, $owner);  
   $fedora = Fedora_Item::ingest_from_FOXML($foxml);
+  
+  if (!$fedora->exists()) {
+    throw new Exception('failed to create fedora object. permissions problem?');
+  }
   
   // create and attach dublin core stream
   $dc = new Dublin_Core($fedora);
-  $dc->set_element(ISLANDORA_DM_DC_TITLE, array($title));
-  $dc->set_element(ISLANDORA_DM_DC_IDENTIFIER, array($pid));
+  $dc->set_element(Constants::DC_TITLE, array($title));
+  $dc->set_element(Constants::DC_IDENTIFIER, array($pid));
   $dc->save();
   
   return $fedora;
 }
 
-function create_document_fedora_item($po, $fedora, $file) {
+function create_document_fedora_item($po, $po_fedora_item, $file) {
   try {
     // this pid strategy is a potential concurrency problem. 
     // it could be replaced with call to fedora's getNextPID service
@@ -122,18 +168,23 @@ function create_document_fedora_item($po, $fedora, $file) {
 
     // add relationhips
     $fedora->add_relationship('isMemberOf', $po->getPID());
-    $fedora->add_relationship('hasModel', ISLANDORA_DM_PID_PO_DOCUMENT_CMODEL, FEDORA_MODEL_URI);
+    $fedora->add_relationship('hasModel', Constants::PID_PO_DOCUMENT_CMODEL, FEDORA_MODEL_URI);
     
     // create image datastream
-    $fedora->add_datastream_from_file($file, ISLANDORA_DM_DSID_TIFF, ISLANDORA_DM_DSLABEL_TIFF, ISLANDORA_DM_MIME_TYPE_TIFF);
+    $fedora->add_datastream_from_file($file, Constants::DSID_TIFF, Constants::DSLABEL_TIFF, Constants::MIME_TYPE_TIFF);
+
+    // copy access policy from po object
+    $policy = $po_fedora_item->get_datastream_dissemination(Constants::DSID_POLICY);
+    
+    if (!empty($policy)) {
+      $fedora->add_datastream_from_string($policy, Constants::DSID_POLICY, Constants::DSLABEL_POLICY, Constants::MIME_TYPE_XML, 'X');
+    }
   }
   
   catch (Exception $e) {
     $fedora = null;
-    watchdog(t('islandora_dm'), t('Error while creating fedora object ')  . $pid . t(': ' . $e), null, WATCHDOG_WARN);
+    watchdog(Constants::MODULE_NAME, 'Error while creating fedora object %pid: @e', array('%pid' => $po->getPID(), '@e' => $e), WATCHDOG_WARN);    
   }
   
   return $fedora;
 }
-
-?>

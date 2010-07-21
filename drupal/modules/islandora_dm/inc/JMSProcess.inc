@@ -11,19 +11,19 @@ class JMSProcess {
   }
   
   static function createExisting() {
-    $pid = escapeshellcmd(variable_get('islandora_dm_java_jms_pid', null));
+    $pid = escapeshellcmd(variable_get('islandora_dm_jms_jms_pid', null));
     return self::create(array('pid' => $pid));
   }
   
   static function createWithCmd($args = array()) {
     $defaults = array(
       'cmd' => 'start.sh',
-      'cwd' => trim(`pwd`) . '/' . drupal_get_path('module', 'islandora_dm') . '/etc/java/bin',
-      'log' => escapeshellcmd(variable_get('islandora_dm_java_jms_logfile', null)),
+      'cwd' => trim(`pwd`) . '/' . drupal_get_path('module', Constants::MODULE_NAME) . '/etc/java/bin',
+      'log' => escapeshellcmd(variable_get('islandora_dm_jms_logfile', null)),
       'env' => array(
-         '_islandora_dm_java_fedora_url' => variable_get('islandora_dm_java_fedora_url', ''),
-         '_islandora_dm_java_fedora_user' => variable_get('islandora_dm_java_fedora_user', ''),
-         '_islandora_dm_java_fedora_pass' => variable_get('islandora_dm_java_fedora_pass', ''),
+         '_islandora_dm_jms_fedora_url' => variable_get('islandora_dm_jms_fedora_url', ''),
+         '_islandora_dm_jms_fedora_user' => variable_get('islandora_dm_jms_fedora_user', ''),
+         '_islandora_dm_jms_fedora_pass' => variable_get('islandora_dm_jms_fedora_pass', ''),
        ),
     );
     $args = $args + $defaults;
@@ -35,7 +35,7 @@ class JMSProcess {
     $p = self::createWithCmd();
     $p->start();
     if ($p->isRunning()) {
-      variable_set('islandora_dm_java_jms_pid', $p->pid());
+      variable_set('islandora_dm_jms_jms_pid', $p->pid());
     }
     
     return $p;
@@ -44,7 +44,7 @@ class JMSProcess {
   static function stop() {
     $p = self::createExisting();
     $p->stop();
-    variable_del('islandora_dm_java_jms_pid');
+    variable_del('islandora_dm_jms_jms_pid');
     
     return $p;
   }

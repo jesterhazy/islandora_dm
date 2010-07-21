@@ -36,5 +36,3 @@ function curl_fetch($url,
 
     return curl_exec($ch);
 }
-
-?>

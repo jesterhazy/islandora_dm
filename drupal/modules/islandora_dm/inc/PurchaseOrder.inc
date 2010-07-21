@@ -86,7 +86,7 @@ class PurchaseOrder {
   function documentCount() {
     return count($this->documentPids);
   }
-  
+    
   /**
    * Create a themed drupal view of the purchase order. Used to create the detailed, single-po view page.
    */
@@ -139,7 +139,7 @@ class PurchaseOrder {
       return $view;
     }
     
-    drupal_add_js(drupal_get_path('module', 'islandora_dm') . '/js/search.js');
+    drupal_add_js(drupal_get_path('module', Constants::MODULE_NAME) . '/js/search.js');
     
     $view .= '<div class="po clickable">';
     $view .= '<div class="po-number">' . t('PO #') . ' <a href="' . base_path() . 'islandora_dm/po/' . $this->number . '/view">' . $this->number . '</a></div>';
@@ -166,7 +166,7 @@ class PurchaseOrder {
     $doc = fetch_fedora_item($document_pid);
     $ds_list = $doc->get_datastreams_list_as_array();
     
-    $tn_url = base_path() . drupal_get_path('module', 'islandora_dm')  . '/img/tn-placeholder.gif';
+    $tn_url = base_path() . drupal_get_path('module', Constants::MODULE_NAME)  . '/img/tn-placeholder.gif';
     
     if (!empty($ds_list['tn'])) {
       global $base_url;
@@ -179,13 +179,13 @@ class PurchaseOrder {
   function addViewErrors() {
     // empty fedora is an error.
     if (!$this->fedora) {
-      drupal_set_message(t('Unable to retrieve purchase order ' . $this->number . '.'), 'error');
+      drupal_set_message(t('Unable to retrieve purchase order ' . $this->number . '.'), Constants::DRUPAL_MESSAGE_ERROR);
     }
     
     // empty uis data is a warning
     // only set if fedora was ok
     else if (!$this->uis) {
-      drupal_set_message(t('Unable to retrieve UIS data for purchase order ' . $this->number . '.'), 'warning');
+      drupal_set_message(t('Unable to retrieve UIS data for purchase order ' . $this->number . '.'), Constants::DRUPAL_MESSAGE_WARNING);
     }
   }
   

@@ -1,5 +1,5 @@
 <?php
-define('ISLANDORA_DM_ARCHIVE_DIR_DATE_FORMAT', 'Ymd-Hi');
+define('Constants::ARCHIVE_DIR_DATE_FORMAT', 'Ymd-Hi');
 
 
 class ImportPage {
@@ -8,26 +8,34 @@ class ImportPage {
   function form() {
     $form = array();
 
-    $form['import_all'] = array(
+    $jms = JMSProcess::createExisting()->isRunning();
+
+    if ($jms) {
+       $form['import_all'] = array(
         '#type' => 'submit',
         '#name' => self::BTN_IMPORT_ALL,
         '#value' => t('Import All')
-    );
+      );
 
-    $form['import_selected'] = array(
+      $form['import_selected'] = array(
         '#type' => 'submit',
         '#name' => 'import_selected',
         '#value' => t('Import Selected')
-    );
+      );
+    }
     
-   $files = $this->getFileOptions();
+    else {
+      drupal_set_message(t('Document import is disabled because the JMS service is not running.'), Constants::DRUPAL_MESSAGE_WARNING);
+    }
+   
+    $files = $this->getFileOptions();
 
     $form['files'] = array(
-        '#type' => 'checkboxes',
-        '#name' => 'files',
-        '#options' =>  $files,
-        '#theme' => 'islandora_dm_import_files_checkboxes',
-        '#description' => t('Select the files to import, or click the <i>Import All</i> button.')
+      '#type' => 'checkboxes',
+      '#name' => 'files',
+      '#options' =>  $files,
+      '#theme' => 'islandora_dm_import_files_checkboxes',
+      '#description' => t('Select the files to import, or click the <i>Import All</i> button.')
     );
     
     return $form;
@@ -47,7 +55,7 @@ class ImportPage {
   }
   
   function getFiles() {
-    $dir = variable_get(ISLANDORA_DM_IMPORT_FOLDER_PATH, null);
+    $dir = variable_get(Constants::IMPORT_FOLDER_PATH, null);
     return Files::listFiles($dir);
   }
     
@@ -105,7 +113,13 @@ class ImportPage {
   
   function importFiles($files = array()) {
     foreach ($files as $file) {
-      $this->importFile($file);
+      try {
+        $this->importFile($file);
+      }
+      
+      catch (Exception $e) {
+        watchdog(t(Constants::MODULE_NAME), 'Error importing file @file: @ex', array('@file' => $file->filename, '@ex' => $e), WATCHDOG_WARN);
+      }
     }
   }
   
@@ -115,56 +129,58 @@ class ImportPage {
     // extract po number
     $this->attachPONumber($file);
     if (!$file->poNumber) {
-      drupal_set_message(t('Can\'t import <b>') . $file->basename . t('</b>, because the name not valid.'), 'error');
+      drupal_set_message(t('Can\'t import <b>') . $file->basename . t('</b>, because the name not valid.'), Constants::DRUPAL_MESSAGE_ERROR);
       return;
     }
 
     // verify read access
     if (!is_readable($file->filename)) {
-      drupal_set_message(t('Can\'t import <b>') . $file->basename . t('</b>, because the file permissions are wrong.'), 'error');
+      drupal_set_message(t('Can\'t import <b>') . $file->basename . t('</b>, because the file permissions are wrong.'), Constants::DRUPAL_MESSAGE_ERROR);
       return;
     }
     
     // look up purchase order (in fedora and uis)
     $po = PurchaseOrder::fetchByNumber($file->poNumber);
     if(!$po->getFedora() && !$po->getUIS()) {
-      drupal_set_message(t('Can\'t import <b>') . $file->basename . t('</b>, because purchase order <b>' . $file->poNumber . t('</b> doesn\'t exist.')), 'error');
+      drupal_set_message(t('Can\'t import <b>') . $file->basename . t('</b>, because purchase order <b>' . $file->poNumber . t('</b> doesn\'t exist.')), Constants::DRUPAL_MESSAGE_ERROR);
       return;
     }
     
     // create fedora record if needed
     if (!$po->getFedora()) {
-      $fedora = $this->createPurchaseOrderRecord($po);
+      $po_fedora_item = $this->createPurchaseOrderRecord($po);
       
-      if ($fedora) {
+      if ($po_fedora_item) {
         drupal_set_message(t('Created purchase order <b>') . $file->poNumber . t('</b>.'));
       }
       
-      if (!$fedora) {
-        drupal_set_message(t('Can\'t import <b>') . $file->basename . t('</b>, because an error occurred while storing the purchase order data.'), 'error');        
+      if (!$po_fedora_item) {
+        drupal_set_message(t('Can\'t import <b>') . $file->basename . t('</b>, because an error occurred while storing the purchase order data.'), Constants::DRUPAL_MESSAGE_ERROR);        
         return;   
       }
     }
     
     // create document record, test success
-    $document = $this->createDocumentRecord($po, $fedora, $file->filename);
+    $document = $this->createDocumentRecord($po, $po_fedora_item, $file->filename);
     if (!$document) {
-      drupal_set_message(t('Can\'t import <b>') . $file->basename . t('</b>, because an error occurred while storing the document.'), 'error');              
+      drupal_set_message(t('Can\'t import <b>') . $file->basename . t('</b>, because an error occurred while storing the document.'), Constants::DRUPAL_MESSAGE_ERROR);              
       return;
     }
     
-    $archived = $this->archiveFile($file);
-    if (!$archived) {
-      drupal_set_message(t('Imported <b>') . $file->basename . t('</b>, but an error occurred while archiving the file.'), 'warn');
-      return;
+    if (!variable_get(Constants::IMPORT_ARCHIVE_PATH, false)) {
+      $archived = $this->archiveFile($file);
+      if (!$archived) {
+        drupal_set_message(t('Imported <b>') . $file->basename . t('</b>, but an error occurred while archiving the file.'), Constants::DRUPAL_MESSAGE_WARNING);
+        return;
+      }      
     }
-    
+
     drupal_set_message(t('Added file <b>') . $file->basename . t('</b> to purchase order <b>') . $file->poNumber . t('</b>.'));
   }
   
   protected function getArchiveDir() {
-    $base_dir = variable_get(ISLANDORA_DM_IMPORT_ARCHIVE_PATH, null);
-    $date = date(ISLANDORA_DM_ARCHIVE_DIR_DATE_FORMAT);
+    $base_dir = variable_get(Constants::IMPORT_ARCHIVE_PATH, null);
+    $date = date(Constants::ARCHIVE_DIR_DATE_FORMAT);
     $archive_dir = $base_dir . '/' . $date;
     return $archive_dir;
   }
@@ -173,8 +189,8 @@ class ImportPage {
     return create_purchase_order_fedora_item($po);
   }
   
-  protected function createDocumentRecord($po, $fedora, $file) {
-    return create_document_fedora_item($po, $fedora, $file);
+  protected function createDocumentRecord($po, $po_fedora_item, $file) {
+    return create_document_fedora_item($po, $po_fedora_item, $file);
   }
   
   protected function archiveFile($file) {
@@ -194,7 +210,7 @@ class ImportPage {
     $error = $md ? 'make archive directory for' : $cp ? 'copy' : $del ? 'delete' : null;
     
     if ($error) {
-      watchdog(t('islandora_dm'), t('Failed to ' . $error . ' import file: ' . $file->basename), null, WATCHDOG_WARN);
+      watchdog(t(Constants::MODULE_NAME), t('Failed to ' . $error . ' import file: ' . $file->basename), null, WATCHDOG_WARN);
     }
     
     return $cp && $del;

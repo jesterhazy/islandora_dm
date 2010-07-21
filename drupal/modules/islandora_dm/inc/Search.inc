@@ -23,7 +23,7 @@ class Search {
     
     // log warning if execute is called more than once
     if ($this->results) {
-      watchdog(t('islandora_dm'), t('ignoring invalid call to Search::execute'), null, WATCHDOG_WARNING);
+      watchdog(t(Constants::MODULE_NAME), t('ignoring invalid call to Search::execute'), null, WATCHDOG_WARNING);
       return;
     }
     

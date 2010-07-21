@@ -5,12 +5,12 @@
     <foxml:property NAME="info:fedora/fedora-system:def/model#state" VALUE="Active"/>
     <foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="Purchase Order Example"/>
     <foxml:property NAME="info:fedora/fedora-system:def/model#ownerId" VALUE="fedoraAdmin"/>
-    <foxml:property NAME="info:fedora/fedora-system:def/model#createdDate" VALUE="2010-04-03T13:56:43.642Z"/>
-    <foxml:property NAME="info:fedora/fedora-system:def/view#lastModifiedDate" VALUE="2010-04-03T13:57:58.796Z"/>
+    <foxml:property NAME="info:fedora/fedora-system:def/model#createdDate" VALUE="2010-06-01T00:00:00.000Z"/>
+    <foxml:property NAME="info:fedora/fedora-system:def/view#lastModifiedDate" VALUE="2010-06-01T00:00:00.000Z"/>
   </foxml:objectProperties>
   <foxml:datastream CONTROL_GROUP="X" ID="DC" STATE="A" VERSIONABLE="false">
-    <foxml:datastreamVersion CREATED="2010-04-03T13:56:43.642Z" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/"
-      ID="DC1.0" LABEL="Dublin Core Record for this object" MIMETYPE="text/xml" SIZE="404">
+    <foxml:datastreamVersion FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/"
+      ID="DC1.0" LABEL="Dublin Core Record for this object" MIMETYPE="text/xml">
       <foxml:xmlContent>
         <oai_dc:dc xmlns:dc="http://purl.org/dc/elements/1.1/"
           xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
@@ -22,8 +22,8 @@
     </foxml:datastreamVersion>
   </foxml:datastream>
   <foxml:datastream CONTROL_GROUP="X" ID="RELS-EXT" STATE="A" VERSIONABLE="false">
-    <foxml:datastreamVersion CREATED="2010-04-03T13:57:58.796Z" FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0"
-      ID="RELS-EXT.0" LABEL="RDF Statements about this object" MIMETYPE="application/rdf+xml" SIZE="290">
+    <foxml:datastreamVersion FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0"
+      ID="RELS-EXT.0" LABEL="RDF Statements about this object" MIMETYPE="application/rdf+xml">
       <foxml:xmlContent>
         <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
           <rdf:Description rdf:about="info:fedora/islandora-dm:po-example">
@@ -35,8 +35,8 @@
     </foxml:datastreamVersion>
   </foxml:datastream>
   <foxml:datastream CONTROL_GROUP="X" ID="dm" STATE="A" VERSIONABLE="false">
-    <foxml:datastreamVersion CREATED="2010-04-03T18:21:46.910Z" ID="dm.0" LABEL="Enter a label here."
-      MIMETYPE="text/xml" SIZE="69">
+    <foxml:datastreamVersion ID="dm.0" LABEL="Enter a label here."
+      MIMETYPE="text/xml">
       <foxml:xmlContent>
         <dm>
           <owner>unassigned</owner>
@@ -45,8 +45,8 @@
     </foxml:datastreamVersion>
   </foxml:datastream>
   <foxml:datastream CONTROL_GROUP="X" ID="uis" STATE="A" VERSIONABLE="false">
-    <foxml:datastreamVersion CREATED="2010-04-03T18:21:46.910Z" ID="uis.0" LABEL="Enter a label here."
-      MIMETYPE="text/xml" SIZE="69">
+    <foxml:datastreamVersion ID="uis.0" LABEL="Enter a label here."
+      MIMETYPE="text/xml">
       <foxml:xmlContent>
         <po>
           <buddept>

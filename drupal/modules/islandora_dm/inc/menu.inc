@@ -9,26 +9,26 @@ function islandora_dm_menu() {
   // admin page
   $items['admin/settings/islandora_dm'] = array(
     'title' => 'Islandora document management',
-    'description' => 'Configure the Islandora document management module',
+    'description' => 'Configure the Islandora document management module.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('islandora_dm_admin'),
-    'access arguments' => array('admin islandora_dm'),
+    'access arguments' => array(Constants::PERMISSION_ADMIN),
   );
   
   $items['admin/settings/islandora_dm/settings'] = array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -1,
     'title' => 'Settings',
-    'access arguments' => array('admin islandora_dm'),
+    'access arguments' => array(Constants::PERMISSION_ADMIN),
   );
   
-  $items['admin/settings/islandora_dm/java'] = array(
+  $items['admin/settings/islandora_dm/jms'] = array(
     'type' => MENU_LOCAL_TASK,
-    'title' => 'Java settings',
-    'description' => 'Configure java and jms settings.',
+    'title' => 'JMS settings',
+    'description' => 'Configure settings for the JMS service.',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('islandora_dm_admin_java'),
-    'access arguments' => array('admin islandora_dm'),
+    'page arguments' => array('islandora_dm_admin_jms'),
+    'access arguments' => array(Constants::PERMISSION_ADMIN),
   );
   
   $items['admin/settings/islandora_dm/objects'] = array(
@@ -37,42 +37,42 @@ function islandora_dm_menu() {
     'description' => 'Install the fedora objects used by this module.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('islandora_dm_admin_objects_form'),
-    'access arguments' => array('admin islandora_dm'),
+    'access arguments' => array(Constants::PERMISSION_ADMIN),
   );
 
   // home page
-  $items['islandora_dm'] = array (
+  $items[Constants::MODULE_NAME] = array (
       'title' => 'Islandora document management',
       'page callback' => 'islandora_dm_home',
-      'access arguments' => array('access islandora_dm'),
+      'access arguments' => array(Constants::PERMISSION_VIEW),
   );
   
   // about page
   $items['islandora_dm/about'] = array (
       'title' => 'About',
       'page callback' => 'islandora_dm_about',
-      'access arguments' => array('access islandora_dm'),
+      'access arguments' => array(Constants::PERMISSION_VIEW),
   );
   
   // import documents
   $items['islandora_dm/import'] = array (
       'title' => 'Import Documents',
       'page callback' => 'islandora_dm_import',
-      'access arguments' => array('import islandora_dm'),
+      'access arguments' => array(Constants::PERMISSION_EDIT),
   );
   
   // search
   $items['islandora_dm/search'] = array (
       'title' => 'Search',
       'page callback' => 'islandora_dm_search',
-      'access arguments' => array('access islandora_dm'),
+      'access arguments' => array(Constants::PERMISSION_VIEW),
   );
   
   // my purchase orders
   $items['islandora_dm/search/owner/mine'] = array (
       'title' => 'My Purchase Orders',
       'page callback' => 'islandora_dm_search_owner_mine',
-      'access arguments' => array('access islandora_dm'),
+      'access arguments' => array(Constants::PERMISSION_VIEW),
       'weight' => 1,
   );
   
@@ -80,7 +80,7 @@ function islandora_dm_menu() {
   $items['islandora_dm/search/owner/unassigned'] = array (
       'title' => 'Unassigned',
       'page callback' => 'islandora_dm_search_owner_unassigned',
-      'access arguments' => array('access islandora_dm'),
+      'access arguments' => array(Constants::PERMISSION_VIEW),
       'weight' => 2,
   );
   
@@ -88,7 +88,7 @@ function islandora_dm_menu() {
   $items['islandora_dm/search/status/processed'] = array (
       'title' => 'Processed',
       'page callback' => 'islandora_dm_search_status_processed',
-      'access arguments' => array('access islandora_dm'),
+      'access arguments' => array(Constants::PERMISSION_VIEW),
       'weight' => 3,
   );
   
@@ -99,17 +99,7 @@ function islandora_dm_menu() {
       'title arguments' => array('!id' => 2),
       'page callback' => 'islandora_dm_po_view',
       'page arguments' => array(2),
-      'access arguments' => array('access islandora_dm'),
-  );
-  
-  // example fedora retrieval
-  // TODO delete me
-  $items['islandora_dm/fedora/%/view'] = array (
-      'type' => MENU_CALLBACK,
-      'title' => 'Basic Fedora View Test',
-      'page callback' => 'islandora_dm_fedora_view',
-      'page arguments' => array(2),
-      'access arguments' => array('access islandora_dm'),
+      'access arguments' => array(Constants::PERMISSION_VIEW),
   );
   
   return $items;
