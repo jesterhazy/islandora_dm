@@ -15,9 +15,9 @@ public class TiffConverterListener extends TiffDatastreamListener {
 	private ThreadLocal<SimpleFedoraClient> client = new ThreadLocal<SimpleFedoraClient>();
 
 	
-	private static final String FEDORA_USER_KEY = "_islandora_dm_java_fedora_user";
-	private static final String FEDORA_PASS_KEY = "_islandora_dm_java_fedora_pass";
-	private static final String FEDORA_URL_KEY = "_islandora_dm_java_fedora_url";
+	private static final String FEDORA_USER_KEY = "_islandora_dm_jms_fedora_user";
+	private static final String FEDORA_PASS_KEY = "_islandora_dm_jms_fedora_pass";
+	private static final String FEDORA_URL_KEY = "_islandora_dm_jms_fedora_url";
 
 	public TiffConverterListener(Map<String, String> settings) {
 		super(settings);
