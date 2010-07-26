@@ -6,33 +6,31 @@ Search results
 - result counts
 - sorting
 
-Indexing
-- other datastreams in document objects
-- annotations??
-
 Viewer integration
+- discuss ui, how metadata display and edit features should look/work
+- not that much editable data!
 
 JMS ingest actions
+- abby
+- pdf/open office?
+- large tifs -> jp2 issues
 
 Classification/Retention data
+- confirm data structure/meaning
+- discuss editing requirements
 
-Define requirements for editing
-
-Security
+Security/LDAP
 
 View PO page
 - out of date vs. uis warning
 - take ownership action
-- add document action
+- add document action?
 
 Ingest 
-
-- JMS down warning.
 - add 'reingest' action to view page
 - confirm filename pattern
 - validate filenames
 - escape filenames in form
-- what format are docs scanned in? jp2? tiff?
 
 Ingest Form 
 - group by PO number (currently just sorting)
