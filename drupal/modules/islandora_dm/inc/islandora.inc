@@ -68,7 +68,7 @@ function create_purchase_order_fedora_item($po) {
     // create po stream
     $fedora->add_datastream_from_string($po->getUIS()->asXML(), Constants::DSID_UIS, Constants::DSLABEL_UIS, Constants::MIME_TYPE_XML, 'X');
   
-    copy_collection_defaults($fedora);
+    add_collection_datastreams($fedora);
   }
   
   catch (Exception $e) {
@@ -79,13 +79,13 @@ function create_purchase_order_fedora_item($po) {
   return $fedora;
 }
 
-function copy_collection_defaults($fedora_item) {
+function add_collection_datastreams($fedora_item) {
   $collection = fetch_po_collection();
   
   if ($collection) {
-    copy_default_policy($collection, $fedora_item);
-    copy_default_classification($collection, $fedora_item);
-    copy_default_disposition($collection, $fedora_item);
+    add_policy($collection, $fedora_item);
+    add_classification($collection, $fedora_item);
+    add_disposition($collection, $fedora_item);
   }
   
   else {
@@ -93,7 +93,7 @@ function copy_collection_defaults($fedora_item) {
   }
 }
 
-function copy_default_policy($collection, $fedora_item) {
+function add_policy($collection, $fedora_item) {
   copy_collection_datastream($collection, 
     $fedora_item, 
     Constants::DSID_DEFAULT_POLICY, 
@@ -101,20 +101,34 @@ function copy_default_policy($collection, $fedora_item) {
     Constants::DSLABEL_POLICY);
 }
 
-function copy_default_classification($collection, $fedora_item) {
-  copy_collection_datastream($collection, 
-    $fedora_item, 
-    Constants::DSID_DEFAULT_CLASSIFICATION, 
+function add_classification($collection, $fedora_item) {
+  $xml = datastream_to_xml(Constants::DSID_DEFAULT_CLASSIFICATION, $collection);
+  
+  global $user;
+  $xml->depositorOfRecord = $user->name;
+  $xml->dateOfDeposit = date('Y-m-d');
+  $ds = $xml->asXML();
+  
+  $fedora_item->add_datastream_from_string($ds, 
     Constants::DSID_CLASSIFICATION, 
-    Constants::DSLABEL_CLASSIFICATION);
+    Constants::DSLABEL_CLASSIFICATION, 
+    Constants::MIME_TYPE_XML, 'X');
 }
 
-function copy_default_disposition($collection, $fedora_item) {
-  copy_collection_datastream($collection, 
-    $fedora_item, 
-    Constants::DSID_DEFAULT_DISPOSITION, 
+function add_disposition($collection, $fedora_item) {
+  $xml = datastream_to_xml(Constants::DSID_DEFAULT_DISPOSITION, $collection);
+  
+  global $user;
+  $xml->dispositionDecisionUser = $user->name;
+  
+  $dispositionDate = date('Y-m-d', mktime(0, 0, 0, date('m') + $xml->retentionPeriod, date('d'),   date('Y')));
+  $xml->dispositionDate = $dispositionDate;
+  $ds = $xml->asXML();
+  
+  $fedora_item->add_datastream_from_string($ds, 
     Constants::DSID_DISPOSITION, 
-    Constants::DSLABEL_DISPOSITION);
+    Constants::DSLABEL_DISPOSITION, 
+    Constants::MIME_TYPE_XML, 'X');
 }
 
 function copy_collection_datastream($collection, $fedora_item, $collection_dsid, $item_dsid, $item_dslabel, $mimetype = Constants::MIME_TYPE_XML, $control_group = 'X') {  
@@ -187,4 +201,9 @@ function create_document_fedora_item($po, $po_fedora_item, $file) {
   }
   
   return $fedora;
+}
+
+function datastream_to_xml($datastream_id, $fedora_item) {
+  $ds = $fedora_item->get_datastream_dissemination($datastream_id);
+  return new SimpleXmlElement($ds);
 }

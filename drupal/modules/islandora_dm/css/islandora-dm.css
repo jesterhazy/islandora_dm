@@ -75,3 +75,22 @@ div.clickable.active:hover {
 }
 
 /* end /search */
+
+/* ------------------------------------
+   /po/-/view 
+*/
+
+.islandora-dm-po-view td.label {
+  width: 15em;
+}
+
+.islandora-dm-po-view tr.odd, .islandora-dm-po-view tr.even {
+  background-color: inherit;
+  border: none;
+}
+
+.islandora-dm-po-view tbody {
+  border: none;
+}
+
+/* end /po/-/view */

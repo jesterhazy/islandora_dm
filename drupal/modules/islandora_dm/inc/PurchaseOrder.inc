@@ -32,6 +32,17 @@ class PurchaseOrder {
   protected $uisDatastream;
   
   /**
+   * SimpleXMLElement object containing classificationDatastream from fedora
+   */
+  protected $classificationDatastream;
+  
+  /**
+   * SimpleXMLElement object containing dispositionDatastream from fedora
+   */
+  protected $dispositionDatastream;
+
+  
+  /**
    * array of strings containing pids of related (child) documents
    */
   protected $documentPids;
@@ -91,7 +102,7 @@ class PurchaseOrder {
    * Create a themed drupal view of the purchase order. Used to create the detailed, single-po view page.
    */
   function getView() {
-    $view = '';
+    $view = '<div class="islandora-dm-po-view">';
     
     $this->addViewErrors();
 
@@ -102,16 +113,20 @@ class PurchaseOrder {
  
     // construct view
     $rows = array(
-      array(t('Date:'), check_plain($this->getDate()), null),
-      array(t('Requisition:'), check_plain($this->getRequisitionNumber()), null),
-      array(t('Department:'), check_plain($this->getDepartment() . ' (' . $this->uisDatastream->idept .')'), null),
-      array(t('Supplier:'), check_plain($this->getSupplier() . ' (' . $this->uisDatastream->supplier->isup .')'), null),
-      array(t('Owner:'), check_plain($this->getOwner()), null),
-      array(t('Status:'), check_plain($this->getStatus()), null),
+      array(array('data' => t('Date:'), 'class' => 'label'), check_plain($this->getDate()), null),
+      array(array('data' => t('Requisition:'), 'class' => 'label'), check_plain($this->getRequisitionNumber()), null),
+      array(array('data' => t('Department:'), 'class' => 'label'), check_plain($this->getDepartment() . ' (' . $this->uisDatastream->idept .')'), null),
+      array(array('data' => t('Supplier:'), 'class' => 'label'), check_plain($this->getSupplier() . ' (' . $this->uisDatastream->supplier->isup .')'), null),
+      array(array('data' => t('Owner:'), 'class' => 'label'), check_plain($this->getOwner()), null),
+      array(array('data' => t('Status:'), 'class' => 'label'), check_plain($this->getStatus()), null),
     );
         
     $view .= theme('table', null, $rows);
-
+    
+    $view .= $this->classificationView();
+    
+    $view .= $this->dispositionView();
+    
     $view .= '<h3>Documents</h3>';
 
     foreach ($this->documentPids as $document_pid) {
@@ -123,6 +138,51 @@ class PurchaseOrder {
     $view .= '<h3>Attachments</h3>';
     $view .= '<p>todo</p>';
 
+    $view .= "</div>";
+    return $view;
+  }
+  
+  function dispositionView() {
+    $view = '';
+    
+    if ($this->dispositionDatastream) {
+      $ds = $this->dispositionDatastream;
+      
+      $view = '<h3>Disposition</h3>';
+
+      $rows = array(
+        array(array('data' => t('Disposition Action:'), 'class' => 'label'), check_plain($ds->dispositionAction), null),
+        array(array('data' => t('Retention Period:'), 'class' => 'label'), check_plain($ds->retentionPeriod), null),
+        array(array('data' => t('Disposition Date:'), 'class' => 'label'), check_plain($ds->dispositionDate), null),
+        array(array('data' => t('Disposition Reason:'), 'class' => 'label'), check_plain($ds->dispositionReason), null),
+        array(array('data' => t('Disposition Decision User:'), 'class' => 'label'), check_plain($ds->dispositionDecisionUser), null),
+      );
+
+      $view .= theme('table', null, $rows);
+    }
+  
+    return $view;
+  }
+  
+  function classificationView() {
+    $view = '';
+    
+    if ($this->classificationDatastream) {
+      $ds = $this->classificationDatastream;
+      
+      $view = '<h3>Classification</h3>';
+
+      $rows = array(
+        array(array('data' => t('Office of Record:'), 'class' => 'label'), check_plain($ds->officeOfRecord), null),
+        array(array('data' => t('Unit of Record:'), 'class' => 'label'), check_plain($ds->unitOfRecord), null),
+        array(array('data' => t('Depositor of Record:'), 'class' => 'label'), check_plain($ds->depositorOfRecord), null),
+        array(array('data' => t('Date of Deposit:'), 'class' => 'label'), check_plain($ds->dateOfDeposit), null),
+        array(array('data' => t('Classification Code:'), 'class' => 'label'), check_plain($ds->classificationCode), null),
+      );
+
+      $view .= theme('table', null, $rows);
+    }
+  
     return $view;
   }
   
@@ -206,8 +266,10 @@ class PurchaseOrder {
     // only continue populating if fedora fetch succeeded
     if ($po->fedora) {
       // convert fedora streams to xml
-      $po->dmDatastream = self::datastreamToXml('dm', $po->fedora);
-      $po->uisDatastream = self::datastreamToXml('uis', $po->fedora); 
+      $po->dmDatastream = datastream_to_xml('dm', $po->fedora);
+      $po->uisDatastream = datastream_to_xml('uis', $po->fedora);
+      $po->classificationDatastream = datastream_to_xml('classification', $po->fedora); 
+      $po->dispositionDatastream = datastream_to_xml('disposition', $po->fedora);
       
       // load document ids
       $po->documentPids = fetch_document_pids($po->getPid());
@@ -218,11 +280,6 @@ class PurchaseOrder {
   
   protected static function pidToNumber($pid) {
     return str_replace('islandora-dm:po-', '', $pid);
-  }
-  
-  protected static function datastreamToXml($datastream_id, $fedora_item) {
-    $ds = $fedora_item->get_datastream_dissemination($datastream_id);
-    return new SimpleXmlElement($ds);
   }
 }
 

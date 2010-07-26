@@ -129,14 +129,26 @@
   <foxml:datastream CONTROL_GROUP="X" ID="defaultClassification" STATE="A" VERSIONABLE="false">
     <foxml:datastreamVersion ID="defaultClassification.0" LABEL="default classification metadata" MIMETYPE="text/xml">
       <foxml:xmlContent>
-        <classification>classification</classification>
+        <classification>
+          <officeOfRecord>Finance</officeOfRecord>
+          <unitOfRecord>Accounts Payable</unitOfRecord>
+          <depositorOfRecord></depositorOfRecord>
+          <dateOfDeposit></dateOfDeposit>
+          <classificationCode>code</classificationCode>
+        </classification>
       </foxml:xmlContent>
     </foxml:datastreamVersion>
   </foxml:datastream>
   <foxml:datastream CONTROL_GROUP="X" ID="defaultDisposition" STATE="A" VERSIONABLE="false">
     <foxml:datastreamVersion ID="defaultDisposition.0" LABEL="default disposition metadata" MIMETYPE="text/xml">
       <foxml:xmlContent>
-        <disposition>disposition</disposition>
+        <disposition>
+          <dispositionAction>Archive</dispositionAction>
+          <retentionPeriod>120</retentionPeriod>
+          <dispositionDate></dispositionDate>
+          <dispositionReason>Required by legislation</dispositionReason>
+          <dispositionDecisionUser>user</dispositionDecisionUser>
+        </disposition>
       </foxml:xmlContent>
     </foxml:datastreamVersion>
   </foxml:datastream>
