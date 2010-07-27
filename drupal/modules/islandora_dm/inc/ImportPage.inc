@@ -1,6 +1,4 @@
 <?php
-define('Constants::ARCHIVE_DIR_DATE_FORMAT', 'Ymd-Hi');
-
 
 class ImportPage {
   const BTN_IMPORT_ALL = 'import_all';
@@ -180,7 +178,7 @@ class ImportPage {
   
   protected function getArchiveDir() {
     $base_dir = variable_get(Constants::IMPORT_ARCHIVE_PATH, null);
-    $date = date(Constants::ARCHIVE_DIR_DATE_FORMAT);
+    $date = date(Constants::IMPORT_ARCHIVE_DATE_FORMAT);
     $archive_dir = $base_dir . '/' . $date;
     return $archive_dir;
   }
