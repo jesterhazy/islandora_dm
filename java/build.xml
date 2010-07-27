@@ -8,7 +8,7 @@
             Islandora Document Management - Java Extensions
     </description>
 
-	<property name="idm.deployDir" value="/Volumes/islandora_dir/islandora_dm/drupal/modules/islandora_dm/etc"/>
+	<property name="idm.deployDir" value="/Volumes/island/islandora_dm/drupal/modules/islandora_dm/etc"/>
 
 	<target name="default" description="Islandora Document Management - Java Extensions">
 		<echo>Build file for Islandora Document Management - Java Extensions</echo>
