@@ -22,7 +22,7 @@ class Process {
   function start() {
     if ($this->cmd) {
       $exec_cmd = $this->cwd ? "cd $this->cwd; " : '';
-      $exec_cmd .= "nohup ./$this->cmd > $this->log 2>&1 & echo \$!";
+      $exec_cmd .= "nohup nice ./$this->cmd > $this->log 2>&1 & echo \$!";
       
       foreach($this->env as $key => $value) {
         putenv("$key=$value");
