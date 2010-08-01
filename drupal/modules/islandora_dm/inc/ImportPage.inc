@@ -7,7 +7,6 @@ class ImportPage {
     $form = array();
 
     $jms = JMSProcess::createExisting()->isRunning();
-
     if ($jms) {
        $form['import_all'] = array(
         '#type' => 'submit',
@@ -145,9 +144,9 @@ class ImportPage {
     }
     
     // create fedora record if needed
-    if (!$po->getFedora()) {
+    $po_fedora_item = $po->getFedora();
+    if (!$po_fedora_item) {
       $po_fedora_item = $this->createPurchaseOrderRecord($po);
-      
       if ($po_fedora_item) {
         drupal_set_message(t('Created purchase order <b>') . $file->poNumber . t('</b>.'));
       }
