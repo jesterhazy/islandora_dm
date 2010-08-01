@@ -11,7 +11,7 @@ import ca.upei.roblib.islandora.dm.util.Constants;
 
 public class TiffConverterListener extends TiffDatastreamListener {
 	
-	private final List<DatastreamConverter> converters;
+	private final List<? extends DatastreamConverter> converters;
 	private ThreadLocal<SimpleFedoraClient> client = new ThreadLocal<SimpleFedoraClient>();
 
 	
@@ -23,10 +23,13 @@ public class TiffConverterListener extends TiffDatastreamListener {
 		super(settings);
 		
 		converters = Arrays.asList(
-				new ImageMagickThumbnailConverter(),
-//				new ImageMagickJP2Converter(),
-//				new PdfConverter(),
-				new AbbyConverter()
+				new JAIThumbnailConverter()
+				
+//				new ImageMagickThumbnailConverter(),
+//				new ImageMagickJP2Converter()
+//				new JAIJP2Converter()
+//				new PdfConverter()
+//				new AbbyConverter()
 			);
 	}
 
@@ -41,6 +44,8 @@ public class TiffConverterListener extends TiffDatastreamListener {
 				try {				
 					input = fetchInputFile(pid, dsid);
 					for (DatastreamConverter converter : converters) {
+						log.debug(String.format("converting using %s", converter.getClass().getSimpleName()));
+						
 						File output = null;
 						try {
 							output = getOutputFile(converter.getFilenameSuffix());
@@ -50,6 +55,7 @@ public class TiffConverterListener extends TiffDatastreamListener {
 						
 						catch (Exception e) {
 							log.error(String.format("error creating datastream %s for pid %s", converter.getOutputDsid(), pid));
+							log.debug(e, e);
 						}
 						
 						finally {
