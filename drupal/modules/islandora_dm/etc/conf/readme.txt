@@ -15,3 +15,14 @@
 4. fedora.fcfg
 
 - enable messaging
+
+5. po service
+
+mock version:
+http://island.local/mock_po_service/po-service.php
+
+real version (last known url):
+
+http://fairy.cs.upei.ca:18080/UIS_Web/po/xml/129183
+
+
