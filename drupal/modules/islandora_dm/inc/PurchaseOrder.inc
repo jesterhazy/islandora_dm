@@ -222,17 +222,25 @@ class PurchaseOrder {
     return $view;
   }
     
-  function getDocumentThumbnailImgTag($document_pid) {    
-    $doc = fetch_fedora_item($document_pid);
-    $ds_list = $doc->get_datastreams_list_as_array();
-    
-    $tn_url = base_path() . drupal_get_path('module', Constants::MODULE_NAME)  . '/img/tn-placeholder.gif';
-    
-    if (!empty($ds_list['tn'])) {
-      global $base_url;
-      $tn_url = $base_url . '/fedora/repository/' . $document_pid . '/tn';
-    }
-    
+  function getDocumentThumbnailImgTag($document_pid) {
+	// setup placeholder
+	$tn_url = base_path() . drupal_get_path('module', Constants::MODULE_NAME)  . '/img/tn-placeholder.gif';
+	
+	// TODO control order of pages (to get first page reliably)
+	$page_pids = fetch_page_pids($document_pid);
+			
+	if (!empty($page_pids)) {
+		$page_pid = $page_pids[0];
+		$page = fetch_fedora_item($page_pid);
+	
+		$ds_list = $page->get_datastreams_list_as_array();
+
+	    if (!empty($ds_list[Constants::DSID_TN])) {
+	      global $base_url;
+	      $tn_url = $base_url . '/fedora/repository/' . $page_pid . '/tn';
+	    }	
+	}
+	
     return '<img src="' . $tn_url . '" width="85" height="110" alt="' . t('document image') . '">';
   }
   

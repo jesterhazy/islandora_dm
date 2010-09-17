@@ -48,10 +48,18 @@ function fetch_fedora_item($pid) {
   return $item;
 }
 
-function fetch_document_pids($pid) {
-  // TODO may need to allow filtering by content model (depending on how attachments are handled)
-  $child_pids = get_related_items_as_array($pid, 'isMemberOf');  
-  return $child_pids;
+function fetch_document_pids($po_pid) {
+  return fetch_member_pids($po_pid, Constants::PID_PO_DOCUMENT_CMODEL);
+}
+
+function fetch_page_pids($document_pid) {
+  return fetch_member_pids($document_pid, Constants::PID_PO_PAGE_CMODEL);
+}
+
+function fetch_member_pids($collection_pid, $cmodel = NULL) {
+  // TODO add cmodel filtering
+  $member_pids = get_related_items_as_array($collection_pid, 'isMemberOf');  
+  return $member_pids;
 }
 
 function create_purchase_order_fedora_item($po) {

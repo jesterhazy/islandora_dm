@@ -15,10 +15,10 @@ class Constants {
   const IMPORT_ARCHIVE_DISABLED = 'islandora_dm_archive_disabled';
   const IMPORT_ARCHIVE_DATE_FORMAT = 'Ymd-Hi';
   
-  
   const PID_PO_COLLECTION = 'islandora-dm:po-collection';
   const PID_PO_CMODEL = 'islandora-dm:po-cmodel';
   const PID_PO_DOCUMENT_CMODEL = 'islandora-dm:po-document-cmodel';
+  const PID_PO_PAGE_CMODEL = 'islandora-dm:po-page-cmodel';
   
   const DSID_POLICY = 'POLICY';
   const DSLABEL_POLICY = 'xacml policy';
@@ -43,8 +43,20 @@ class Constants {
   
   const DSID_TIFF = 'tiff';
   const DSLABEL_TIFF = 'tiff image';
-  
   const MIME_TYPE_TIFF = 'image/tiff';
+  
+  const DSID_JP2_ARCHIVE = 'jp2archive';
+  const DSLABEL_JP2_ARCHIVE = 'jp2 archive image';
+  const MIME_TYPE_JP2_ARCHIVE = 'image/jp2';
+  
+  const DSID_JP2 = 'jp2';
+  const DSLABEL_JP2 = 'jp2 image';
+  const MIME_TYPE_JP2 = 'image/jp2';
+  
+  const DSID_TN = 'tn';
+  const DSLABEL_TN = 'thumbnail image';
+  const MIME_TYPE_TN = 'image/jpeg';
+  
   const MIME_TYPE_XML = 'text/xml';
   
   const DC_TITLE = 'dc:title';

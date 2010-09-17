@@ -33,7 +33,7 @@ function islandora_dm_menu() {
   
   $items['admin/settings/islandora_dm/objects'] = array(
     'type' => MENU_LOCAL_TASK,
-    'title' => 'Install fedora objects',
+    'title' => 'Fedora objects',
     'description' => 'Install the fedora objects used by this module.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('islandora_dm_admin_objects_form'),

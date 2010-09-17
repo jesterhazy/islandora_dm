@@ -78,22 +78,20 @@ class AdminPage {
   }
   
   function objectsForm() {
-    $objects_dir = drupal_get_path('module', Constants::MODULE_NAME) . '/etc/foxml';
-
-    $files = file_scan_directory($objects_dir, '\.xml$');
-
-    $objects = array();
-    foreach ($files as $path => $file) {
-      $objects[$file->basename] = check_plain($file->basename);
-    }
-
+    
     $form = array();
-    $form['objects'] = array(
-      '#type' => 'checkboxes',
-      '#title' => t('Available objects'),
-      '#default_value' => $objects,
-      '#options' =>  $objects,
-      '#description' => t('Select the objects to be (re)installed in Fedora'),
+    $form['cmodels'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Content Models'),
+      '#default_value' => 1,
+      '#description' => t('Install or re-install the content models and default collection.'),
+    );
+    
+    $form['examples'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Examples'),
+      '#default_value' => 1,
+      '#description' => t('Install or re-install the example objects.'),
     );
 
     $form['submit'] = array(
@@ -107,25 +105,50 @@ class AdminPage {
   
   function objectsFormSubmit($form, &$form_state) {
     $objects_dir = drupal_get_path('module', Constants::MODULE_NAME) . '/etc/foxml';
-
+    $examples_dir = $objects_dir . '/examples';
+    
     $error = FALSE;
 
-    if ($form_state['clicked_button']['#name'] == 'install' ) {
-      foreach($form_state['values']['objects'] as $object_file => $checked) {
-        if ($checked) {
+    try {
+      if ($form_state['clicked_button']['#name'] == 'install' ) {
+        if ($form_state['values']['cmodels']) {
+          $cmodels_dir = $objects_dir . '/cmodels';
+          $files = file_scan_directory($cmodels_dir, '\.xml$');
 
-          try {
-            ingest_object_from_foxml($objects_dir . '/' . $object_file);
-          }
-
-          catch (Exception $e) {
-            $error = TRUE;
-            drupal_set_message(t($e->getMessage()), Constants::DRUPAL_MESSAGE_ERROR);
+          foreach($files as $file) {
+            ingest_object_from_foxml($file->filename);
           }
         }
-      }
-    }
 
+        if ($form_state['values']['examples']) {
+          $examples_dir = $objects_dir . '/examples';
+          $files = file_scan_directory($examples_dir, '\.xml$');
+
+		  $letters = array('a', 'b', 'c');
+		
+          foreach($files as $file) {
+            $item = ingest_object_from_foxml($file->filename);
+			
+			// filenames format for example page objects is po-example-d1-p1.xml
+            if (preg_match('/-p[0-9]+$/', $file->name)) {   
+			  $page_number = substr($file->name, -1);
+	          $letter = $letters[$page_number - 1];
+	 
+              $item->add_datastream_from_file($examples_dir . '/tiff/' . $letter . '.tiff', Constants::DSID_TIFF, Constants::DSLABEL_TIFF, Constants::MIME_TYPE_TIFF);
+              $item->add_datastream_from_file($examples_dir . '/jp2archive/' . $letter . '.jp2', Constants::DSID_JP2_ARCHIVE, Constants::DSLABEL_JP2_ARCHIVE, Constants::MIME_TYPE_JP2_ARCHIVE);
+              $item->add_datastream_from_file($examples_dir . '/jp2/' . $letter . '.jp2', Constants::DSID_JP2, Constants::DSLABEL_JP2, Constants::MIME_TYPE_JP2);
+              $item->add_datastream_from_file($examples_dir . '/tn/' . $letter . '.jpg', Constants::DSID_TN, Constants::DSLABEL_TN, Constants::MIME_TYPE_TN);         
+            }            
+          }
+        }
+      }      
+    }
+    
+    catch (Exception $e) {
+      $error = TRUE;
+      drupal_set_message(t($e->getMessage()), Constants::DRUPAL_MESSAGE_ERROR);
+    }
+    
     if (!$error) {
       drupal_set_message(t('Fedora objects (re)installed successfully.'));
     }
