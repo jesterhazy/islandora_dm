@@ -5,7 +5,7 @@ class ImportPage {
   const FILENAME_PATTERN = '/^ *([0-9]+) +([0-9\-]{10}) +\(([0-9]+)\) +([0-9]+) *$/';
   function form() {
     $form = array();
-
+    
     $form['import_all'] = array(
       '#type' => 'submit',
       '#name' => self::BTN_IMPORT_ALL,
@@ -21,23 +21,14 @@ class ImportPage {
     $files = $this->getFiles();
     $valid = array();
 	  $invalid = array();
-	  
-	  foreach($files as $file) {
-	    $file->validFilename ? $valid[] = $file : $invalid[] = $file;
-	  }
+
+    $i = 1; // 1-based to compensate for bad drupal checkbox posts
+    foreach($files as $file) {
+      $file->validFilename ? $valid[$i++] = $file : $invalid[] = $file;
+    }
 	
-	  // TODO: display nicely-themed import page w/ valid files
-	  // 	
-	  // $i = 0;
-	  //        foreach ($files as $file) {
-	  //          if ($file->validFilename) {
-	  //      
-	  //            $form['files'][$i] = array(
-	  //              '#type' => 'item',
-	  //              '#title' => $file->filename,
-	  //            );
-	  //          }
-	  //        }
+	  // TODO: group table by date/po/batch
+	  // TODO: add js to help users add/remove complete docs/batches
 	    
     $form['files'] = array(
        '#type' => 'checkboxes',
@@ -46,13 +37,13 @@ class ImportPage {
        '#theme' => 'islandora_dm_import_files_checkboxes',
        '#description' => t('Select the files to import, or click the <i>Import All</i> button.')
      );
-  	
-    $this->displayInvalidImportFiles($form, $invalid);
+    
+    $this->addInvalidFiles($form, $invalid);
 
     return $form;
   }
   
-  function displayInvalidImportFiles(&$form, $invalid) {
+  function addInvalidFiles(&$form, $invalid) {
     if (!empty($invalid)) {
       $form['invalid_files']['header'] = array(
         '#value' => '<h4>' . t('Invalid files in import directory') . "</h4>\n<ul>",
@@ -112,7 +103,7 @@ class ImportPage {
       $item = array(
         '#type' => 'item', 
         '#name' => 'files', 
-        '#value' => t('The import folder is empty.'),
+        '#value' => t('The are no valid files in the import directory.'),
       );
       
       $output = drupal_render($item);
@@ -121,13 +112,12 @@ class ImportPage {
     else {
       $header = array('', t('Filename'), t('Size'), t('Last Modified'));
   
-      $i = 0;
+      $i = 1; // 1-based to compensate for bad drupal checkbox posts
       $rows[] = array();
       foreach($files as $file) {
         $checkbox = array(
           '#type' => 'checkbox',
           '#name' => $form['#name'] . '[' . $i++ . ']',
-          '#return_value' => check_plain($file->basename),          
         );
         
         $rows[] = array(
@@ -144,15 +134,17 @@ class ImportPage {
     return $output;
   }
   
-  function submit($form, &$form_state) {
+  function submit($form, &$form_state) {  
     $import_all = (self::BTN_IMPORT_ALL == $form_state['clicked_button']['#name']);
-    
     $selected_files = array();
     
-    foreach ($form_state['values']['files'] as $key => $value) {
-      if ($import_all || $value) {
-        $selected_files[] = $form['files']['#options'][$key];
+    $i = 1; // 1-based to compensate for bad drupal checkbox posts
+    foreach ($form['files']['#options'] as $file) {
+      if ($import_all || $form_state['values']['files'][$i]) {
+        $selected_files[] = $file;
       }
+      
+      $i++;
     }
     
     $this->importFiles($selected_files);
@@ -172,6 +164,8 @@ class ImportPage {
   
   function importFile($file) {
     // TODO cache fedora and uis lookups. maybe.
+    drupal_set_message('importFile called for ' . $file->basename);
+    return;
     
     // attach po info from filename
     $this->parseFilename($file);
