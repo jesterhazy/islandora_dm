@@ -39,6 +39,14 @@ class Files {
     return $size . ($remainder > 0 ? '.' . $remainder : '') . ' ' . $labels[$level];
   }
   
+  static function extractBasenames($files) {
+    return array_map('self::extractBasename', $files);
+  }
+  
+  static function extractBasename($file) {
+    return $file->basename;
+  }
+  
   static function formatFilemtime($time) {
     return strftime(self::DATE_FORMAT_MINUTE_PRECISION, $time);
   }

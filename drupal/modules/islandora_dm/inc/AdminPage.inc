@@ -95,9 +95,9 @@ class AdminPage {
     );
 
     $form['submit'] = array(
-        '#type' => 'submit',
-        '#name' => 'install',
-        '#value' => t('Install selected')
+      '#type' => 'submit',
+      '#name' => 'install',
+      '#value' => t('Install selected')
     );
 
     return $form;

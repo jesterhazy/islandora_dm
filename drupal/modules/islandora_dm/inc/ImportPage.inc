@@ -2,58 +2,106 @@
 
 class ImportPage {
   const BTN_IMPORT_ALL = 'import_all';
-  const VALID_FILENAME_PATTERN = '/^([0-9]+)-([0-9]+)$/';
+  const FILENAME_PATTERN = '/^ *([0-9]+) +([0-9\-]{10}) +\(([0-9]+)\) +([0-9]+) *$/';
   function form() {
     $form = array();
 
-    $jms = JMSProcess::createExisting()->isRunning();
-    if ($jms) {
-       $form['import_all'] = array(
-        '#type' => 'submit',
-        '#name' => self::BTN_IMPORT_ALL,
-        '#value' => t('Import All')
-      );
-
-      $form['import_selected'] = array(
-        '#type' => 'submit',
-        '#name' => 'import_selected',
-        '#value' => t('Import Selected')
-      );
-    }
-    
-    else {
-      drupal_set_message(t('Document import is disabled because the JMS service is not running.'), Constants::DRUPAL_MESSAGE_WARNING);
-    }
-   
-    $files = $this->getFileOptions();
-
-    $form['files'] = array(
-      '#type' => 'checkboxes',
-      '#name' => 'files',
-      '#options' =>  $files,
-      '#theme' => 'islandora_dm_import_files_checkboxes',
-      '#description' => t('Select the files to import, or click the <i>Import All</i> button.')
+    $form['import_all'] = array(
+      '#type' => 'submit',
+      '#name' => self::BTN_IMPORT_ALL,
+      '#value' => t('Import All')
     );
-    
+
+    $form['import_selected'] = array(
+      '#type' => 'submit',
+      '#name' => 'import_selected',
+      '#value' => t('Import Selected')
+    );
+   
+    $files = $this->getFiles();
+    $valid = array();
+	  $invalid = array();
+	  
+	  foreach($files as $file) {
+	    $file->validFilename ? $valid[] = $file : $invalid[] = $file;
+	  }
+	
+	  // TODO: display nicely-themed import page w/ valid files
+	  // 	
+	  // $i = 0;
+	  //        foreach ($files as $file) {
+	  //          if ($file->validFilename) {
+	  //      
+	  //            $form['files'][$i] = array(
+	  //              '#type' => 'item',
+	  //              '#title' => $file->filename,
+	  //            );
+	  //          }
+	  //        }
+	    
+    $form['files'] = array(
+       '#type' => 'checkboxes',
+       '#name' => 'files',
+       '#options' =>  $valid,
+       '#theme' => 'islandora_dm_import_files_checkboxes',
+       '#description' => t('Select the files to import, or click the <i>Import All</i> button.')
+     );
+  	
+    $this->displayInvalidImportFiles($form, $invalid);
+
     return $form;
   }
   
-  function getFileOptions() {
-    $files = $this->getFiles();
-    $options = array();
-    
-    foreach($files as $file) {
-      $options[$file->basename] = $file;
+  function displayInvalidImportFiles(&$form, $invalid) {
+    if (!empty($invalid)) {
+      $form['invalid_files']['header'] = array(
+        '#value' => '<h4>' . t('Invalid files in import directory') . "</h4>\n<ul>",
+      );
+
+      $form['invalid_files']['files'] = array(
+        '#type' => 'item',
+        '#value' => implode('<br>', Files::extractBasenames($invalid)),
+      );
+
+      $form['invalid_files']['footer'] = array(
+        '#value' => '</ul>',
+      );
     }
-    
-    ksort($options, SORT_NUMERIC);
-    
-    return $options;
   }
-  
+
   function getFiles() {
     $dir = variable_get(Constants::IMPORT_FOLDER_PATH, null);
-    return Files::listFiles($dir);
+    $files = Files::listFiles($dir);
+  	$this->parseFilenames($files);
+  	
+  	usort($files, 'ImportPage::compareFiles');
+  
+  	return $files;
+   }
+  
+  function compareFiles($f1, $f2) {
+    $result = 0;
+    if ($f1->validFilename || $f2->validFilename) {
+      $result = $f1->validFilename - $f2->validFilename;
+
+      if ($result == 0) {
+         $result = strcmp($f1->scanDate, $f2->scanDate);
+      }
+
+      if ($result == 0) {
+         $result = strcmp($f1->poNumber, $f2->poNumber);
+      }
+
+      if ($result == 0) {
+        $result = $f1->scanBatch - $f2->scanBatch;
+      }
+
+      if ($result == 0) {
+         $result = $f1->scanPage - $f2->scanPage;
+      }
+    }  
+   
+    return $result;
   }
     
   function themeFileCheckboxes($form) {
@@ -73,11 +121,13 @@ class ImportPage {
     else {
       $header = array('', t('Filename'), t('Size'), t('Last Modified'));
   
+      $i = 0;
       $rows[] = array();
       foreach($files as $file) {
         $checkbox = array(
           '#type' => 'checkbox',
-          '#name' => $form['#name'] . '[' . check_plain($file->basename) . ']',
+          '#name' => $form['#name'] . '[' . $i++ . ']',
+          '#return_value' => check_plain($file->basename),          
         );
         
         $rows[] = array(
@@ -123,8 +173,8 @@ class ImportPage {
   function importFile($file) {
     // TODO cache fedora and uis lookups. maybe.
     
-    // extract po number
-    $this->attachPONumber($file);
+    // attach po info from filename
+    $this->parseFilename($file);
     if (!$file->poNumber) {
       drupal_set_message(t('Can\'t import <b>') . $file->basename . t('</b>, because the name not valid.'), Constants::DRUPAL_MESSAGE_ERROR);
       return;
@@ -211,13 +261,22 @@ class ImportPage {
     }
     
     return $cp && $del;
-  } 
+  }
+
+  protected function parseFilenames(&$files) {
+	  foreach ($files as $file) {
+  		$this->parseFilename($file);
+  	}
+  }
   
-  protected function attachPONumber(&$file) {
-    $matches = array();    
-    if (preg_match(self::VALID_FILENAME_PATTERN, $file->name, $matches)) {
-      $file->poNumber = $matches[1];
-    }
+  protected function parseFilename(&$file) {
+  	if (preg_match(self::FILENAME_PATTERN, $file->name, $m)) {
+  		$file->validFilename = TRUE;
+  		$file->poNumber = $m[1];
+  		$file->scanDate = $m[2];
+  		$file->scanBatch = $m[3] + 0;
+  		$file->scanPage = $m[4] + 0;
+  	}
   }
 }
 
