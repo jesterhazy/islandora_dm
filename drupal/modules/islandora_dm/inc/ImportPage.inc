@@ -151,39 +151,38 @@ class ImportPage {
   }
   
   function importFiles($files = array()) {
-    foreach ($files as $file) {
-      try {
-        $this->importFile($file);
-      }
+    // group by poNumber
+    $po_files = array();
+    foreach($files as $file) {
       
+      // verify read access
+      if (!is_readable($file->filename)) {
+        drupal_set_message(t('Can\'t import <b>') . $file->basename . t('</b>, because the file permissions are wrong.'), Constants::DRUPAL_MESSAGE_ERROR);
+      }
+      else {
+        $po_files[$file->poNumber][] = $file;        
+      }
+    }
+    
+    // import each po
+    foreach($po_files as $k => $v) {
+      try {
+        $this->importPurchaseOrder($k, $v);
+      }
       catch (Exception $e) {
         watchdog(t(Constants::MODULE_NAME), 'Error importing file @file: @ex', array('@file' => $file->filename, '@ex' => $e), WATCHDOG_WARN);
       }
     }
   }
   
-  function importFile($file) {
-    // TODO cache fedora and uis lookups. maybe.
-    drupal_set_message('importFile called for ' . $file->basename);
-    return;
-    
-    // attach po info from filename
-    $this->parseFilename($file);
-    if (!$file->poNumber) {
-      drupal_set_message(t('Can\'t import <b>') . $file->basename . t('</b>, because the name not valid.'), Constants::DRUPAL_MESSAGE_ERROR);
-      return;
-    }
-
-    // verify read access
-    if (!is_readable($file->filename)) {
-      drupal_set_message(t('Can\'t import <b>') . $file->basename . t('</b>, because the file permissions are wrong.'), Constants::DRUPAL_MESSAGE_ERROR);
-      return;
-    }
-    
+  function importPurchaseOrder($po_number, $files) {
     // look up purchase order (in fedora and uis)
-    $po = PurchaseOrder::fetchByNumber($file->poNumber);
+    $po = PurchaseOrder::fetchByNumber($po_number);
     if(!$po->getFedora() && !$po->getUIS()) {
-      drupal_set_message(t('Can\'t import <b>') . $file->basename . t('</b>, because purchase order <b>' . $file->poNumber . t('</b> doesn\'t exist.')), Constants::DRUPAL_MESSAGE_ERROR);
+      drupal_set_message(
+        t('Import failed for purchase order <b>') 
+        . $po_number . t('</b>, because purchase order doesn\'t exist. ') 
+        . count($files) . t(' file(s) skipped.'), Constants::DRUPAL_MESSAGE_ERROR);
       return;
     }
     
@@ -192,22 +191,68 @@ class ImportPage {
     if (!$po_fedora_item) {
       $po_fedora_item = $this->createPurchaseOrderRecord($po);
       if ($po_fedora_item) {
-        drupal_set_message(t('Created purchase order <b>') . $file->poNumber . t('</b>.'));
+        drupal_set_message(t('Created purchase order <b>') . $po->getPid() . t('</b>.'));
       }
       
-      if (!$po_fedora_item) {
-        drupal_set_message(t('Can\'t import <b>') . $file->basename . t('</b>, because an error occurred while storing the purchase order data.'), Constants::DRUPAL_MESSAGE_ERROR);        
+      else {
+        drupal_set_message(
+          t('Import failed for purchase order <b>') 
+          . $po_number . t('</b>, because an error occurred while storing the purchase order data. ') 
+          . count($files) . t(' file(s) skipped.'), Constants::DRUPAL_MESSAGE_ERROR);
         return;   
       }
     }
     
+    $this->importDocuments($po, $files);   
+  }
+  
+  function importDocuments(&$po, $files) {
+    // group by document (which is date + batch)
+    $doc_files = array();
+    foreach($files as $file) {
+      $k = $file->scanDate . $file->scanBatch;
+      $doc_files[$k][] = $file;
+    }
+    
+    // import each document
+    foreach($doc_files as $k => $v) {
+      $this->importDocument($po, $v);
+    }
+  }
+  
+  function importDocument(&$po, $files) {
     // create document record, test success
-    $document = $this->createDocumentRecord($po, $po_fedora_item, $file->filename);
-    if (!$document) {
-      drupal_set_message(t('Can\'t import <b>') . $file->basename . t('</b>, because an error occurred while storing the document.'), Constants::DRUPAL_MESSAGE_ERROR);              
+    $document_fedora_item = $this->createDocumentRecord($po);
+    if (!$document_fedora_item) {
+      drupal_set_message(t('Can\'t create document for <b>') . $po->getPid() . t('</b>, because an error occurred while storing the document.'), Constants::DRUPAL_MESSAGE_ERROR);              
       return;
     }
     
+    $po->addDocument($document_fedora_item->pid);
+    drupal_set_message(t('Added document <b>') . $document_fedora_item->pid . t('</b> to purchase order <b>') . $po->getPid() . t('</b>.'));
+    
+    // import pages
+    $this->importPages($po, $document_fedora_item->pid, $files);  
+  }
+  
+  function importPages(&$po, $document_pid, $files) {
+    foreach($files as $file) {
+      $this->importFile($po, $document_pid, $file);
+    }
+  }
+  
+  function importFile(&$po, $document_pid, $file) {
+    // create page record, test success
+    $page_fedora_item = $this->createPageRecord($po, $document_pid, $file);
+    if (!$page_fedora_item) {
+      drupal_set_message(t('Can\'t create page for <b>') . $file->basename . t('</b>, because an error occurred while storing the page.'), Constants::DRUPAL_MESSAGE_ERROR);              
+      return;
+    }
+    
+    $po->addPage($document_pid, $page_fedora_item->pid);
+    drupal_set_message(t('Added page <b>') . $file->basename . t('</b> to document <b>') . $document_pid . t('</b>.'));
+    
+    // archive the file
     if (!variable_get(Constants::IMPORT_ARCHIVE_PATH, false)) {
       $archived = $this->archiveFile($file);
       if (!$archived) {
@@ -215,8 +260,6 @@ class ImportPage {
         return;
       }      
     }
-
-    drupal_set_message(t('Added file <b>') . $file->basename . t('</b> to purchase order <b>') . $file->poNumber . t('</b>.'));
   }
   
   protected function getArchiveDir() {
@@ -230,8 +273,12 @@ class ImportPage {
     return create_purchase_order_fedora_item($po);
   }
   
-  protected function createDocumentRecord($po, $po_fedora_item, $file) {
-    return create_document_fedora_item($po, $po_fedora_item, $file);
+  protected function createDocumentRecord($po) {
+    return create_document_fedora_item($po);
+  }
+  
+  protected function createPageRecord($po, $document_pid, $file) {
+    return create_page_fedora_item($po, $document_pid, $file);
   }
   
   protected function archiveFile($file) {

@@ -43,9 +43,10 @@ class PurchaseOrder {
 
   
   /**
-   * array of strings containing pids of related (child) documents
+   * map of document pids -> array(page pids) containing of details 
+   * related (child) documents and their pages.
    */
-  protected $documentPids;
+  protected $documents;
   
   /**
    * Constructor. Requires a po number.
@@ -95,7 +96,41 @@ class PurchaseOrder {
   }
   
   function documentCount() {
-    return count($this->documentPids);
+    return count($this->documents);
+  }
+  
+  function addDocument($document_pid) {
+    if (!isset($this->documents[$document_pid])) {
+      $this->documents[$document_pid] = array();
+    }
+  }
+  
+  function documentNumber($document_pid) {
+    return preg_match('/-d([0-9]+)$/', $document_pid, $m) ? $m[1] : 0;
+  }
+  
+  function documentPid($document_number) {
+    return $this->getPid() . '-d' . $document_number;
+  }
+  
+  function documentTitle($document_number) {
+    return $this->getTitle() . ' Document ' . $document_number;
+  }
+  
+  function pageCount($document_pid) {
+    return count($this->documents[$document_pid]);
+  }
+  
+  function addPage($document_pid, $page_pid) {
+    $this->documents[$document_pid][] = $page_pid;
+  }
+  
+  function pagePid($document_pid, $page_number) {
+    return $this->documentPid($this->documentNumber($document_pid)) . '-p' . $page_number;
+  }
+  
+  function pageTitle($document_pid, $page_number) {
+    return $this->documentTitle($this->documentNumber($document_pid)) . ' Page ' . $page_number;
   }
     
   /**
@@ -129,7 +164,7 @@ class PurchaseOrder {
     
     $view .= '<h3>Documents</h3>';
 
-    foreach ($this->documentPids as $document_pid) {
+    foreach (array_keys($this->documents) as $document_pid) {
       $view .= '<div class="thumbnail left">' . $this->getDocumentThumbnailImgTag($document_pid) . '</div>';
     }
 
@@ -204,8 +239,8 @@ class PurchaseOrder {
     $view .= '<div class="po clickable">';
     $view .= '<div class="po-number">' . t('PO #') . ' <a href="' . base_path() . 'islandora_dm/po/' . $this->number . '/view">' . $this->number . '</a></div>';
 
-    if (!empty($this->documentPids)) {
-      $document_pid = $this->documentPids[0];
+    if (!empty($this->documents)) {
+      $document_pid = array_shift(array_keys($this->documents));
       $view .= '<div class="thumbnail right">' . $this->getDocumentThumbnailImgTag($document_pid) . '</div>';
     }
     
@@ -223,23 +258,22 @@ class PurchaseOrder {
   }
     
   function getDocumentThumbnailImgTag($document_pid) {
-	// setup placeholder
-	$tn_url = base_path() . drupal_get_path('module', Constants::MODULE_NAME)  . '/img/tn-placeholder.gif';
+	  // setup placeholder
+  	$tn_url = base_path() . drupal_get_path('module', Constants::MODULE_NAME)  . '/img/tn-placeholder.gif';
 	
-	// TODO control order of pages (to get first page reliably)
-	$page_pids = fetch_page_pids($document_pid);
+  	$page_pids = $this->documents[$document_pid];
 			
-	if (!empty($page_pids)) {
-		$page_pid = $page_pids[0];
-		$page = fetch_fedora_item($page_pid);
+  	if (!empty($page_pids)) {
+  		$page_pid = $page_pids[0];
+  		$page = fetch_fedora_item($page_pid);
 	
-		$ds_list = $page->get_datastreams_list_as_array();
+  		$ds_list = $page->get_datastreams_list_as_array();
 
-	    if (!empty($ds_list[Constants::DSID_TN])) {
-	      global $base_url;
-	      $tn_url = $base_url . '/fedora/repository/' . $page_pid . '/tn';
-	    }	
-	}
+  	    if (!empty($ds_list[Constants::DSID_TN])) {
+  	      global $base_url;
+  	      $tn_url = $base_url . '/fedora/repository/' . $page_pid . '/tn';
+  	    }	
+  	}
 	
     return '<img src="' . $tn_url . '" width="85" height="110" alt="' . t('document image') . '">';
   }
@@ -279,8 +313,8 @@ class PurchaseOrder {
       $po->classificationDatastream = datastream_to_xml('classification', $po->fedora); 
       $po->dispositionDatastream = datastream_to_xml('disposition', $po->fedora);
       
-      // load document ids
-      $po->documentPids = fetch_document_pids($po->getPid());
+      // load documents/pages map
+      $po->documents = fetch_documents($po->getPid());
     }
     
     return $po;

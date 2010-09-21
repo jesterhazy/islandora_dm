@@ -38,14 +38,29 @@ function pid_from_file($file) {
 }
 
 function fetch_fedora_item($pid) {
-  $item = new Fedora_Item($pid);
-  
-  if (!$item->exists()) {
-    watchdog(t(Constants::MODULE_NAME), t('Unable to retrieve ' . $pid . '.'), null, WATCHDOG_ERROR);
-    return null;
+  try {
+    $item = new Fedora_Item($pid);
+    if ($item->exists()) {
+      return $item;
+    }
   }
   
-  return $item;
+  catch (exception $e) {
+    // bury
+  }
+  
+  watchdog(t(Constants::MODULE_NAME), t('Unable to retrieve ' . $pid . '.'), null, WATCHDOG_ERROR);
+  return NULL;
+}
+
+function fetch_documents($po_pid) {
+  $documents = array();
+  $doc_pids = fetch_document_pids($po_pid);
+  foreach($doc_pids as $pid) {
+    $documents[$pid] = fetch_page_pids($pid);
+  }
+  
+  return $documents;
 }
 
 function fetch_document_pids($po_pid) {
@@ -64,7 +79,7 @@ function fetch_member_pids($collection_pid, $cmodel = NULL) {
 
 function create_purchase_order_fedora_item($po) {
   try {
-    $fedora = create_fedora_item_with_dc($po->getPID(), $po->getTitle());
+    $fedora = create_fedora_item_with_dc($po->getPid(), $po->getTitle());
     
     // add relationhips
     $fedora->add_relationship('isMemberOf', Constants::PID_PO_COLLECTION);
@@ -81,7 +96,7 @@ function create_purchase_order_fedora_item($po) {
   
   catch (Exception $e) {
     $fedora = null;
-    watchdog(Constants::MODULE_NAME, 'Error while creating fedora object %pid: @e', array('%pid' => $po->getPID(), '@e' => $e), WATCHDOG_WARN);
+    watchdog(Constants::MODULE_NAME, 'Error while creating fedora object %pid: @e', array('%pid' => $po->getPid(), '@e' => $e), WATCHDOG_WARN);
   }
 
   return $fedora;
@@ -91,7 +106,6 @@ function add_collection_datastreams($fedora_item) {
   $collection = fetch_po_collection();
   
   if ($collection) {
-    add_policy($collection, $fedora_item);
     add_classification($collection, $fedora_item);
     add_disposition($collection, $fedora_item);
   }
@@ -99,14 +113,6 @@ function add_collection_datastreams($fedora_item) {
   else {
     throw new Exception('error retrieving collection');
   }
-}
-
-function add_policy($collection, $fedora_item) {
-  copy_collection_datastream($collection, 
-    $fedora_item, 
-    Constants::DSID_DEFAULT_POLICY, 
-    Constants::DSID_POLICY, 
-    Constants::DSLABEL_POLICY);
 }
 
 function add_classification($collection, $fedora_item) {
@@ -178,38 +184,54 @@ function create_fedora_item_with_dc($pid, $title) {
   return $fedora;
 }
 
-function create_document_fedora_item($po, $po_fedora_item, $file) {
+function create_document_fedora_item($po) {
   try {
     // this pid strategy is a potential concurrency problem. 
     // it could be replaced with call to fedora's getNextPID service
-    $documentNumber = $po->documentCount() + 1;  
-    $pid = $po->getPID() . '-doc-' . $documentNumber;
-    $title = $po->getTitle() . ' Document ' . $documentNumber;
+    $document_number = $po->documentCount() + 1;  
+    $pid = $po->documentPid($document_number);
+    $title = $po->documentTitle($document_number);
     
     $fedora = create_fedora_item_with_dc($pid, $title);
 
     // add relationhips
-    $fedora->add_relationship('isMemberOf', $po->getPID());
+    $fedora->add_relationship('isMemberOf', $po->getPid());
     $fedora->add_relationship('hasModel', Constants::PID_PO_DOCUMENT_CMODEL, FEDORA_MODEL_URI);
-    
-    // create image datastream
-    $fedora->add_datastream_from_file($file, Constants::DSID_TIFF, Constants::DSLABEL_TIFF, Constants::MIME_TYPE_TIFF);
-
-    // copy access policy from po object
-    $policy = $po_fedora_item->get_datastream_dissemination(Constants::DSID_POLICY);
-    
-    if (!empty($policy)) {
-      $fedora->add_datastream_from_string($policy, Constants::DSID_POLICY, Constants::DSLABEL_POLICY, Constants::MIME_TYPE_XML, 'X');
-    }
   }
   
   catch (Exception $e) {
     $fedora = null;
-    watchdog(Constants::MODULE_NAME, 'Error while creating fedora object %pid: @e', array('%pid' => $po->getPID(), '@e' => $e), WATCHDOG_WARN);    
+    watchdog(Constants::MODULE_NAME, 'Error while creating fedora object %pid: @e', array('%pid' => $po->getPid(), '@e' => $e), WATCHDOG_WARN);    
   }
   
   return $fedora;
 }
+
+function create_page_fedora_item($po, $document_pid, $file) {  
+  try {
+    // this pid strategy is a potential concurrency problem. 
+    // it could be replaced with call to fedora's getNextPID service
+    $page_number = $po->pageCount($document_pid) + 1;
+    $pid = $po->pagePid($document_pid, $page_number);    
+    $title = $po->pageTitle($document_pid, $page_number);
+    
+    $fedora = create_fedora_item_with_dc($pid, $title);
+
+    // add relationhips
+    $fedora->add_relationship('isMemberOf', $document_pid);
+    $fedora->add_relationship('hasModel', Constants::PID_PO_PAGE_CMODEL, FEDORA_MODEL_URI);
+    
+    // create image datastream
+    $fedora->add_datastream_from_file($file->filename, Constants::DSID_TIFF, Constants::DSLABEL_TIFF, Constants::MIME_TYPE_TIFF);
+  }
+  
+  catch (Exception $e) {
+    $fedora = null;
+    watchdog(Constants::MODULE_NAME, 'Error while creating fedora object %pid: @e', array('%pid' => $po->getPid(), '@e' => $e), WATCHDOG_WARN);    
+  }
+  
+  return $fedora;
+} 
 
 function datastream_to_xml($datastream_id, $fedora_item) {
   $ds = $fedora_item->get_datastream_dissemination($datastream_id);

@@ -20,11 +20,6 @@ class Constants {
   const PID_PO_DOCUMENT_CMODEL = 'islandora-dm:po-document-cmodel';
   const PID_PO_PAGE_CMODEL = 'islandora-dm:po-page-cmodel';
   
-  const DSID_POLICY = 'POLICY';
-  const DSLABEL_POLICY = 'xacml policy';
-  const DSID_DEFAULT_POLICY = 'defaultPOLICY';
-  const DSLABEL_DEFAULT_POLICY = 'default access policy';
-  
   const DSID_DEFAULT_CLASSIFICATION = 'defaultClassification';
   const DSLABEL_DEFAULT_CLASSIFICATION = 'default classification metadata';
   const DSID_CLASSIFICATION = 'classification';
