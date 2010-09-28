@@ -53,6 +53,10 @@ function fetch_fedora_item($pid) {
   return NULL;
 }
 
+function fetch_notes_pids($po_pid) {
+  return fetch_member_pids($po_pid, Constants::PID_PO_NOTE_CMODEL);
+}
+
 function fetch_documents($po_pid) {
   $documents = array();
   $doc_pids = fetch_document_pids($po_pid);
@@ -72,8 +76,7 @@ function fetch_page_pids($document_pid) {
 }
 
 function fetch_member_pids($collection_pid, $cmodel = NULL) {
-  // TODO add cmodel filtering
-  $member_pids = get_related_items_as_array($collection_pid, 'isMemberOf');  
+  $member_pids = get_related_items_as_array($collection_pid, 'isMemberOf', NULL, NULL, NULL, $cmodel);  
   return $member_pids;
 }
 
@@ -197,6 +200,36 @@ function create_document_fedora_item($po) {
     // add relationhips
     $fedora->add_relationship('isMemberOf', $po->getPid());
     $fedora->add_relationship('hasModel', Constants::PID_PO_DOCUMENT_CMODEL, FEDORA_MODEL_URI);
+  }
+  
+  catch (Exception $e) {
+    $fedora = null;
+    watchdog(Constants::MODULE_NAME, 'Error while creating fedora object %pid: @e', array('%pid' => $po->getPid(), '@e' => $e), WATCHDOG_WARN);    
+  }
+  
+  return $fedora;
+}
+
+function create_note_fedora_item($po, $text, $user) {
+  try {
+    // this pid strategy is a potential concurrency problem. 
+    // it could be replaced with call to fedora's getNextPID service
+    $note_number = $po->noteCount() + 1;  
+    $pid = $po->notePid($note_number);
+    $title = $po->noteTitle($note_number);
+    
+    $fedora = create_fedora_item_with_dc($pid, $title);
+
+    // add relationhips
+    $fedora->add_relationship('isMemberOf', $po->getPid());
+    $fedora->add_relationship('hasModel', Constants::PID_PO_NOTE_CMODEL, FEDORA_MODEL_URI);
+    
+    // add note text
+    $fedora->add_datastream_from_string($text, Constants::DSID_NOTE_TEXT, Constants::DSLABEL_NOTE_TEXT, Constants::MIME_TYPE_TEXT);
+    
+    // add creator id 
+    // shouldn't have to do this, but fedora's creator info is mysteriously inaccessible
+    $fedora->add_datastream_from_string($user, Constants::DSID_NOTE_CREATOR, Constants::DSLABEL_NOTE_CREATOR, Constants::MIME_TYPE_TEXT);
   }
   
   catch (Exception $e) {

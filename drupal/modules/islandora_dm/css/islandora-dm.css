@@ -26,14 +26,6 @@ div.clickable.active:hover {
   background-color: #eee;
 }
 
-/*.text-right {
-  text-align: right;
-}
-
-.text-center {
-  text-align: center;
-}*/
-
 /* end global */
 
 /* ------------------------------------
@@ -91,6 +83,15 @@ div.clickable.active:hover {
 
 .islandora-dm-po-view tbody {
   border: none;
+}
+
+.islandora-dm-po-view .note {
+  margin: .5em;
+}
+
+.islandora-dm-po-view .note .caption {
+  font-style: italic;
+  font-size: 80%;
 }
 
 /* end /po/-/view */

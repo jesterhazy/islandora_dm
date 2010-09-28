@@ -48,6 +48,13 @@ class PurchaseOrder {
    */
   protected $documents;
   
+  
+  /**
+   * list of note pids related to this purchase order. sorted by pid, 
+   * which should be same as insertion order. 
+   */
+  protected $notes;
+  
   /**
    * Constructor. Requires a po number.
    */
@@ -95,6 +102,18 @@ class PurchaseOrder {
     return $this->uis;
   }
   
+  function noteCount() {
+    return count($this->notes);
+  }
+  
+  function notePid($note_number) {
+    return $this->getPid() . '-n' . $note_number;
+  }
+  
+  function noteTitle($note_number) {
+    return $this->getTitle() . ' Note ' . $note_number;
+  }
+  
   function documentCount() {
     return count($this->documents);
   }
@@ -139,13 +158,13 @@ class PurchaseOrder {
   function getView() {
     $view = '<div class="islandora-dm-po-view">';
     
-    $this->addViewErrors();
+    $this->addErrorMessages();
 
     // return an empty view (with errors) if fedora is empty.
     if (!$this->fedora) {
       return $view;
     }
- 
+     
     // construct view
     $rows = array(
       array(array('data' => t('Date:'), 'class' => 'label'), check_plain($this->getDate()), null),
@@ -158,18 +177,11 @@ class PurchaseOrder {
         
     $view .= theme('table', null, $rows);
     
-    $view .= $this->classificationView();
+    $view .= $this->addClassificationView();
+    $view .= $this->addDispositionView();
+    $view .= $this->addNotesView();
+    $view .= $this->addDocumentsView();
     
-    $view .= $this->dispositionView();
-    
-    $view .= '<h3>Documents</h3>';
-
-    foreach (array_keys($this->documents) as $document_pid) {
-      $view .= '<div class="thumbnail left">' . $this->getDocumentThumbnailImgTag($document_pid) . '</div>';
-    }
-
-    $view .= '<br clear=all>';
-
     $view .= '<h3>Attachments</h3>';
     $view .= '<p>todo</p>';
 
@@ -177,7 +189,38 @@ class PurchaseOrder {
     return $view;
   }
   
-  function dispositionView() {
+  function addDocumentsView() {
+    $view = '';
+    
+    $view .= '<h3>Documents</h3>';
+    
+    foreach (array_keys($this->documents) as $document_pid) {
+      $view .= '<div class="thumbnail left">' . $this->getDocumentThumbnailImgTag($document_pid) . '</div>';
+    }
+
+    $view .= '<br clear=all>';
+    
+    return $view;
+  }
+  
+  function addNotesView() {
+    $view = '<div class="notes">';
+    $view = '<h3>Notes</h3>';
+    
+    if(!empty($this->notes)) {
+      foreach ($this->notes as $note_pid) {
+        $note = Note::fetchByPid($note_pid);
+        $view .= $note->view();
+      }
+    }
+    
+    $url = base_path() . 'islandora_dm/po/' . $this->number . '/add_note';
+    $view .= '<div class="button"><a href="' . $url . '"><button>' . t('Add Note') .'</button></a></div>';
+    $view .= '</div>';
+    return $view;
+  }
+  
+  function addDispositionView() {
     $view = '';
     
     if ($this->dispositionDatastream) {
@@ -199,7 +242,7 @@ class PurchaseOrder {
     return $view;
   }
   
-  function classificationView() {
+  function addClassificationView() {
     $view = '';
     
     if ($this->classificationDatastream) {
@@ -227,7 +270,7 @@ class PurchaseOrder {
   function getSearchResultView() {
     $view = '';
     
-    $this->addViewErrors();
+    $this->addErrorMessages();
 
     // return an empty view (with errors) if fedora is empty.
     if (!$this->fedora) {
@@ -258,27 +301,27 @@ class PurchaseOrder {
   }
     
   function getDocumentThumbnailImgTag($document_pid) {
-	  // setup placeholder
-  	$tn_url = base_path() . drupal_get_path('module', Constants::MODULE_NAME)  . '/img/tn-placeholder.gif';
-	
-  	$page_pids = $this->documents[$document_pid];
-			
-  	if (!empty($page_pids)) {
-  		$page_pid = $page_pids[0];
-  		$page = fetch_fedora_item($page_pid);
-	
-  		$ds_list = $page->get_datastreams_list_as_array();
+    // setup placeholder
+    $tn_url = base_path() . drupal_get_path('module', Constants::MODULE_NAME)  . '/img/tn-placeholder.gif';
+  
+    $page_pids = $this->documents[$document_pid];
+      
+    if (!empty($page_pids)) {
+      $page_pid = $page_pids[0];
+      $page = fetch_fedora_item($page_pid);
+  
+      $ds_list = $page->get_datastreams_list_as_array();
 
-  	    if (!empty($ds_list[Constants::DSID_TN])) {
-  	      global $base_url;
-  	      $tn_url = $base_url . '/fedora/repository/' . $page_pid . '/tn';
-  	    }	
-  	}
-	
+        if (!empty($ds_list[Constants::DSID_TN])) {
+          global $base_url;
+          $tn_url = $base_url . '/fedora/repository/' . $page_pid . '/tn';
+        }  
+    }
+  
     return '<img src="' . $tn_url . '" width="85" height="110" alt="' . t('document image') . '">';
   }
   
-  function addViewErrors() {
+  function addErrorMessages() {
     // empty fedora is an error.
     if (!$this->fedora) {
       drupal_set_message(t('Unable to retrieve purchase order ' . $this->number . '.'), Constants::DRUPAL_MESSAGE_ERROR);
@@ -312,6 +355,9 @@ class PurchaseOrder {
       $po->uisDatastream = datastream_to_xml('uis', $po->fedora);
       $po->classificationDatastream = datastream_to_xml('classification', $po->fedora); 
       $po->dispositionDatastream = datastream_to_xml('disposition', $po->fedora);
+      
+      // load notes
+      $po->notes = fetch_notes_pids($po->getPid());
       
       // load documents/pages map
       $po->documents = fetch_documents($po->getPid());

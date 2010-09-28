@@ -19,6 +19,7 @@ class Constants {
   const PID_PO_CMODEL = 'islandora-dm:po-cmodel';
   const PID_PO_DOCUMENT_CMODEL = 'islandora-dm:po-document-cmodel';
   const PID_PO_PAGE_CMODEL = 'islandora-dm:po-page-cmodel';
+  const PID_PO_NOTE_CMODEL = 'islandora-dm:po-note-cmodel';
   
   const DSID_DEFAULT_CLASSIFICATION = 'defaultClassification';
   const DSLABEL_DEFAULT_CLASSIFICATION = 'default classification metadata';
@@ -56,5 +57,13 @@ class Constants {
   
   const DC_TITLE = 'dc:title';
   const DC_IDENTIFIER = 'dc:identifier';
+  
+  const DSID_NOTE_TEXT = 'text';
+  const DSLABEL_NOTE_TEXT = 'note text';
+  const MIME_TYPE_TEXT = 'text/plain';
+  
+  const DSID_NOTE_CREATOR = 'creator';
+  const DSLABEL_NOTE_CREATOR = 'note creator';
+  
 }
 

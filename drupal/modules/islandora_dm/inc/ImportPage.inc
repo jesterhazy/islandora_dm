@@ -20,16 +20,16 @@ class ImportPage {
    
     $files = $this->getFiles();
     $valid = array();
-	  $invalid = array();
+    $invalid = array();
 
     $i = 1; // 1-based to compensate for bad drupal checkbox posts
     foreach($files as $file) {
       $file->validFilename ? $valid[$i++] = $file : $invalid[] = $file;
     }
-	
-	  // TODO: group table by date/po/batch
-	  // TODO: add js to help users add/remove complete docs/batches
-	    
+  
+    // TODO: group table by date/po/batch
+    // TODO: add js to help users add/remove complete docs/batches
+      
     $form['files'] = array(
        '#type' => 'checkboxes',
        '#name' => 'files',
@@ -63,11 +63,11 @@ class ImportPage {
   function getFiles() {
     $dir = variable_get(Constants::IMPORT_FOLDER_PATH, null);
     $files = Files::listFiles($dir);
-  	$this->parseFilenames($files);
-  	
-  	usort($files, 'ImportPage::compareFiles');
+    $this->parseFilenames($files);
+    
+    usort($files, 'ImportPage::compareFiles');
   
-  	return $files;
+    return $files;
    }
   
   function compareFiles($f1, $f2) {
@@ -305,19 +305,19 @@ class ImportPage {
   }
 
   protected function parseFilenames(&$files) {
-	  foreach ($files as $file) {
-  		$this->parseFilename($file);
-  	}
+    foreach ($files as $file) {
+      $this->parseFilename($file);
+    }
   }
   
   protected function parseFilename(&$file) {
-  	if (preg_match(self::FILENAME_PATTERN, $file->name, $m)) {
-  		$file->validFilename = TRUE;
-  		$file->poNumber = $m[1];
-  		$file->scanDate = $m[2];
-  		$file->scanBatch = $m[3] + 0;
-  		$file->scanPage = $m[4] + 0;
-  	}
+    if (preg_match(self::FILENAME_PATTERN, $file->name, $m)) {
+      $file->validFilename = TRUE;
+      $file->poNumber = $m[1];
+      $file->scanDate = $m[2];
+      $file->scanBatch = $m[3] + 0;
+      $file->scanPage = $m[4] + 0;
+    }
   }
 }
 

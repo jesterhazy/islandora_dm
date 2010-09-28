@@ -124,16 +124,16 @@ class AdminPage {
           $examples_dir = $objects_dir . '/examples';
           $files = file_scan_directory($examples_dir, '\.xml$');
 
-		  $letters = array('a', 'b', 'c');
-		
+      $letters = array('a', 'b', 'c');
+    
           foreach($files as $file) {
             $item = ingest_object_from_foxml($file->filename);
-			
-			// filenames format for example page objects is po-example-d1-p1.xml
+      
+      // filenames format for example page objects is po-example-d1-p1.xml
             if (preg_match('/-p[0-9]+$/', $file->name)) {   
-			  $page_number = substr($file->name, -1);
-	          $letter = $letters[$page_number - 1];
-	 
+        $page_number = substr($file->name, -1);
+            $letter = $letters[$page_number - 1];
+   
               $item->add_datastream_from_file($examples_dir . '/tiff/' . $letter . '.tiff', Constants::DSID_TIFF, Constants::DSLABEL_TIFF, Constants::MIME_TYPE_TIFF);
               $item->add_datastream_from_file($examples_dir . '/jp2archive/' . $letter . '.jp2', Constants::DSID_JP2_ARCHIVE, Constants::DSLABEL_JP2_ARCHIVE, Constants::MIME_TYPE_JP2_ARCHIVE);
               $item->add_datastream_from_file($examples_dir . '/jp2/' . $letter . '.jp2', Constants::DSID_JP2, Constants::DSLABEL_JP2, Constants::MIME_TYPE_JP2);
