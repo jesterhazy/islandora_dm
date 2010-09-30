@@ -212,11 +212,12 @@ class PurchaseOrder {
     
     foreach (array_keys($this->documents) as $document_pid) {
       $pages = $this->pageCount($document_pid);
-      $view .= '<div class="document-thumbnail"><div class="left"><div class="thumbnail">';
+      $view .= '<div class="document">';
+      $view .= '<div class="thumbnail">';
       $view .= $this->getDocumentThumbnailImgTag($document_pid);
       $view .= '</div><div class="caption">';
       $view .= $pages . ' page' . ($pages != 1 ? 's' : '');
-      $view .= '</div></div></div>';
+      $view .= '</div></div>';
     }
 
     $view .= '<br clear=all>';

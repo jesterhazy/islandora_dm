@@ -13,11 +13,6 @@
   float: right;
 }
 
-.thumbnail.left {
-  margin-right: 20px;
-  float: left;
-}
-
 div.clickable.active {
   cursor: pointer;
 }
@@ -96,6 +91,11 @@ div.clickable.active:hover {
 .islandora-dm-po-view .caption {
   font-style: italic;
   font-size: 80%;
+}
+
+.islandora-dm-po-view .document {
+  float: left;
+  margin-right: 20px;
 }
 
 /* end /po/-/view */

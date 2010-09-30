@@ -25,8 +25,8 @@ class Note {
   function view() {
     $view = '';
     $view .= '<div class="note">';
-    $view .= '<div class="text">' . $this->text() . '</div>';
-    $view .= '<div class="caption">' . $this->created() . ' - ' . $this->creator() . '</div>';
+    $view .= '<div class="text">' . preg_replace('/\n/', '<br>', check_plain($this->text())) . '</div>';
+    $view .= '<div class="caption">' . check_plain($this->created()) . ' - ' . check_plain($this->creator()) . '</div>';
     $view .= '</div>';
     return $view;
   }
@@ -40,7 +40,7 @@ class Note {
     );
 
     $form['text'] = array(
-      '#type' => 'textfield',
+      '#type' => 'textarea',
       '#title' => t('Note'),
       '#required' => TRUE,
     );
