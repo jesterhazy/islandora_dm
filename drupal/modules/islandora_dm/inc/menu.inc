@@ -22,15 +22,6 @@ function islandora_dm_menu() {
     'access arguments' => array(Constants::PERMISSION_ADMIN),
   );
   
-  $items['admin/settings/islandora_dm/jms'] = array(
-    'type' => MENU_LOCAL_TASK,
-    'title' => 'JMS settings',
-    'description' => 'Configure settings for the JMS service.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('islandora_dm_admin_jms'),
-    'access arguments' => array(Constants::PERMISSION_ADMIN),
-  );
-  
   $items['admin/settings/islandora_dm/objects'] = array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Fedora objects',
