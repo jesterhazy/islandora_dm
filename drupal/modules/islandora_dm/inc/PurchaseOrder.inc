@@ -102,8 +102,28 @@ class PurchaseOrder {
     return $this->uis;
   }
   
-  function noteCount() {
-    return count($this->notes);
+  /**
+   * Find the next number to use for pid construction
+   */
+  function nextNumber($pids) {
+    $numbers = empty($pids) ? NULL : array_map('PurchaseOrder::numberFromPid', $pids);
+    return empty($numbers) ? 1 : max($numbers) + 1;
+  }
+  
+  static function numberFromPid($pid) {
+    return preg_match('/([0-9]+)$/', $pid, $m) ? $m[1] : 0;
+  }
+  
+  function nextNoteNumber() {
+    return $this->nextNumber($this->notes);
+  }
+  
+  function nextDocumentNumber() {
+    return $this->nextNumber(empty($this->documents) ? NULL : array_keys($this->documents));
+  }
+  
+  function nextPageNumber($document_pid) {
+    return $this->nextNumber($this->documents[$document_pid]);
   }
   
   function notePid($note_number) {
@@ -114,18 +134,10 @@ class PurchaseOrder {
     return $this->getTitle() . ' Note ' . $note_number;
   }
   
-  function documentCount() {
-    return count($this->documents);
-  }
-  
   function addDocument($document_pid) {
     if (!isset($this->documents[$document_pid])) {
       $this->documents[$document_pid] = array();
     }
-  }
-  
-  function documentNumber($document_pid) {
-    return preg_match('/-d([0-9]+)$/', $document_pid, $m) ? $m[1] : 0;
   }
   
   function documentPid($document_number) {
@@ -145,11 +157,11 @@ class PurchaseOrder {
   }
   
   function pagePid($document_pid, $page_number) {
-    return $this->documentPid($this->documentNumber($document_pid)) . '-p' . $page_number;
+    return $this->documentPid($this->numberFromPid($document_pid)) . '-p' . $page_number;
   }
   
   function pageTitle($document_pid, $page_number) {
-    return $this->documentTitle($this->documentNumber($document_pid)) . ' Page ' . $page_number;
+    return $this->documentTitle($this->numberFromPid($document_pid)) . ' Page ' . $page_number;
   }
     
   /**

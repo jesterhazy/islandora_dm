@@ -67,7 +67,7 @@ class Note {
     
     $po = PurchaseOrder::fetchByNumber($po_number);
     $note = create_note_fedora_item($po, $text, $user->name);
-    drupal_set_message(t('Added note %n to purchase order %p.', array('%n' => $po->noteCount() + 1, '%p' => $po_number)));
+    drupal_set_message(t('Added note %n to purchase order %p.', array('%n' => $po->nextNoteNumber(), '%p' => $po_number)));
     
     $form_state['redirect'] = array('islandora_dm/po/' . $form_state['values']['po_number'] . '/view');
   }

@@ -191,7 +191,7 @@ function create_document_fedora_item($po) {
   try {
     // this pid strategy is a potential concurrency problem. 
     // it could be replaced with call to fedora's getNextPID service
-    $document_number = $po->documentCount() + 1;  
+    $document_number = $po->nextDocumentNumber();
     $pid = $po->documentPid($document_number);
     $title = $po->documentTitle($document_number);
     
@@ -214,7 +214,7 @@ function create_note_fedora_item($po, $text, $user) {
   try {
     // this pid strategy is a potential concurrency problem. 
     // it could be replaced with call to fedora's getNextPID service
-    $note_number = $po->noteCount() + 1;  
+    $note_number = $po->nextNoteNumber();  
     $pid = $po->notePid($note_number);
     $title = $po->noteTitle($note_number);
     
@@ -244,7 +244,7 @@ function create_page_fedora_item($po, $document_pid, $file) {
   try {
     // this pid strategy is a potential concurrency problem. 
     // it could be replaced with call to fedora's getNextPID service
-    $page_number = $po->pageCount($document_pid) + 1;
+    $page_number = $po->nextPageNumber($document_pid);
     $pid = $po->pagePid($document_pid, $page_number);    
     $title = $po->pageTitle($document_pid, $page_number);
     
@@ -270,3 +270,4 @@ function datastream_to_xml($datastream_id, $fedora_item) {
   $ds = $fedora_item->get_datastream_dissemination($datastream_id);
   return new SimpleXmlElement($ds);
 }
+
