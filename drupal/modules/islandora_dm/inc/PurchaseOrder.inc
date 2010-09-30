@@ -156,6 +156,7 @@ class PurchaseOrder {
    * Create a themed drupal view of the purchase order. Used to create the detailed, single-po view page.
    */
   function getView() {
+    $view = "\n\n";
     $view = '<div class="islandora-dm-po-view">';
     
     $this->addErrorMessages();
@@ -182,20 +183,28 @@ class PurchaseOrder {
     $view .= $this->addNotesView();
     $view .= $this->addDocumentsView();
     
+    $view .= "\n\n";
     $view .= '<h3>Attachments</h3>';
     $view .= '<p>todo</p>';
 
-    $view .= "</div>";
+
+    $view .= "</div>";    
+    $view .= "\n\n";
+    
     return $view;
   }
   
   function addDocumentsView() {
-    $view = '';
-    
+    $view = "\n\n";
     $view .= '<h3>Documents</h3>';
     
     foreach (array_keys($this->documents) as $document_pid) {
-      $view .= '<div class="thumbnail left">' . $this->getDocumentThumbnailImgTag($document_pid) . '</div>';
+      $pages = $this->pageCount($document_pid);
+      $view .= '<div class="document-thumbnail"><div class="left"><div class="thumbnail">';
+      $view .= $this->getDocumentThumbnailImgTag($document_pid);
+      $view .= '</div><div class="caption">';
+      $view .= $pages . ' page' . ($pages != 1 ? 's' : '');
+      $view .= '</div></div></div>';
     }
 
     $view .= '<br clear=all>';
@@ -204,8 +213,8 @@ class PurchaseOrder {
   }
   
   function addNotesView() {
-    $view = '<div class="notes">';
-    $view = '<h3>Notes</h3>';
+    $view = "\n\n";
+    $view .= '<div class="notes"><h3>Notes</h3>';
     
     if(!empty($this->notes)) {
       foreach ($this->notes as $note_pid) {
@@ -221,12 +230,12 @@ class PurchaseOrder {
   }
   
   function addDispositionView() {
-    $view = '';
+    $view = "\n\n";
     
     if ($this->dispositionDatastream) {
       $ds = $this->dispositionDatastream;
       
-      $view = '<h3>Disposition</h3>';
+      $view .= '<h3>Disposition</h3>';
 
       $rows = array(
         array(array('data' => t('Disposition Action:'), 'class' => 'label'), check_plain($ds->dispositionAction), null),
@@ -243,12 +252,12 @@ class PurchaseOrder {
   }
   
   function addClassificationView() {
-    $view = '';
+    $view = "\n\n";
     
     if ($this->classificationDatastream) {
       $ds = $this->classificationDatastream;
       
-      $view = '<h3>Classification</h3>';
+      $view .= '<h3>Classification</h3>';
 
       $rows = array(
         array(array('data' => t('Office of Record:'), 'class' => 'label'), check_plain($ds->officeOfRecord), null),
@@ -268,7 +277,7 @@ class PurchaseOrder {
    * Create a themed drupal view of the purchase order for use in search result lists.
    */
   function getSearchResultView() {
-    $view = '';
+    $view = "\n\n";
     
     $this->addErrorMessages();
 

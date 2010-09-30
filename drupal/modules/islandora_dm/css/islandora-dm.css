@@ -89,7 +89,11 @@ div.clickable.active:hover {
   margin: .5em;
 }
 
-.islandora-dm-po-view .note .caption {
+.islandora-dm-po-view .button {
+  margin: .5em;
+}
+
+.islandora-dm-po-view .caption {
   font-style: italic;
   font-size: 80%;
 }

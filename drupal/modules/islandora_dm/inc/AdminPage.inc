@@ -129,9 +129,9 @@ class AdminPage {
           foreach($files as $file) {
             $item = ingest_object_from_foxml($file->filename);
       
-      // filenames format for example page objects is po-example-d1-p1.xml
+            // filenames format for example page objects is po-example-d1-p1.xml
             if (preg_match('/-p[0-9]+$/', $file->name)) {   
-        $page_number = substr($file->name, -1);
+            $page_number = substr($file->name, -1);
             $letter = $letters[$page_number - 1];
    
               $item->add_datastream_from_file($examples_dir . '/tiff/' . $letter . '.tiff', Constants::DSID_TIFF, Constants::DSLABEL_TIFF, Constants::MIME_TYPE_TIFF);
