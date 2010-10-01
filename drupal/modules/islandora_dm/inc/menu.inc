@@ -8,8 +8,8 @@ function islandora_dm_menu() {
 
   // admin page
   $items['admin/settings/islandora_dm'] = array(
-    'title' => 'Islandora document management',
-    'description' => 'Configure the Islandora document management module.',
+    'title' => 'Islandora Document Management',
+    'description' => 'Configure the Islandora Document Management module.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('islandora_dm_admin'),
     'access arguments' => array(Constants::PERMISSION_ADMIN),
@@ -33,7 +33,7 @@ function islandora_dm_menu() {
 
   // home page
   $items[Constants::MODULE_NAME] = array (
-      'title' => 'Islandora document management',
+      'title' => 'Islandora Document Management',
       'page callback' => 'islandora_dm_home',
       'access arguments' => array(Constants::PERMISSION_VIEW),
   );
