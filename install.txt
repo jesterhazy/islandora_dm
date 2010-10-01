@@ -1,0 +1,46 @@
+Installing into UPEI test site (test.islandlives.ca)
+
+Install files
+cd /var/www/html/drupal/sites/test.islandlives.ca.jesterhazy/modules
+sudo svn co http://http://137.149.66.238/repos/fedoradrupalmodule/islandora_dm/trunk/drupal/modules/islandora_dm islandora_dm
+sudo chown -R apache:apache islandora_dm
+sudo cp -R islandora_dm/etc/mock_po_service /var/www/html/drupal/islandora_dm_mock_po_service
+sudo chown -R apache:apache /var/www/html/drupal/islandora_dm_mock_po_service
+sudo -u apache mkdir /var/www/html/drupal/sites/test.islandlives.ca.jesterhazy/files/islandora_dm_import
+sudo -u apache mkdir /var/www/html/drupal/sites/test.islandlives.ca.jesterhazy/files/islandora_dm_archive
+
+-- solr service
+sudo cp -R Solr /var/www/html/drupal/sites/test.islandlives.ca.jesterhazy/modules/fedora_repository/Solr
+sudo chown -R apache:apache /var/www/html/drupal/sites/test.islandlives.ca.jesterhazy/modules/fedora_repository/Solr
+
+-- patch fedora_repository module code
+cd /var/www/html/drupal/sites/test.islandlives.ca.jesterhazy/modules/fedora_repository
+sudo patch -p0 < ~/fedora-collection-cmodel-patch-je.diff
+
+-- update gsearch config
+-- apply diff (manually copy changes) islandora_dm/etc/conf/basicFoxmlToLucene.xslt.diff to /usr/local/fedora/tomcat/webapps/fedoragsearch/WEB-INF/classes/config/index/BasicIndex/basicFoxmlToLucene.xslt
+
+
+Generate test import files (optional):
+sudo -u apache cp islandora_dm/etc/foxml/examples/tiff/a.tiff '/var/www/html/drupal/sites/test.islandlives.ca.jesterhazy/files/islandora_dm_import/1 2010-09-17 (1) 0001.tiff'
+sudo -u apache cp islandora_dm/etc/foxml/examples/tiff/a.tiff '/var/www/html/drupal/sites/test.islandlives.ca.jesterhazy/files/islandora_dm_import/1 2010-09-17 (2) 0001.tiff'
+sudo -u apache cp islandora_dm/etc/foxml/examples/tiff/b.tiff '/var/www/html/drupal/sites/test.islandlives.ca.jesterhazy/files/islandora_dm_import/1 2010-09-17 (2) 0002.tiff'
+sudo -u apache cp islandora_dm/etc/foxml/examples/tiff/a.tiff '/var/www/html/drupal/sites/test.islandlives.ca.jesterhazy/files/islandora_dm_import/2 2010-09-17 (1) 0001.tiff'
+sudo -u apache cp islandora_dm/etc/foxml/examples/tiff/b.tiff '/var/www/html/drupal/sites/test.islandlives.ca.jesterhazy/files/islandora_dm_import/2 2010-09-17 (1) 0002.tiff'
+sudo -u apache cp islandora_dm/etc/foxml/examples/tiff/a.tiff '/var/www/html/drupal/sites/test.islandlives.ca.jesterhazy/files/islandora_dm_import/1 2010-09-18 (1) 0001.tiff'
+sudo -u apache cp islandora_dm/etc/foxml/examples/tiff/b.tiff '/var/www/html/drupal/sites/test.islandlives.ca.jesterhazy/files/islandora_dm_import/1 2010-09-18 (1) 0002.tiff'
+sudo -u apache cp islandora_dm/etc/foxml/examples/tiff/c.tiff '/var/www/html/drupal/sites/test.islandlives.ca.jesterhazy/files/islandora_dm_import/1 2010-09-18 (1) 0003.tiff'
+
+
+
+- enable module in drupal admin
+
+- update module settings:
+Import Path: /var/www/html/drupal/sites/test.islandlives.ca.jesterhazy/files/islandora_dm_import
+Archive Path: /var/www/html/drupal/sites/test.islandlives.ca.jesterhazy/files/islandora_dm_archive
+Disable Archiving: On
+PO Service URL: http://test.islandlives.ca/islandora_dm_mock_po_service/po-service.php
+Install all Fedora Objects
+
+- update fedora_repository module settings:
+add 'islandora-dm:' to allowed pid spaces
