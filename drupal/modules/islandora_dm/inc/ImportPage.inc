@@ -65,7 +65,7 @@ class ImportPage {
     $files = Files::listFiles($dir);
     $this->parseFilenames($files);
     
-    usort($files, 'ImportPage::compareFiles');
+    usort($files, array($this, 'compareFiles'));
   
     return $files;
    }

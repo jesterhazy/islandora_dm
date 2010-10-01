@@ -40,7 +40,7 @@ class Files {
   }
   
   static function extractBasenames($files) {
-    return array_map('self::extractBasename', $files);
+    return array_map(array('Files', 'extractBaseName'), $files);
   }
   
   static function extractBasename($file) {

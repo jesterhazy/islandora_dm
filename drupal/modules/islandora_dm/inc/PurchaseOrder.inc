@@ -106,11 +106,11 @@ class PurchaseOrder {
    * Find the next number to use for pid construction
    */
   function nextNumber($pids) {
-    $numbers = empty($pids) ? NULL : array_map('PurchaseOrder::numberFromPid', $pids);
+    $numbers = empty($pids) ? NULL : array_map(array($this, 'numberFromPid'), $pids);
     return empty($numbers) ? 1 : max($numbers) + 1;
   }
   
-  static function numberFromPid($pid) {
+  function numberFromPid($pid) {
     return preg_match('/([0-9]+)$/', $pid, $m) ? $m[1] : 0;
   }
   
