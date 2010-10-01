@@ -124,7 +124,7 @@ class AdminPage {
           $examples_dir = $objects_dir . '/examples';
           $files = file_scan_directory($examples_dir, '\.xml$');
 
-      $letters = array('a', 'b', 'c');
+          $letters = array('a', 'b', 'c');
     
           foreach($files as $file) {
             $item = ingest_object_from_foxml($file->filename);
