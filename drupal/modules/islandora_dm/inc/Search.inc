@@ -28,7 +28,7 @@ class Search {
     }
     
     $solr = $this->getSolrService();
-    
+
     // TODO 'qt' param s/b from solr block config (maybe default limit, too)
     $this->results = $solr->search($this->query, $offset, $limit, array('qt' => 'standard'));
   }
@@ -45,9 +45,9 @@ class Search {
     
     // TODO foreach on a field list
     $query = 'islandora-dm.po:(' . $escaped . ')';
-    
+    	
     // TODO placeholder for document fields
-    $query .= 'or islandora-dm.po.collection:(' . $escaped . ')';
+    // $query .= 'or islandora-dm.po.collection:(' . $escaped . ')';
     
     $this->query = $query;
   }
@@ -90,12 +90,12 @@ class Search {
     
     if ($this->results) {
       foreach ($this->results->response->docs as $doc) {
-        switch ($doc->{'islandora-dm.po.cmodel'}) {
+        switch ($doc->{'rels.hasModel'}) {
           case 'islandora-dm:po-cmodel':
             $pids[] = $doc->PID;
             break;
-          case 'islandora-dm:po-document-cmodel':
-            $pids[] = $doc->{'islandora-dm.po.collection'};
+          case 'islandora-dm:po-page-cmodel':
+            $pids[] = $doc->{'rels.isMemberOf'}[1];
             break;
           default:
             // skip result 
