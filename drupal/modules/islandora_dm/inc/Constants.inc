@@ -58,9 +58,8 @@ class Constants {
   const DC_TITLE = 'dc:title';
   const DC_IDENTIFIER = 'dc:identifier';
   
-  const DSID_NOTE_TEXT = 'text';
-  const DSLABEL_NOTE_TEXT = 'note text';
-  const MIME_TYPE_TEXT = 'text/plain';
+  const DSID_NOTE = 'note';
+  const DSLABEL_NOTE = 'note';
   
   const DSID_NOTE_CREATOR = 'creator';
   const DSLABEL_NOTE_CREATOR = 'note creator';

@@ -39,11 +39,8 @@
       LABEL="Datastream Composite Model" MIMETYPE="text/xml">
       <foxml:xmlContent>
         <dsCompositeModel xmlns="info:fedora/fedora-system:def/dsCompositeModel#">
-           <dsTypeModel ID="text">
-             <form MIME="text/plain"/>
-           </dsTypeModel>
-           <dsTypeModel ID="creator">
-             <form MIME="text/plain"/>
+           <dsTypeModel ID="note">
+             <form MIME="text/xml"/>
            </dsTypeModel>
         </dsCompositeModel>
       </foxml:xmlContent>

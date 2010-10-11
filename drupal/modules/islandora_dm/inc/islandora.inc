@@ -49,7 +49,7 @@ function fetch_fedora_item($pid) {
     // bury
   }
   
-  watchdog(t(Constants::MODULE_NAME), t('Unable to retrieve ' . $pid . '.'), null, WATCHDOG_ERROR);
+  watchdog(Constants::MODULE_NAME, t('Unable to retrieve ' . $pid . '.'), null, WATCHDOG_ERROR);
   return NULL;
 }
 
@@ -224,12 +224,9 @@ function create_note_fedora_item($po, $text, $user) {
     $fedora->add_relationship('isMemberOf', $po->getPid());
     $fedora->add_relationship('hasModel', Constants::PID_PO_NOTE_CMODEL, FEDORA_MODEL_URI);
     
-    // add note text
-    $fedora->add_datastream_from_string($text, Constants::DSID_NOTE_TEXT, Constants::DSLABEL_NOTE_TEXT, Constants::MIME_TYPE_TEXT);
-    
-    // add creator id 
-    // shouldn't have to do this, but fedora's creator info is mysteriously inaccessible
-    $fedora->add_datastream_from_string($user, Constants::DSID_NOTE_CREATOR, Constants::DSLABEL_NOTE_CREATOR, Constants::MIME_TYPE_TEXT);
+    // add note ds
+    $note_xml = '<note><text>' . $text . '</text><creator>' . $user . '</creator></note>';
+    $fedora->add_datastream_from_string($note_xml, Constants::DSID_NOTE, Constants::DSLABEL_NOTE, Constants::MIME_TYPE_XML, 'X');
   }
   
   catch (Exception $e) {
@@ -252,6 +249,7 @@ function create_page_fedora_item($po, $document_pid, $file) {
 
     // add relationhips
     $fedora->add_relationship('isMemberOf', $document_pid);
+    $fedora->add_relationship('isMemberOf', $po->getPid());
     $fedora->add_relationship('hasModel', Constants::PID_PO_PAGE_CMODEL, FEDORA_MODEL_URI);
     
     // create image datastream

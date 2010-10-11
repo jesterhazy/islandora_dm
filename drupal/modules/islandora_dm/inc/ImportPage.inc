@@ -170,7 +170,7 @@ class ImportPage {
         $this->importPurchaseOrder($k, $v);
       }
       catch (Exception $e) {
-        watchdog(t(Constants::MODULE_NAME), 'Error importing file @file: @ex', array('@file' => $file->filename, '@ex' => $e), WATCHDOG_WARN);
+        watchdog(Constants::MODULE_NAME, 'Error importing file @file: @ex', array('@file' => $file->filename, '@ex' => $e), WATCHDOG_WARN);
       }
     }
   }
@@ -298,7 +298,7 @@ class ImportPage {
     $error = $md ? 'make archive directory for' : $cp ? 'copy' : $del ? 'delete' : null;
     
     if ($error) {
-      watchdog(t(Constants::MODULE_NAME), t('Failed to ' . $error . ' import file: ' . $file->basename), null, WATCHDOG_WARN);
+      watchdog(Constants::MODULE_NAME, t('Failed to ' . $error . ' import file: ' . $file->basename), null, WATCHDOG_WARN);
     }
     
     return $cp && $del;

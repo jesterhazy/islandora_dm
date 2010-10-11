@@ -23,7 +23,7 @@ class Search {
     
     // log warning if execute is called more than once
     if ($this->results) {
-      watchdog(t(Constants::MODULE_NAME), t('ignoring invalid call to Search::execute'), null, WATCHDOG_WARNING);
+      watchdog(Constants::MODULE_NAME, t('ignoring invalid call to Search::execute'), null, WATCHDOG_WARNING);
       return;
     }
     
@@ -42,13 +42,7 @@ class Search {
     $split = split(' ', $terms);
     $joined = join(" and ", $split);
     $escaped = Apache_Solr_Service::escape($joined);
-    
-    // TODO foreach on a field list
     $query = 'islandora-dm.po:(' . $escaped . ')';
-    	
-    // TODO placeholder for document fields
-    // $query .= 'or islandora-dm.po.collection:(' . $escaped . ')';
-    
     $this->query = $query;
   }
   
@@ -90,22 +84,41 @@ class Search {
     
     if ($this->results) {
       foreach ($this->results->response->docs as $doc) {
-        switch ($doc->{'rels.hasModel'}) {
-          case 'islandora-dm:po-cmodel':
-            $pids[] = $doc->PID;
-            break;
-          case 'islandora-dm:po-page-cmodel':
-            $pids[] = $doc->{'rels.isMemberOf'}[1];
-            break;
-          default:
-            // skip result 
-            // TODO log error on unexpected cmodel (and fix query)
-            break;
-        }
+        $this->resultToPid($doc, $pids);
       }
     }
     
     return array_unique($pids);
+  }
+  
+  function resultToPid(&$doc, &$pids) {
+    if (Constants::PID_PO_CMODEL == $doc->{'rels.hasModel'}) {
+      $pids[] = $doc->PID;
+    }
+    
+    elseif (strpos($doc->{'rels.hasModel'}, 'islandora-dm:') !== FALSE) {
+      $collections = is_array($doc->{'rels.isMemberOf'}) 
+        ? $doc->{'rels.isMemberOf'} 
+          : array($doc->{'rels.isMemberOf'});
+      
+      foreach ($collections as $collection) {
+        if ($this->isPurchaseOrderPid($collection)) {
+          $pids[] = $collection;
+        }
+      }
+    }
+    
+    else {
+      // unexpected cmodel
+      watchdog(Constants::MODULE_NAME, 
+        'unexpected content model in search results. pid: @pid, cmodel: @cmodel', 
+        array('@pid' => $doc->PID, '@cmodel' => $doc->{'rels.hasModel'}), 
+        WATCHDOG_WARN);
+    }
+  }
+  
+  function isPurchaseOrderPid($pid) {
+    return preg_match('/^islandora-dm:po-[^\-]+$/', $pid);
   }
   
   /**

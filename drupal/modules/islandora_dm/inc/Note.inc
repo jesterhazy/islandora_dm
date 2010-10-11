@@ -1,32 +1,20 @@
 <?php
 
 class Note {
-  protected $fedora;
+  protected $xml;
+  protected $created;
   
   function Note($fedora_item) {
     $this->fedora = $fedora_item;
-  }
-  
-  function text() {
-    $text = $this->fedora->get_datastream_dissemination(Constants::DSID_NOTE_TEXT);
-    return $text;
-  }
-  
-  function creator() {
-    $creator = $this->fedora->get_datastream_dissemination(Constants::DSID_NOTE_CREATOR);
-    return $creator;
-  }
-  
-  function created() {
-    $created = format_date(strtotime($this->fedora->objectProfile->objCreateDate));
-    return $created;
+    $this->xml = datastream_to_xml(Constants::DSID_NOTE, $fedora_item);
+    $this->created = format_date(strtotime($this->fedora->objectProfile->objCreateDate));
   }
   
   function view() {
     $view = '';
     $view .= '<div class="note">';
-    $view .= '<div class="text">' . preg_replace('/\n/', '<br>', check_plain($this->text())) . '</div>';
-    $view .= '<div class="caption">' . check_plain($this->created()) . ' - ' . check_plain($this->creator()) . '</div>';
+    $view .= '<div class="text">' . preg_replace('/\n/', '<br>', check_plain($this->xml->text)) . '</div>';
+    $view .= '<div class="caption">' . check_plain($this->created) . ' - ' . check_plain($this->xml->creator) . '</div>';
     $view .= '</div>';
     return $view;
   }

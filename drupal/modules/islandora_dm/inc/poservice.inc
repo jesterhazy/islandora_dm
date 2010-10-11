@@ -20,7 +20,7 @@ function fetch_uis_po($po_number) {
   
   catch (Exception $e) {
     $message = 'Unable to retrieve information for purchase order ' . $po_number;
-    watchdog(t(Constants::MODULE_NAME), t($message . ': ' . $e->getMessage()), null, WATCHDOG_ERROR);
+    watchdog(Constants::MODULE_NAME, t($message . ': ' . $e->getMessage()), null, WATCHDOG_ERROR);
     $xml = null;
   }
 
