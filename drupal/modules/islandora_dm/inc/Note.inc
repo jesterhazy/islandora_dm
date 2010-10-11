@@ -72,5 +72,5 @@ function islandora_dm_add_note_form(&$form_state, $po_number) {
 }
 
 function islandora_dm_add_note_form_submit($form, &$form_state) {
-  return Note::addNoteFormSubmit($form, &$form_state);
+  return Note::addNoteFormSubmit($form, $form_state);
 }
