@@ -1,42 +1,47 @@
-721a722,764
+721a722,769
 > 
 > <!--**************************************START Islandora-DM**********************************************************************************************************-->
 > 
->  		<xsl:if test="starts-with($PID,'islandora-dm')">
-> 	     		<xsl:for-each select="foxml:datastream/foxml:datastreamVersion[last()]/foxml:xmlContent/rdf:RDF/rdf:Description/*">
-> 				<field>
->                                 	<xsl:attribute name="name">
->                                                 <xsl:value-of select="concat('rels.', name())"/>
->                                         </xsl:attribute>
->                                         <xsl:value-of select="substring-after(@rdf:resource, '/')"/>
->                                 </field>
-> 	 		</xsl:for-each>
+> 		<xsl:if test="starts-with($PID,'islandora-dm')">
 > 
-> 	     		<xsl:for-each select="foxml:datastream/foxml:datastreamVersion[last()]/foxml:xmlContent/dm/*">
-> 	       			<xsl:if test="name() = 'owner'">
-> 	         			<field>
-> 	           				<xsl:attribute name="name">islandora-dm.po.owner</xsl:attribute>
-> 	           				<xsl:value-of select="."/>
-> 	         			</field>
-> 	       			</xsl:if>
-> 	       			<field>
-> 	         			<xsl:attribute name="name">islandora-dm.po</xsl:attribute>
-> 	         			<xsl:value-of select="."/>
-> 	       			</field>
-> 	     		</xsl:for-each>  
->  
-> 	     		<xsl:for-each select="foxml:datastream/foxml:datastreamVersion[last()]/foxml:xmlContent/po/*">
-> 	       			<xsl:if test="name() = 'processed'">
-> 	         			<field>
-> 	           				<xsl:attribute name="name">islandora-dm.po.status</xsl:attribute>
-> 	           				<xsl:value-of select="."/>
-> 	         			</field>
-> 	       			</xsl:if>
-> 	       			<field>
-> 	         			<xsl:attribute name="name">islandora-dm.po</xsl:attribute>
-> 	         			<xsl:value-of select="."/>
-> 	       			</field>
-> 	     		</xsl:for-each>
+> 			<!-- rels-ext handling added here, because the stuff around line 128 doesn't seem to work -->
+> 			<xsl:for-each select="foxml:datastream/foxml:datastreamVersion[last()]/foxml:xmlContent/rdf:RDF/rdf:Description/*">
+> 				<field>
+> 					<xsl:attribute name="name">
+> 						<xsl:value-of select="concat('rels.', name())"/>
+> 					</xsl:attribute>
+> 					<xsl:value-of select="substring-after(@rdf:resource, '/')"/>
+> 				</field>
+> 			</xsl:for-each>
+> 	
+> 			<!--  which dm-specific dsids are indexed? -->
+> 			<xsl:variable name="indexed-dsids" select="'/dm/uis/xml/note/'" />
+> 	
+> 			<!-- indexing for inline xml streams -->
+> 			<xsl:for-each select="foxml:datastream/foxml:datastreamVersion[last()]/foxml:xmlContent/*">
+> 				<xsl:variable name="dsid" select="../../../@ID" />
+> 				<xsl:if test="contains($indexed-dsids, concat('/', $dsid, '/'))">
+> 					<field>
+> 						<xsl:attribute name="name">islandora-dm.po</xsl:attribute>
+> 						<xsl:value-of select="normalize-space(.)"/>
+> 					</field>
+> 
+> 					<!-- special handling for specific streams -->
+> 					<xsl:if test="$dsid = 'dm'">
+> 						<field>
+> 							<xsl:attribute name="name">islandora-dm.po.owner</xsl:attribute>
+> 							<xsl:value-of select="normalize-space(owner)"/>
+> 						</field>
+> 					</xsl:if>
+> 			
+> 					<xsl:if test="$dsid = 'uis'">
+> 						<field>
+> 							<xsl:attribute name="name">islandora-dm.po.status</xsl:attribute>
+> 							<xsl:value-of select="normalize-space(processed)"/>
+> 						</field>
+> 					</xsl:if>
+> 				</xsl:if>
+> 			</xsl:for-each>
 > 		</xsl:if>
 > 
 > <!--**************************************END Islandora-DM************************************************************************************************************-->

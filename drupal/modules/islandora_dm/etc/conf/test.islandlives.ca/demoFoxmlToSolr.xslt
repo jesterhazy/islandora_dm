@@ -766,6 +766,7 @@
 
 <!--**************************************END Islandora-DM************************************************************************************************************-->
 
+
 <!--*********************************** begin changes for Mods as a managed datastream users an islandor extension function********************************************************************************-->
 <xsl:for-each select="foxml:datastream[@ID='MODS']/foxml:datastreamVersion[last()]">
 			<xsl:call-template name="mods"/> <!--only call this if the mods stream exists-->			
