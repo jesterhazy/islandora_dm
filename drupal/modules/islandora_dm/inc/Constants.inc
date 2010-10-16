@@ -41,8 +41,8 @@ class Constants {
   const DSLABEL_TIFF = 'tiff image';
   const MIME_TYPE_TIFF = 'image/tiff';
   
-  const DSID_JP2_ARCHIVE = 'jp2archive';
-  const DSLABEL_JP2_ARCHIVE = 'jp2 archive image';
+  const DSID_JP2_ARCHIVE = 'jp2lossless';
+  const DSLABEL_JP2_ARCHIVE = 'jp2 image (lossless)';
   const MIME_TYPE_JP2_ARCHIVE = 'image/jp2';
   
   const DSID_JP2 = 'jp2';

@@ -135,7 +135,7 @@ class AdminPage {
             $letter = $letters[$page_number - 1];
    
               $item->add_datastream_from_file($examples_dir . '/tiff/' . $letter . '.tiff', Constants::DSID_TIFF, Constants::DSLABEL_TIFF, Constants::MIME_TYPE_TIFF);
-              $item->add_datastream_from_file($examples_dir . '/jp2archive/' . $letter . '.jp2', Constants::DSID_JP2_ARCHIVE, Constants::DSLABEL_JP2_ARCHIVE, Constants::MIME_TYPE_JP2_ARCHIVE);
+              $item->add_datastream_from_file($examples_dir . '/jp2lossless/' . $letter . '.jp2', Constants::DSID_JP2_ARCHIVE, Constants::DSLABEL_JP2_ARCHIVE, Constants::MIME_TYPE_JP2_ARCHIVE);
               $item->add_datastream_from_file($examples_dir . '/jp2/' . $letter . '.jp2', Constants::DSID_JP2, Constants::DSLABEL_JP2, Constants::MIME_TYPE_JP2);
               $item->add_datastream_from_file($examples_dir . '/tn/' . $letter . '.jpg', Constants::DSID_TN, Constants::DSLABEL_TN, Constants::MIME_TYPE_TN);         
             }            

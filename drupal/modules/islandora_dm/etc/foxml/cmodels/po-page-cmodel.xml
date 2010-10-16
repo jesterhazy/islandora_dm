@@ -45,7 +45,7 @@
           <dsTypeModel ID="jp2">
             <form MIME="image/jp2"/>
           </dsTypeModel>
-          <dsTypeModel ID="jp2archive">
+          <dsTypeModel ID="jp2lossless">
             <form MIME="image/jp2"/>
           </dsTypeModel>
           <dsTypeModel ID="tn">
