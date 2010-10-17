@@ -45,3 +45,11 @@ Install all Fedora Objects
 
 - update fedora_repository module settings:
 add 'islandora-dm:' to allowed pid spaces
+
+
+
+-- start jms listeners on abbyy server
+ssh 137.149.200.15
+sudo su - abbyy
+python2.7 fedora_listener/fedora_listener.py -H test.islandlives.ca -P 61613 -U fedoraAdmin -W <pw> -R http://test.islandlives.ca:8080/fedora >/tmp/fedora_listener.log&
+python2.7 content_model_listeners/content_model_listener.py -H test.islandlives.ca -P 61613 -U fedoraAdmin -W <pw> -R http://test.islandlives.ca:8080/fedora -M islandora-dm:po-page-cmodel >/tmp/content-model-listener.log&
