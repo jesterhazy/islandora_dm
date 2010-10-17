@@ -734,8 +734,8 @@
 				</field>
 			</xsl:for-each>
 	
-			<!--  which dm-specific dsids are indexed? -->
-			<xsl:variable name="indexed-dsids" select="'/dm/uis/xml/note/'" />
+			<!--  which dm-specific dsids are indexed (across all content models)? -->
+			<xsl:variable name="indexed-dsids" select="'/dm/uis/note/xml/text/'" />
 	
 			<!-- indexing for inline xml streams -->
 			<xsl:for-each select="foxml:datastream/foxml:datastreamVersion[last()]/foxml:xmlContent/*">
@@ -762,6 +762,29 @@
 					</xsl:if>
 				</xsl:if>
 			</xsl:for-each>
+			
+			<!-- indexing for external text streams (plain or xml) -->
+			<xsl:for-each select="foxml:datastream[@CONTROL_GROUP = 'M']">
+				<xsl:variable name="dsid" select="@ID" />
+				<xsl:variable name="mime" select="./foxml:datastreamVersion[last()]/@MIMETYPE" />
+				
+				<xsl:if test="contains($indexed-dsids, concat('/', $dsid, '/'))">
+				
+					<xsl:variable name="content">
+						<xsl:if test="$mime = 'text/plain'">
+							<xsl:value-of select="islandora-exts:getDatastreamTextRaw($PID, $REPOSITORYNAME, $dsid, $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)" />
+						</xsl:if>
+						<xsl:if test="$mime = 'text/xml'">
+							<xsl:value-of select="islandora-exts:getXMLDatastreamASNodeList($PID, $REPOSITORYNAME, $dsid, $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)" />
+						</xsl:if>
+					</xsl:variable>
+				
+					<field>
+						<xsl:attribute name="name">islandora-dm.po</xsl:attribute>
+						<xsl:value-of select="normalize-space($content)"/>
+					</field>
+				</xsl:if>
+			</xsl:for-each>
 		</xsl:if>
 
 <!--**************************************END Islandora-DM************************************************************************************************************-->
@@ -774,7 +797,6 @@
 </xsl:template>
 <xsl:template name="mods">
 <xsl:variable name="MODS_STREAM" select="islandora-exts:getXMLDatastreamASNodeList($PID, $REPOSITORYNAME, 'MODS', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
-
 <!--***********************************************************MODS modified for maps**********************************************************************************-->
 <xsl:for-each select="$MODS_STREAM//mods:title">
 	<xsl:if test="text() [normalize-space(.) ]"><!--don't bother with empty space-->
