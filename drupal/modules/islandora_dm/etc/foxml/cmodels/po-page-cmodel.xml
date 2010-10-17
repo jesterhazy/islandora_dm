@@ -57,6 +57,9 @@
           <dsTypeModel ID="text">
             <form MIME="text/plain"/>
           </dsTypeModel>
+          <dsTypeModel ID="pdf">
+            <form MIME="application/pdf"/>
+          </dsTypeModel>
         </dsCompositeModel>
       </foxml:xmlContent>
     </foxml:datastreamVersion>
