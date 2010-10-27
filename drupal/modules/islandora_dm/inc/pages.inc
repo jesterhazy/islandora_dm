@@ -67,7 +67,7 @@ function islandora_dm_search_status_processed() {
 }
 
 function islandora_dm_po_view($po_number) {
-  return PurchaseOrder::fetchByNumber($po_number)->getView();
+  return DMPurchaseOrder::fetchByNumber($po_number)->getView();
 }
 
 function unimplemented_page($name) {

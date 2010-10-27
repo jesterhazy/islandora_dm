@@ -15,6 +15,7 @@ class Constants {
   const IMPORT_ARCHIVE_DISABLED = 'islandora_dm_archive_disabled';
   const IMPORT_ARCHIVE_DATE_FORMAT = 'Ymd-Hi';
   
+  const PID_NAMESPACE = 'islandora-dm';
   const PID_PO_COLLECTION = 'islandora-dm:po-collection';
   const PID_PO_CMODEL = 'islandora-dm:po-cmodel';
   const PID_PO_DOCUMENT_CMODEL = 'islandora-dm:po-document-cmodel';

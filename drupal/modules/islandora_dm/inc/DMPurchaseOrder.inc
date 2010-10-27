@@ -1,10 +1,10 @@
 <?php
 
 /*
- * PurchaseOrder - methods for retrieving, displaying, and manipulating purchase orders.
+ * DMPurchaseOrder - methods for retrieving, displaying, and manipulating purchase orders.
  */
- 
-class PurchaseOrder {
+class DMPurchaseOrder extends DMObject {
+  const PID_PREFIX = 'islandora-dm:po-';
   
   /**
    * The purchase order number.
@@ -12,36 +12,30 @@ class PurchaseOrder {
   protected $number;
   
   /**
-   * Fedora_Item object containing the fedora data
-   */
-  protected $fedora; 
-  
-  /**
    * SimpleXMLElement object containing up to date UIS data
    */
   protected $uis;
   
   /**
-   * SimpleXMLElement object containing dmDatastream from fedora
+   * SimpleXMLElement object containing dmXml from fedora
    */
-  protected $dmDatastream;
+  protected $dmXml;
   
   /**
-   * SimpleXMLElement object containing uisDatastream from fedora
+   * SimpleXMLElement object containing uisXml from fedora
    */
-  protected $uisDatastream;
+  protected $uisXml;
   
   /**
-   * SimpleXMLElement object containing classificationDatastream from fedora
+   * SimpleXMLElement object containing classificationXml from fedora
    */
-  protected $classificationDatastream;
+  protected $classificationXml;
   
   /**
-   * SimpleXMLElement object containing dispositionDatastream from fedora
+   * SimpleXMLElement object containing dispositionXml from fedora
    */
-  protected $dispositionDatastream;
+  protected $dispositionXml;
 
-  
   /**
    * map of document pids -> array(page pids) containing of details 
    * related (child) documents and their pages.
@@ -55,35 +49,47 @@ class PurchaseOrder {
    */
   protected $notes;
   
-  /**
-   * Constructor. Requires a po number.
-   */
-  function PurchaseOrder($po_number) {
-    $this->number = $po_number;
+  function typeLabel() {
+    return 'Purchase Order';
+  }
+  
+  function generatePid() {
+    return self::number2pid($this->number);
+  }
+  
+  function generateTitle($pid) {
+    return $this->typeLabel() . ' ' . self::pid2number($pid);
+  }
+  
+  function createFedoraItem() {
+    parent::createFedoraItem();
+    $this->fedora->add_relationship('hasModel', Constants::PID_PO_CMODEL, FEDORA_MODEL_URI);
+  }
+  
+  function addDMDatastream() {
+    $xml = '<dm><owner>unassigned</owner></dm>';
+    $this->fedora->add_datastream_from_string($xml, Constants::DSID_DM, Constants::DSLABEL_DM, Constants::MIME_TYPE_XML, 'X');
+  }
+  
+  function addUISDatastream() {
+    $xml = $this->uis->asXML();
+    $this->fedora->add_datastream_from_string($xml, Constants::DSID_UIS, Constants::DSLABEL_UIS, Constants::MIME_TYPE_XML, 'X');
   }
   
   function getDate() {
-    return substr($this->uisDatastream->podate, 0, strpos($this->uisDatastream->podate, 'T'));
+    return substr($this->uisXml->podate, 0, strpos($this->uisXml->podate, 'T'));
   }
   
   function getDepartment() {
-    return $this->uisDatastream->dept;
-  }
-  
-  function getPid() {
-    return 'islandora-dm:po-' . $this->number;
-  }
-  
-  function getTitle() {
-    return t('Purchase Order ') . $this->number;
+    return $this->uisXml->dept;
   }
   
   function getSupplier() {
-    return $this->uisDatastream->supplier->name;
+    return $this->uisXml->supplier->name;
   }
   
   function getRequisitionNumber() {
-    return substr($this->uisDatastream->re, strpos($this->uisDatastream->re, '#') + 1);
+    return substr($this->uisXml->re, strpos($this->uisXml->re, '#') + 1);
   }
   
   function getStatus() {
@@ -91,79 +97,9 @@ class PurchaseOrder {
   }
   
   function getOwner() {
-    return $this->dmDatastream->owner;
+    return $this->dmXml->owner;
   }
   
-  function getFedora() {
-    return $this->fedora;
-  }
-  
-  function getUIS() {
-    return $this->uis;
-  }
-  
-  /**
-   * Find the next number to use for pid construction
-   */
-  function nextNumber($pids) {
-    $numbers = empty($pids) ? NULL : array_map(array($this, 'numberFromPid'), $pids);
-    return empty($numbers) ? 1 : max($numbers) + 1;
-  }
-  
-  function numberFromPid($pid) {
-    return preg_match('/([0-9]+)$/', $pid, $m) ? $m[1] : 0;
-  }
-  
-  function nextNoteNumber() {
-    return $this->nextNumber($this->notes);
-  }
-  
-  function nextDocumentNumber() {
-    return $this->nextNumber(empty($this->documents) ? NULL : array_keys($this->documents));
-  }
-  
-  function nextPageNumber($document_pid) {
-    return $this->nextNumber($this->documents[$document_pid]);
-  }
-  
-  function notePid($note_number) {
-    return $this->getPid() . '-n' . $note_number;
-  }
-  
-  function noteTitle($note_number) {
-    return $this->getTitle() . ' Note ' . $note_number;
-  }
-  
-  function addDocument($document_pid) {
-    if (!isset($this->documents[$document_pid])) {
-      $this->documents[$document_pid] = array();
-    }
-  }
-  
-  function documentPid($document_number) {
-    return $this->getPid() . '-d' . $document_number;
-  }
-  
-  function documentTitle($document_number) {
-    return $this->getTitle() . ' Document ' . $document_number;
-  }
-  
-  function pageCount($document_pid) {
-    return count($this->documents[$document_pid]);
-  }
-  
-  function addPage($document_pid, $page_pid) {
-    $this->documents[$document_pid][] = $page_pid;
-  }
-  
-  function pagePid($document_pid, $page_number) {
-    return $this->documentPid($this->numberFromPid($document_pid)) . '-p' . $page_number;
-  }
-  
-  function pageTitle($document_pid, $page_number) {
-    return $this->documentTitle($this->numberFromPid($document_pid)) . ' Page ' . $page_number;
-  }
-    
   /**
    * Create a themed drupal view of the purchase order. Used to create the detailed, single-po view page.
    */
@@ -182,8 +118,8 @@ class PurchaseOrder {
     $rows = array(
       array(array('data' => t('Date:'), 'class' => 'label'), check_plain($this->getDate()), null),
       array(array('data' => t('Requisition:'), 'class' => 'label'), check_plain($this->getRequisitionNumber()), null),
-      array(array('data' => t('Department:'), 'class' => 'label'), check_plain($this->getDepartment() . ' (' . $this->uisDatastream->idept .')'), null),
-      array(array('data' => t('Supplier:'), 'class' => 'label'), check_plain($this->getSupplier() . ' (' . $this->uisDatastream->supplier->isup .')'), null),
+      array(array('data' => t('Department:'), 'class' => 'label'), check_plain($this->getDepartment() . ' (' . $this->uisXml->idept .')'), null),
+      array(array('data' => t('Supplier:'), 'class' => 'label'), check_plain($this->getSupplier() . ' (' . $this->uisXml->supplier->isup .')'), null),
       array(array('data' => t('Owner:'), 'class' => 'label'), check_plain($this->getOwner()), null),
       array(array('data' => t('Status:'), 'class' => 'label'), check_plain($this->getStatus()), null),
     );
@@ -204,6 +140,10 @@ class PurchaseOrder {
     $view .= "\n\n";
     
     return $view;
+  }
+  
+  function pageCount($document_pid) {
+    return count($this->documents[$document_pid]);
   }
   
   function addDocumentsView() {
@@ -231,7 +171,7 @@ class PurchaseOrder {
     
     if(!empty($this->notes)) {
       foreach ($this->notes as $note_pid) {
-        $note = Note::fetchByPid($note_pid);
+        $note = DMNote::fetchByPid($note_pid);
         $view .= $note->view();
       }
     }
@@ -245,8 +185,8 @@ class PurchaseOrder {
   function addDispositionView() {
     $view = "\n\n";
     
-    if ($this->dispositionDatastream) {
-      $ds = $this->dispositionDatastream;
+    if ($this->dispositionXml) {
+      $ds = $this->dispositionXml;
       
       $view .= '<h3>Disposition</h3>';
 
@@ -267,8 +207,8 @@ class PurchaseOrder {
   function addClassificationView() {
     $view = "\n\n";
     
-    if ($this->classificationDatastream) {
-      $ds = $this->classificationDatastream;
+    if ($this->classificationXml) {
+      $ds = $this->classificationXml;
       
       $view .= '<h3>Classification</h3>';
 
@@ -356,40 +296,84 @@ class PurchaseOrder {
     }
   }
   
+  static function number2pid($po_number) {
+    return self::PID_PREFIX . $po_number;
+  }
+  
+  static function pid2number($pid) {
+    return str_replace(self::PID_PREFIX, '', $pid);    
+  }
+  
+  /**
+   * Retrieve and return the fedora record for this $po_number,
+   * or NULL if the item is not found.
+   */
+  static function fetchFedora($po_number) {
+    $pid = self::number2pid($po_number);
+    $fedora = fetch_fedora_item($pid);
+    return $fedora;
+  }
+  
+  /**
+   * Retrieve and return the uis record for this $po_number,
+   * or NULL if the item is not found.
+   */
+  static function fetchUIS($po_number) {
+    return fetch_uis_po($po_number);
+  }
+  
   static function fetchByPID($pid) {
-    $po_number = self::pidToNumber($pid);
+    $po_number = self::pid2Number($pid);    
     return self::fetchByNumber($po_number);
   }
   
   static function fetchByNumber($po_number) {
-    $po = new PurchaseOrder($po_number);
+    $po = new DMPurchaseOrder();
+    $po->number = $po_number;
     
-    // fetch from fedora
-    $po->fedora = fetch_fedora_item($po->getPid());
+    // get fedora record
+    $po->fedora = self::fetchFedora($po_number);
     
-    // fetch from uis (for import, or to access volatile fields)
-    $po->uis = fetch_uis_po($po_number);
-
+    // get uis record
+    $po->uis = self::fetchUIS($po_number);
+    
     // only continue populating if fedora fetch succeeded
     if ($po->fedora) {
       // convert fedora streams to xml
-      $po->dmDatastream = datastream_to_xml('dm', $po->fedora);
-      $po->uisDatastream = datastream_to_xml('uis', $po->fedora);
-      $po->classificationDatastream = datastream_to_xml('classification', $po->fedora); 
-      $po->dispositionDatastream = datastream_to_xml('disposition', $po->fedora);
+      $po->dmXml = datastream_to_xml('dm', $po->fedora);
+      $po->uisXml = datastream_to_xml('uis', $po->fedora);
+      $po->classificationXml = datastream_to_xml('classification', $po->fedora); 
+      $po->dispositionXml = datastream_to_xml('disposition', $po->fedora);
       
-      // load notes
-      $po->notes = fetch_notes_pids($po->getPid());
+      // load notes pids
+      $po->notes = fetch_notes($po->pid());
       
-      // load documents/pages map
-      $po->documents = fetch_documents($po->getPid());
+      // load documents/pages pid map
+      $po->documents = fetch_documents($po->pid());
     }
     
     return $po;
   }
   
-  protected static function pidToNumber($pid) {
-    return str_replace('islandora-dm:po-', '', $pid);
+  static function import($po_number, $uis) {
+    try {
+      $obj = new DMPurchaseOrder();
+      $obj->number = $po_number;
+      $obj->uis = $uis;
+      $obj->createFedoraItem();      
+      $obj->joinCollection(Constants::PID_PO_COLLECTION);
+      $obj->addDMDatastream();
+      $obj->addUISDatastream();
+      
+      // TODO objectify
+      add_collection_datastreams($obj->fedora);
+    }
+    
+    catch (Exception $e) {
+      watchdog(Constants::MODULE_NAME, 'Error while creating fedora object %pid: @e', array('%pid' => $obj->pid(), '@e' => $e), WATCHDOG_WARN);
+      $obj = null;
+    }
+    
+    return $obj;
   }
 }
-

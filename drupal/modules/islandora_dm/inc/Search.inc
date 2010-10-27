@@ -135,7 +135,7 @@ class Search {
     
     else {
       foreach ($pids as $pid) {
-        $po = PurchaseOrder::fetchByPID($pid);
+        $po = DMPurchaseOrder::fetchByPID($pid);
         $page .= $po->getSearchResultView();
       }
     }
