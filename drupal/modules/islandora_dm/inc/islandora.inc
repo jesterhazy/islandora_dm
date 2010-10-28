@@ -14,17 +14,19 @@ function ingest_object_from_foxml($file) {
   $pid = pid_from_file($file);
   
   // purge the item if it exists
-  $item = new Fedora_Item($pid);
-  if ($item->exists()) {
-    $item->purge();
-  }
+  try {
+    $item = new Fedora_Item($pid);
     
-  $item = Fedora_Item::ingest_from_FOXML_file($file);
-  
-  if (!$item->exists()) {
-    throw new Exception('Ingest failed for ' . $pid . '.');
+    if ($item->exists()) {
+      $item->purge();
+    }
   }
   
+  catch (Exception $e) {
+    // bury - means item didn't exist (good)
+  }
+ 
+  $item = Fedora_Item::ingest_from_FOXML_file($file);
   return $item;
 }
 
@@ -159,10 +161,6 @@ function create_fedora_item_with_dc($pid, $title) {
   // create and store fedora item
   $foxml = Fedora_Item::create_object_FOXML($pid, 'A', $title, $owner);  
   $fedora = Fedora_Item::ingest_from_FOXML($foxml);
-  
-  if (!$fedora->exists()) {
-    throw new Exception('failed to create fedora object. permissions problem?');
-  }
   
   // create and attach dublin core stream
   $dc = new Dublin_Core($fedora);

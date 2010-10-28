@@ -48,7 +48,38 @@ function islandora_dm_menu() {
   // import documents
   $items['islandora_dm/import'] = array (
       'title' => 'Import Documents',
-      'page callback' => 'islandora_dm_import',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('islandora_dm_import_numbered_form'),
+      'access arguments' => array(Constants::PERMISSION_EDIT),
+  );
+  
+  // import numbered documents
+  $items['islandora_dm/import/numbered'] = array (
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+      'title' => 'Numbered Files',
+      'description' => 'Import files which have a purchase order number in the file name.',
+      'weight' => -1,
+      'access arguments' => array(Constants::PERMISSION_EDIT),
+  );
+  
+  // import unnumbered documents
+  $items['islandora_dm/import/unnumbered'] = array (
+      'type' => MENU_LOCAL_TASK,
+      'title' => 'Unnumbered Files',
+      'description' => 'Import files which do not have purchase order number in the file name.',
+      'weight' => 2,
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('islandora_dm_import_unnumbered_form'),
+      'access arguments' => array(Constants::PERMISSION_EDIT),
+  );
+  
+  // import invalid documents
+  $items['islandora_dm/import/invalid'] = array (
+      'type' => MENU_LOCAL_TASK,
+      'title' => 'Invalid Files',
+      'description' => 'View files in the import folder which have invalid file names.',
+      'weight' => 3,
+      'page callback' => 'islandora_dm_import_invalid',
       'access arguments' => array(Constants::PERMISSION_EDIT),
   );
   

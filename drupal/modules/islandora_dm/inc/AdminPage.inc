@@ -104,9 +104,7 @@ class AdminPage {
   }
   
   function objectsFormSubmit($form, &$form_state) {
-    $objects_dir = drupal_get_path('module', Constants::MODULE_NAME) . '/etc/foxml';
-    $examples_dir = $objects_dir . '/examples';
-    
+    $objects_dir = drupal_get_path('module', Constants::MODULE_NAME) . '/etc/foxml';    
     $error = FALSE;
 
     try {
