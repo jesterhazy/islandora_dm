@@ -1,43 +1,24 @@
-Search
-- fielded search?
+Islandora DM todo list.
 
-Search results
-- pagination
-- result counts
-- sorting
+- ingest against multiple pos - updated document pid generation? maybe page pids, too? [DONE]
+- delete java jms code [DONE]
+- real uis service on test.islandlives.ca
+- global xacml enforcement
+- ldap integration
+- 192 - updated uis service and corresponding module updates
+- checksumming uis data, detecting out of sync, allow updates (with reindexing)
+- allow downloads of pdf streams?
+- trigger jms conversions again (to recover from failures)
+- purge functions (all kinds of objects)
+- enhanced search page (paging, filters, sorting etc)
+- figure out purpose of owner/status data, how to update etc, and update the behaviour behind those links
+- read only view restricted to departments
+- iiv integation
+- email attachments
+- finalize disposition/classification stuff
+- metadata edit features - what metadata to be edited? just owner/status?
 
-Viewer integration
-- discuss ui, how metadata display and edit features should look/work
-- not that much editable data!
 
-JMS ingest actions
-- abby
-- pdf/open office?
-- large tifs -> jp2 issues
-
-Classification/Retention data
-- confirm data structure/meaning
-- discuss editing requirements
-
-Security/LDAP
-
-View PO page
-- out of date vs. uis warning
-- take ownership action
-- add document action?
-
-Ingest 
-- add 'reingest' action to view page
-- confirm filename pattern
-- validate filenames
-- escape filenames in form
-
-Ingest Form 
-- group by PO number (currently just sorting)
-- ajax lookups to validate filename against uis
-- ajax lookups to see if po number already has record dm
-- show list of invalid files separately w/out checkbox.
-
-Attachments
-- define functionality
-- compare with attachments module
+- theming
+- scanning documentation, training?
+- dm training?
