@@ -124,16 +124,16 @@ class DMPurchaseOrder extends DMObject {
     );
         
     $view .= theme('table', null, $rows);
-    
-    $view .= $this->addClassificationView();
-    $view .= $this->addDispositionView();
-    $view .= $this->addNotesView();
+
     $view .= $this->addDocumentsView();
-    
+    $view .= $this->addNotesView();    
+
     $view .= "\n\n";
     $view .= '<h3>Attachments</h3>';
     $view .= '<p>todo</p>';
 
+    $view .= $this->addClassificationView();
+    $view .= $this->addDispositionView();
 
     $view .= "</div>";    
     $view .= "\n\n";
