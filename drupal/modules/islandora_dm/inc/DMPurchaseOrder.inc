@@ -41,8 +41,7 @@ class DMPurchaseOrder extends DMObject {
    * related (child) documents and their pages.
    */
   protected $documents;
-  
-  
+    
   /**
    * list of note pids related to this purchase order. sorted by pid, 
    * which should be same as insertion order. 
@@ -151,13 +150,24 @@ class DMPurchaseOrder extends DMObject {
     $view .= '<h3>Documents</h3>';
     
     foreach (array_keys($this->documents) as $document_pid) {
+      $thumbnail = $this->getDocumentThumbnailImgTag($document_pid);
+      $showlink = !strstr($thumbnail, 'placeholder');
+
       $pages = $this->pageCount($document_pid);
       $view .= '<div class="document">';
       $view .= '<div class="thumbnail">';
-      $view .= '<a href="' . fedora_base_url() . '/objects/' . $document_pid . '/methods/ilives:viewerSdef/getViewer" 
-target="' . $document_pid . '">';
-      $view .= $this->getDocumentThumbnailImgTag($document_pid);
-      $view .= '</a></div><div class="caption">';
+
+      if ($showlink) {
+        $view .= '<a href="' . fedora_base_url() . '/objects/' . $document_pid . '/methods/ilives:viewerSdef/getViewer" target="' . $document_pid . '">';
+      }
+
+      $view .= $thumbnail;
+
+      if ($showlink) {
+        $view .= '</a>';
+      }
+
+      $view .= '</div><div class="caption">';
       $view .= $pages . ' page' . ($pages != 1 ? 's' : '');
       $view .= '</div></div>';
     }
