@@ -2,18 +2,18 @@ Islandora DM todo list.
 
 - ingest against multiple pos - updated document pid generation? maybe page pids, too? [DONE]
 - delete java jms code [DONE]
-- real uis service on test.islandlives.ca
+- real uis service on test.islandlives.ca [DONE]
 - global xacml enforcement
 - ldap integration
 - 192 - updated uis service and corresponding module updates
 - checksumming uis data, detecting out of sync, allow updates (with reindexing)
-- allow downloads of pdf streams?
+- allow downloads of pdf streams? [DONE (via viewer print feature)]
 - trigger jms conversions again (to recover from failures)
 - purge functions (all kinds of objects)
 - enhanced search page (paging, filters, sorting etc)
 - figure out purpose of owner/status data, how to update etc, and update the behaviour behind those links
 - read only view restricted to departments
-- iiv integation
+- iiv integation [DONE]
 - email attachments
 - finalize disposition/classification stuff
 - metadata edit features - what metadata to be edited? just owner/status?
