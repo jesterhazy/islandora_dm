@@ -152,25 +152,26 @@ class ImportPage {
 
   function compareFiles($f1, $f2) {
     $result = 0;
-    if ($f1->validFilename || $f2->validFilename) {
-      $result = $f1->validFilename - $f2->validFilename;
 
-      if ($result == 0) {
+    if ($result == 0) {
          $result = strcmp($f1->scanDate, $f2->scanDate);
-      }
+    }
 
-      if ($result == 0) {
+    if ($result == 0) {
          $result = strcmp($f1->poNumber, $f2->poNumber);
-      }
+    }
 
-      if ($result == 0) {
+    if ($result == 0) {
         $result = $f1->scanBatch - $f2->scanBatch;
-      }
+    }
 
-      if ($result == 0) {
+    if ($result == 0) {
          $result = $f1->scanPage - $f2->scanPage;
-      }
-    }  
+    }
+
+    if ($result == 0) {
+         $result = strcmp($f1->name, $f2->name);
+    }
    
     return $result;
   }
