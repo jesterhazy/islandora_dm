@@ -154,8 +154,10 @@ class DMPurchaseOrder extends DMObject {
       $pages = $this->pageCount($document_pid);
       $view .= '<div class="document">';
       $view .= '<div class="thumbnail">';
+      $view .= '<a href="' . fedora_base_url() . '/objects/' . $document_pid . '/methods/ilives:viewerSdef/getViewer" 
+target="' . $document_pid . '">';
       $view .= $this->getDocumentThumbnailImgTag($document_pid);
-      $view .= '</div><div class="caption">';
+      $view .= '</a></div><div class="caption">';
       $view .= $pages . ' page' . ($pages != 1 ? 's' : '');
       $view .= '</div></div>';
     }

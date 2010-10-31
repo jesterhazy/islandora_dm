@@ -10,6 +10,10 @@ module_load_include('inc', 'Fedora_Repository', 'api/fedora_item');
 module_load_include('inc', 'Fedora_Repository', 'api/fedora_collection');
 module_load_include('inc', 'Fedora_Repository', 'api/dublin_core');
 
+function fedora_base_url() {
+  return variable_get('fedora_base_url', 'http://localhost:8080/fedora');
+}
+
 function ingest_object_from_foxml($file) {
   $pid = pid_from_file($file);
   
