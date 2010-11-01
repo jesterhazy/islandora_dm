@@ -134,6 +134,26 @@ function islandora_dm_menu() {
       'access arguments' => array(Constants::PERMISSION_EDIT),
   );
   
+  // add note to purchase order
+  $items['islandora_dm/po/%/claim'] = array (
+      'type' => MENU_CALLBACK,
+      'title' => 'Claim Ownership of Purchase Order !id',
+      'title arguments' => array('!id' => 2),
+      'page callback' => 'DMPurchaseOrder::claim',
+      'page arguments' => array(2),
+      'access arguments' => array(Constants::PERMISSION_EDIT),
+  );
+  
+  // add note to purchase order
+  $items['islandora_dm/po/%/update'] = array (
+      'type' => MENU_CALLBACK,
+      'title' => 'Update Purchase Order !id',
+      'title arguments' => array('!id' => 2),
+      'page callback' => 'DMPurchaseOrder::update',
+      'page arguments' => array(2),
+      'access arguments' => array(Constants::PERMISSION_EDIT),
+  );
+  
   return $items;
 }
 

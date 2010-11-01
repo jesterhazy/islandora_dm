@@ -99,6 +99,13 @@ class DMPurchaseOrder extends DMObject {
     return $this->dmXml->owner;
   }
   
+  function synchedWithUIS() {
+    $uis_hash = md5(strstr($this->uis->asXML(), '<po>'));
+    $fedora_hash = md5(strstr($this->uisXml->asXML(), '<po>'));
+
+    return $uis_hash == $fedora_hash;
+  }
+  
   /**
    * Create a themed drupal view of the purchase order. Used to create the detailed, single-po view page.
    */
@@ -113,8 +120,10 @@ class DMPurchaseOrder extends DMObject {
       return $view;
     }
     
-    $this->addButtons();
+    $view .= $this->addButtons();
      
+    $view .= "\n\n";
+    $view .= '<h3>Details</h3>';
     // construct view
     $rows = array(
       array(array('data' => t('Date:'), 'class' => 'label'), check_plain($this->getDate()), null),
@@ -180,22 +189,28 @@ class DMPurchaseOrder extends DMObject {
   }
   
   function addButtons() {
-    $view = "\n\n";
+    $view = "\n\n"; 
+   
+    $view .= '<div class="buttons">';
     
-    $base_url = base_path() . 'islandora_dm/po/' . $this->number;
+    global $user;
+    if ($this->dmXml->owner != $user->name) {
+      $view .= $this->addButton('claim', 'Claim Ownership'); 
+    }
     
-    $view .= $this->addButton($base_url, '/add_note', 'Add Note');
-    $view .= $this->addButton($base_url, '/claim', 'Take Ownership');
-    $view .= $this->addButton($base_url, '/update', 'Update from UIS');
+    $view .= $this->addButton('add_note', 'Add Note');
     
-    $url = base_path() . 'islandora_dm/po/' . $this->number . '/add_note';
-    $view .= '<div class="button"><a href="' . $url . '"><button>' . t('Add Note') .'</button></a></div>';
+    if (!$this->synchedWithUIS()) {
+      drupal_set_message(t('This record is out of date. Update before proceeding.'), Constants::DRUPAL_MESSAGE_WARNING);
+      $view .= $this->addButton('update', 'Update from UIS');
+    }
     
+    $view .= '</div>';
     return $view;
   }
   
-  function addButton($base_url, $button_url, $button_label) {
-    $button = '<div class="button"><a href="' . $base_url . $button_url . '"><button>' . t($button_label) .'</button></a></div>';
+  function addButton($button_url, $button_label) {
+    $button = '<div class="button"><a href="' . $button_url . '"><button>' . t($button_label) .'</button></a></div>';
     return $button;
   }
   
@@ -408,4 +423,36 @@ class DMPurchaseOrder extends DMObject {
     
     return $obj;
   }
+  
+  function updateDMDatastream() {
+    $content = $this->dmXml->asXML();
+    $this->fedora->modify_datastream_by_value($content, Constants::DSID_DM, Constants::DSLABEL_DM, Constants::MIME_TYPE_XML);
+  }
+  
+  function updateUISDatastream() {
+    $content = $this->uisXml->asXML();
+    $this->fedora->modify_datastream_by_value($content, Constants::DSID_UIS, Constants::DSLABEL_UIS, Constants::MIME_TYPE_XML);
+  }
+  
+  static function claim($po_number) {
+    global $user;
+    $po = self::fetchByNumber($po_number);
+    
+    $po->dmXml->owner = $user->name;
+    $po->updateDMDatastream();
+    
+    drupal_set_message(t('Changed owner to %s', array('%s' => $user->name)));
+    drupal_goto('islandora_dm/po/' . $po_number . '/view');
+  }
+
+  static function update($po_number) {
+    $po = self::fetchByNumber($po_number);
+    
+    $po->uisXml = $po->uis;
+    $po->updateUISDatastream();
+    drupal_set_message(t('Updated record from UIS'));
+    drupal_goto('islandora_dm/po/' . $po_number . '/view');
+  }
 }
+
+

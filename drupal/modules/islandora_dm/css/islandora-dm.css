@@ -86,6 +86,11 @@ div.clickable.active:hover {
 
 .islandora-dm-po-view .button {
   margin: .5em;
+  display: inline;
+}
+
+.islandora-dm-po-view .buttons {
+  margin: 1em 0 1em 0;
 }
 
 .islandora-dm-po-view .caption {
