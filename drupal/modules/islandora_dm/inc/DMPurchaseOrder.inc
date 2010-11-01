@@ -112,6 +112,8 @@ class DMPurchaseOrder extends DMObject {
     if (!$this->fedora) {
       return $view;
     }
+    
+    $this->addButtons();
      
     // construct view
     $rows = array(
@@ -177,6 +179,26 @@ class DMPurchaseOrder extends DMObject {
     return $view;
   }
   
+  function addButtons() {
+    $view = "\n\n";
+    
+    $base_url = base_path() . 'islandora_dm/po/' . $this->number;
+    
+    $view .= $this->addButton($base_url, '/add_note', 'Add Note');
+    $view .= $this->addButton($base_url, '/claim', 'Take Ownership');
+    $view .= $this->addButton($base_url, '/update', 'Update from UIS');
+    
+    $url = base_path() . 'islandora_dm/po/' . $this->number . '/add_note';
+    $view .= '<div class="button"><a href="' . $url . '"><button>' . t('Add Note') .'</button></a></div>';
+    
+    return $view;
+  }
+  
+  function addButton($base_url, $button_url, $button_label) {
+    $button = '<div class="button"><a href="' . $base_url . $button_url . '"><button>' . t($button_label) .'</button></a></div>';
+    return $button;
+  }
+  
   function addNotesView() {
     $view = "\n\n";
     $view .= '<div class="notes"><h3>Notes</h3>';
@@ -188,8 +210,6 @@ class DMPurchaseOrder extends DMObject {
       }
     }
     
-    $url = base_path() . 'islandora_dm/po/' . $this->number . '/add_note';
-    $view .= '<div class="button"><a href="' . $url . '"><button>' . t('Add Note') .'</button></a></div>';
     $view .= '</div>';
     return $view;
   }
