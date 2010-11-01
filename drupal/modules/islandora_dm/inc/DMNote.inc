@@ -69,7 +69,6 @@ function islandora_dm_add_note_form(&$form_state, $po_number) {
   $form['text'] = array(
     '#type' => 'textarea',
     '#title' => t('Note'),
-    '#required' => TRUE,
   );
 
   $form['submit'] = array(
@@ -87,13 +86,23 @@ function islandora_dm_add_note_form(&$form_state, $po_number) {
   return $form;
 }
 
+function islandora_dm_add_note_form_validate($form, &$form_state) {
+  if ($form_state['clicked_button']['#name'] == 'save' ) {
+    if ($form_state['values']['text'] == '') {
+      form_set_error('text', t('Note field is required.'));
+    }
+  }
+}
+
 function islandora_dm_add_note_form_submit($form, &$form_state) {
-  global $user;
-  $po_number = $form_state['values']['po_number'];
-  $text = $form_state['values']['text'];
-  
-  $note = DMNote::createNote($po_number, $text, $user->name);
-  drupal_set_message(t('Added note %n to purchase order %p.', array('%n' => $note->pid(), '%p' => $po_number)));
+  if ($form_state['clicked_button']['#name'] == 'save' ) {
+    global $user;
+    $po_number = $form_state['values']['po_number'];
+    $text = $form_state['values']['text'];
+
+    $note = DMNote::createNote($po_number, $text, $user->name);
+    drupal_set_message(t('Added note %n to purchase order %p.', array('%n' => $note->pid(), '%p' => $po_number)));
+  }
   
   $form_state['redirect'] = array('islandora_dm/po/' . $form_state['values']['po_number'] . '/view');
 }
