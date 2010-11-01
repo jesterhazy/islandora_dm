@@ -3,10 +3,12 @@ Islandora DM todo list.
 - ingest against multiple pos - updated document pid generation? maybe page pids, too? [DONE]
 - delete java jms code [DONE]
 - real uis service on test.islandlives.ca [DONE]
+- fix spurious validation error on add note form's cancel button [DONE]
+- claim ownership function [DONE]
 - global xacml enforcement
 - ldap integration
 - 192 - updated uis service and corresponding module updates
-- checksumming uis data, detecting out of sync, allow updates (with reindexing)
+- checksumming uis data, detecting out of sync, allow updates (with reindexing) [DONE]
 - allow downloads of pdf streams? [DONE (via viewer print feature)]
 - trigger jms conversions again (to recover from failures)
 - purge functions (all kinds of objects)
