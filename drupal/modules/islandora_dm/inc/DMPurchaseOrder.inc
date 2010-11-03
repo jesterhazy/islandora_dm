@@ -141,7 +141,7 @@ class DMPurchaseOrder extends DMObject {
 
     $view .= "\n\n";
     $view .= '<h3>Attachments</h3>';
-    $view .= '<p>todo</p>';
+    $view .= '<p>No attachments.</p>';
 
     $view .= $this->addClassificationView();
     $view .= $this->addDispositionView();
@@ -223,6 +223,10 @@ class DMPurchaseOrder extends DMObject {
         $note = DMNote::fetchByPid($note_pid);
         $view .= $note->view();
       }
+    }
+
+    else {
+      $view .= '<p>No notes.</p>';
     }
     
     $view .= '</div>';

@@ -100,7 +100,7 @@ div.clickable.active:hover {
 
 .islandora-dm-po-view .document {
   float: left;
-  margin-right: 20px;
+  margin: 0 20px 0.5em 0;
 }
 
 /* end /po/-/view */
