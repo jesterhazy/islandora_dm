@@ -1,5 +1,12 @@
 Islandora DM todo list.
 
+- apply ad_novus theme
+- integrate Fedora Attach module. ASAP.
+- doc/page import proceeds when po import fails
+- multi-po import needs PO# validation before attempting import
+- multi-po import needs to skip doc import if ANY po import fails 
+- md5 compare MAY not be working on test site against live uis service (works w/ mock)
+- add 'no notes' message [DONE] 
 - ingest against multiple pos - updated document pid generation? maybe page pids, too? [DONE]
 - delete java jms code [DONE]
 - real uis service on test.islandlives.ca [DONE]
