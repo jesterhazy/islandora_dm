@@ -11,7 +11,9 @@ function __autoload($class_name) {
 }
 
 function islandora_dm_init() {
-  drupal_add_css(drupal_get_path('module', Constants::MODULE_NAME) .'/css/islandora-dm.css');
+  $module_path = drupal_get_path('module', Constants::MODULE_NAME);
+  $module_css = $module_path .'/css/islandora-dm.css';
+  drupal_add_css($module_css);
 }
 
 /**

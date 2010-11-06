@@ -1,0 +1,27 @@
+.thumbnail {
+  border: 1px solid #b4af9b; 
+}
+
+div.clickable.active:hover {
+  background-color: #b4af9b;
+}
+
+.islandora-dm-search-results div.po {
+  border: 1px solid #b4af9b;
+}
+
+.page-islandora-dm .form-checkboxes th {
+  border-bottom: 1px solid #4d1814;
+}
+
+.page-islandora-dm .form-checkboxes tr {
+  border-bottom: 1px solid #b4af9b;
+}
+
+.page-islandora-dm .form-checkboxes tr.odd {
+  background-color: transparent;
+}
+
+.page-islandora-dm .form-checkboxes td,th {
+  padding: 0 1em;
+}
