@@ -84,6 +84,14 @@ div.clickable.active:hover {
   margin: .5em;
 }
 
+.islandora-dm-po-view .attachment .file {
+  margin: .5em;
+}
+
+.islandora-dm-po-view .attachment .file a {
+  font-weight: bold;
+}
+
 .islandora-dm-po-view .button {
   margin: .5em;
   display: inline;
@@ -101,6 +109,11 @@ div.clickable.active:hover {
 .islandora-dm-po-view .document {
   float: left;
   margin: 0 20px 0.5em 0;
+  padding: 0 0.5em;
+}
+
+.islandora-dm-po-view .document:hover {
+  background-color: #eee;
 }
 
 /* end /po/-/view */

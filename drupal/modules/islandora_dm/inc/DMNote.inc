@@ -4,7 +4,7 @@
  * DMNote - methods for retrieving, displaying, and manipulating notes.
  */
 class DMNote extends DMObject {
-  public $xml;
+  public $noteXml;
   public $created;
   
   function typeLabel() {
@@ -17,15 +17,15 @@ class DMNote extends DMObject {
   }
   
   function addNoteDatastream($text, $username) {
-    $xml = '<note><text>' . $text . '</text><creator>' . $username . '</creator></note>';    
-    $this->fedora->add_datastream_from_string($xml, Constants::DSID_NOTE, Constants::DSLABEL_NOTE, Constants::MIME_TYPE_XML, 'X');
+    $noteXml = '<note><text>' . $text . '</text><creator>' . $username . '</creator></note>';    
+    $this->fedora->add_datastream_from_string($noteXml, Constants::DSID_NOTE, Constants::DSLABEL_NOTE, Constants::MIME_TYPE_XML, 'X');
   }
   
   function view() {
     $view = '';
     $view .= '<div class="note">';
-    $view .= '<div class="text">' . preg_replace('/\n/', '<br>', check_plain($this->xml->text)) . '</div>';
-    $view .= '<div class="caption">' . check_plain($this->created) . ' - ' . check_plain($this->xml->creator) . '</div>';
+    $view .= '<div class="text">' . preg_replace('/\n/', '<br>', check_plain($this->noteXml->text)) . '</div>';
+    $view .= '<div class="caption">Added ' . check_plain($this->created) . ' by ' . check_plain($this->noteXml->creator) . '</div>';
     $view .= '</div>';
     return $view;
   }
@@ -49,7 +49,7 @@ class DMNote extends DMObject {
   static function fetchByPid($pid) {
     $note = new DMNote();
     $note->fedora = fetch_fedora_item($pid);
-    $note->xml = datastream_to_xml(Constants::DSID_NOTE, $note->fedora);
+    $note->noteXml = datastream_to_xml(Constants::DSID_NOTE, $note->fedora);
     $note->created = format_date(strtotime($note->fedora->objectProfile->objCreateDate));
     return $note;
   }

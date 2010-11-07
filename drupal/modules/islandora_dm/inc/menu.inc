@@ -134,6 +134,16 @@ function islandora_dm_menu() {
       'access arguments' => array(Constants::PERMISSION_EDIT),
   );
   
+  // add attachment to purchase order
+  $items['islandora_dm/po/%/add_attachment'] = array (
+      'type' => MENU_CALLBACK,
+      'title' => 'Add Attachment to Purchase Order !id',
+      'title arguments' => array('!id' => 2),
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('islandora_dm_add_attachment_form', 2),
+      'access arguments' => array(Constants::PERMISSION_EDIT),
+  );
+  
   // add note to purchase order
   $items['islandora_dm/po/%/claim'] = array (
       'type' => MENU_CALLBACK,

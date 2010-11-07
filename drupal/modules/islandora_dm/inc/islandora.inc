@@ -63,6 +63,11 @@ function fetch_notes($po_pid) {
   return fetch_member_pids($po_pid, Constants::PID_PO_NOTE_CMODEL);
 }
 
+/* TODO move to DMPurchaseOrder or DMAttachments? */
+function fetch_attachments($po_pid) {
+  return fetch_member_pids($po_pid, Constants::PID_PO_ATTACHMENT_CMODEL);
+}
+
 /* TODO move to DMPurchaseOrder or DMDocument? */
 function fetch_documents($po_pid) {
   $documents = array();

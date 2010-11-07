@@ -25,3 +25,7 @@ div.clickable.active:hover {
 .page-islandora-dm .form-checkboxes td,th {
   padding: 0 1em;
 }
+
+.islandora-dm-po-view .document:hover {
+  background-color: #4d1814;
+}

@@ -48,6 +48,12 @@ class DMPurchaseOrder extends DMObject {
    */
   protected $notes;
   
+  /**
+   * list of attachment pids related to this purchase order. sorted by pid, 
+   * which should be same as insertion order. 
+   */
+  protected $attachments;
+  
   function typeLabel() {
     return 'Purchase Order';
   }
@@ -137,12 +143,8 @@ class DMPurchaseOrder extends DMObject {
     $view .= theme('table', null, $rows);
 
     $view .= $this->addDocumentsView();
-    $view .= $this->addNotesView();    
-
-    $view .= "\n\n";
-    $view .= '<h3>Attachments</h3>';
-    $view .= '<p>No attachments.</p>';
-
+    $view .= $this->addNotesView();
+    $view .= $this->addAttachmentsView();
     $view .= $this->addClassificationView();
     $view .= $this->addDispositionView();
 
@@ -200,6 +202,8 @@ class DMPurchaseOrder extends DMObject {
     
     $view .= $this->addButton('add_note', 'Add Note');
     
+    $view .= $this->addButton('add_attachment', 'Add Attachment');
+    
     if (!$this->synchedWithUIS()) {
       drupal_set_message(t('This record is out of date. Update before proceeding.'), Constants::DRUPAL_MESSAGE_WARNING);
       $view .= $this->addButton('update', 'Update from UIS');
@@ -212,6 +216,25 @@ class DMPurchaseOrder extends DMObject {
   function addButton($button_url, $button_label) {
     $button = '<div class="button"><a href="' . $button_url . '"><button>' . t($button_label) .'</button></a></div>';
     return $button;
+  }
+  
+  function addAttachmentsView() {
+    $view = "\n\n";
+    $view .= '<div class="attachments"><h3>Attachments</h3>';
+    
+    if(!empty($this->attachments)) {
+      foreach ($this->attachments as $attachment_pid) {
+        $attachment = DMAttachment::fetchByPid($attachment_pid);
+        $view .= $attachment->view();
+      }
+    }
+
+    else {
+      $view .= '<p>No attachments.</p>';
+    }
+    
+    $view .= '</div>';
+    return $view;
   }
   
   function addNotesView() {
@@ -399,6 +422,9 @@ class DMPurchaseOrder extends DMObject {
       // load notes pids
       $po->notes = fetch_notes($po->pid());
       
+      // load attachments pids
+      $po->attachments = fetch_attachments($po->pid());
+      
       // load documents/pages pid map
       $po->documents = fetch_documents($po->pid());
     }
@@ -458,5 +484,3 @@ class DMPurchaseOrder extends DMObject {
     drupal_goto('islandora_dm/po/' . $po_number . '/view');
   }
 }
-
-
