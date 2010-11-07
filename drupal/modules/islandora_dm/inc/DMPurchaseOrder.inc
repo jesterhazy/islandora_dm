@@ -191,6 +191,11 @@ class DMPurchaseOrder extends DMObject {
   }
   
   function addButtons() {
+    
+    if (!user_access(Constants::PERMISSION_EDIT)) {
+      return '';
+    }
+    
     $view = "\n\n"; 
    
     $view .= '<div class="buttons">';

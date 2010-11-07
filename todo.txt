@@ -6,6 +6,7 @@ Islandora DM todo list.
 - doc/page import proceeds when po import fails [FIXED]
 - multi-po import needs PO# validation before attempting import [DONE]
 - multi-po import needs to skip doc import if ANY po import fails [FIXED]
+- role checks for new features
 - md5 compare MAY not be working on test site against live uis service (works w/ mock)
 - add 'no notes' message [DONE] 
 - ingest against multiple pos - updated document pid generation? maybe page pids, too? [DONE]
