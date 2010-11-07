@@ -3,9 +3,9 @@ Islandora DM todo list.
 - apply ad_novus fluid theme [DONE]
 - apply islandimagined theme, do css fixes [DONE].
 - build attachment functionality [DONE].
-- doc/page import proceeds when po import fails
+- doc/page import proceeds when po import fails [FIXED]
 - multi-po import needs PO# validation before attempting import [DONE]
-- multi-po import needs to skip doc import if ANY po import fails 
+- multi-po import needs to skip doc import if ANY po import fails [FIXED]
 - md5 compare MAY not be working on test site against live uis service (works w/ mock)
 - add 'no notes' message [DONE] 
 - ingest against multiple pos - updated document pid generation? maybe page pids, too? [DONE]
@@ -24,7 +24,7 @@ Islandora DM todo list.
 - figure out purpose of owner/status data, how to update etc, and update the behaviour behind those links
 - read only view restricted to departments
 - iiv integation [DONE]
-- email attachments
+- email attachments ??
 - finalize disposition/classification stuff
 - metadata edit features - what metadata to be edited? just owner/status?
 
