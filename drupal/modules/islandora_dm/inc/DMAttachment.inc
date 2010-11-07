@@ -54,7 +54,7 @@ class DMAttachment extends DMNote {
         $obj->addNoteDatastream($text, $username);
       }
       catch (Exception $e) {
-          watchdog(Constants::MODULE_NAME, 'Error while creating fedora object %pid: @e', array('%pid' => $obj->pid(), '@e' => $e->getMessage()), WATCHDOG_WARN);
+          watchdog(Constants::MODULE_NAME, 'Error while creating fedora object @pid: @e', array('@pid' => $obj->pid(), '@e' => $e->getMessage()), WATCHDOG_WARN);
           $obj = null; 
       }
     
@@ -116,7 +116,7 @@ function islandora_dm_add_attachment_form_submit($form, &$form_state) {
 
     if ($file != 0) {
       $attachment = DMAttachment::createAttachment($po_number, $file, $description, $user->name);
-      drupal_set_message(t('Added attachment %n to purchase order %p.', array('%n' => $attachment->pid(), '%p' => $po_number)));
+      drupal_set_message(t('Added attachment @n to purchase order @p.', array('@n' => $attachment->pid(), '@p' => $po_number)));
     }
     
     else {

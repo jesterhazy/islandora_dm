@@ -39,7 +39,7 @@ class DMNote extends DMObject {
         $obj->addNoteDatastream($text, $username);        
       }
       catch (Exception $e) {
-          watchdog(Constants::MODULE_NAME, 'Error while creating fedora object %pid: @e', array('%pid' => $obj->pid(), '@e' => $e->getMessage()), WATCHDOG_WARN);
+          watchdog(Constants::MODULE_NAME, 'Error while creating fedora object @pid: @e', array('@pid' => $obj->pid(), '@e' => $e->getMessage()), WATCHDOG_WARN);
           $obj = null; 
       }
 
@@ -101,7 +101,7 @@ function islandora_dm_add_note_form_submit($form, &$form_state) {
     $text = $form_state['values']['text'];
 
     $note = DMNote::createNote($po_number, $text, $user->name);
-    drupal_set_message(t('Added note %n to purchase order %p.', array('%n' => $note->pid(), '%p' => $po_number)));
+    drupal_set_message(t('Added note @n to purchase order @p.', array('@n' => $note->pid(), '@p' => $po_number)));
   }
   
   $form_state['redirect'] = array('islandora_dm/po/' . $form_state['values']['po_number'] . '/view');

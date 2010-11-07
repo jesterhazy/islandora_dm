@@ -221,8 +221,8 @@ class ImportPage {
         }
         else {
           drupal_set_message(
-            t("Can't import <b>%s</b>, because the file permissions are wrong.", 
-              array('%s' => $file->basename)), 
+            t("Can't import @s, because the file permissions are wrong.", 
+              array('@s' => $file->basename)), 
             Constants::DRUPAL_MESSAGE_ERROR);        
         }
       }
@@ -243,7 +243,7 @@ class ImportPage {
       $i = 0;
       foreach ($po_numbers as $po_number) {
         if (!preg_match('/^[0-9]+$/', $po_number)) {
-          form_set_error("po_numbers_$i", t('Invalid purchase order number: %s.', array('%s' => $po_number)));
+          form_set_error("po_numbers_$i", t('Invalid purchase order number: @s.', array('@s' => $po_number)));
           $i++;
         }
       }
@@ -284,7 +284,12 @@ class ImportPage {
     
     // import the pos
     foreach($po_numbers as $po_number) {
-      $this->importPurchaseOrder($po_number);
+      $ok = $this->importPurchaseOrder($po_number);
+      
+      if (!$ok) {
+        break;
+      }
+      
       $po_pids[] = DMPurchaseOrder::number2pid($po_number);
     }
     
@@ -296,41 +301,47 @@ class ImportPage {
     
     else {
       drupal_set_message(
-        t('Import failed for %x purchase order(s). %y file(s) skipped.',
-          array('%x' => $fail_count, '%y' => count($files))),
+        t('Import failed for @x purchase order(s). @y file(s) skipped.',
+          array('@x' => $fail_count, '@y' => count($files))),
         Constants::DRUPAL_MESSAGE_ERROR);
     }
   }
   
   function importPurchaseOrder($po_number) {
+    $ok = FALSE;
     $fedora = DMPurchaseOrder::fetchFedora($po_number);
     
     if ($fedora) {
-      return; // fedora item exists -- nothing to import
-    }
-    
-    $uis = DMPurchaseOrder::fetchUIS($po_number);
-    
-    if ($uis) {
-        $po = DMPurchaseOrder::import($po_number, $uis);
-
-        if ($po) {
-          drupal_set_message(t('Imported purchase order <b>%s</b>.', array('%s' => $po_number)));
-        }
-
-        else {
-          drupal_set_message(
-            t('Import failed for purchase order <b>%s</b>', array('%s' => $po_number)), 
-            Constants::DRUPAL_MESSAGE_ERROR);
-        }
+      $ok = TRUE; // record already in fedora - no need to import.
     }
     
     else {
-      drupal_set_message(
-        t("Import failed, because purchase order <b>%s</b> doesn't exist.", 
-          array('%s' => $po_number)), 
-        Constants::DRUPAL_MESSAGE_ERROR);
+      $uis = DMPurchaseOrder::fetchUIS($po_number);
+
+      if ($uis) {
+          $po = DMPurchaseOrder::import($po_number, $uis);
+
+          if ($po) {
+            drupal_set_message(t('Imported purchase order @s.', array('@s' => $po_number)));
+            $ok = TRUE;
+          }
+
+          else {
+            drupal_set_message(
+              t('Import failed for purchase order @s', array('@s' => $po_number)), 
+              Constants::DRUPAL_MESSAGE_ERROR);
+          }
+      }
+
+      else {
+        drupal_set_message(
+          t("Import failed, because purchase order @s doesn't exist.", 
+            array('@s' => $po_number)), 
+          Constants::DRUPAL_MESSAGE_ERROR);
+      }
     }
+    
+    return $ok;
   }
   
   function importDocuments($po_pids, $files) {    
@@ -353,8 +364,8 @@ class ImportPage {
     
     if ($document) {
       drupal_set_message(
-        t('Added document <b>%d</b> to purchase order(s) <b>%p</b>.', 
-          array('%d' => $document->pid(), '%p' => implode(', ', $po_pids))));
+        t('Added document @d to purchase order(s) @p.', 
+          array('@d' => $document->pid(), '@p' => implode(', ', $po_pids))));
             
       // import pages
       $this->importPages($po_pids, $document->pid(), $files);
@@ -362,8 +373,8 @@ class ImportPage {
     
     else {
       drupal_set_message(
-        t('Can\'t create document for <b>%s</b>, because an error occurred while storing the document.', 
-          array('%s' =>  implode(', ', $po_pids))),
+        t('Can\'t create document for @s, because an error occurred while storing the document.', 
+          array('@s' =>  implode(', ', $po_pids))),
         Constants::DRUPAL_MESSAGE_ERROR);
     }
   }
@@ -379,24 +390,24 @@ class ImportPage {
 
     if (!$page) {
       drupal_set_message(
-        t("Can't create page for <b>%s</b>, because an error occurred while storing the page.", 
-          array('%s' => $file->basename)), 
+        t("Can't create page for @s, because an error occurred while storing the page.", 
+          array('@s' => $file->basename)), 
         Constants::DRUPAL_MESSAGE_ERROR);
 
       return;
     }
 
     drupal_set_message(
-      t('Added page <b>%p</b> to document <b>%d</b>.', 
-        array('%p' => $file->basename, '%d' => $document_pid)));
+      t('Added page @p to document @d.', 
+        array('@p' => $file->basename, '@d' => $document_pid)));
 
     // archive the file
     if (!variable_get(Constants::IMPORT_ARCHIVE_PATH, false)) {
       $archived = $this->archiveFile($file);
       if (!$archived) {
         drupal_set_message(
-          t("Imported <b>%s</b>, but an error occurred while archiving the file.", 
-            array('%s' => $file->basename)), 
+          t("Imported @s, but an error occurred while archiving the file.", 
+            array('@s' => $file->basename)), 
           Constants::DRUPAL_MESSAGE_ERROR);
       }
     }
@@ -465,7 +476,7 @@ class ImportPage {
         $output = t("<p>There are no files with invalid filename in the import folder.</p>\n");
       }
       else {
-        $output = t("<p>%n file(s) have invalid filenames, and cannot be imported:</p>\n", array('%n' => count($invalid_files)));
+        $output = t("<p>@n file(s) have invalid filenames, and cannot be imported:</p>\n", array('@n' => count($invalid_files)));
         
         $output .= "<ul>\n";
         foreach ($invalid_files as $file) {

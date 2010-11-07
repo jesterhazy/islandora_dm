@@ -21,8 +21,8 @@ class DMDocument extends DMObject {
     }
     catch (Exception $e) {
       watchdog(Constants::MODULE_NAME, 
-        'Error while creating fedora object %pid: @e', 
-        array('%pid' => $obj->pid(), '@e' => $e->getMessage()), 
+        'Error while creating fedora object @pid: @e', 
+        array('@pid' => $obj->pid(), '@e' => $e->getMessage()), 
         WATCHDOG_WARN);
       $obj = null;
     }

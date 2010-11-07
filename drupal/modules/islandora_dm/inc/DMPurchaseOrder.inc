@@ -447,7 +447,7 @@ class DMPurchaseOrder extends DMObject {
     }
     
     catch (Exception $e) {
-      watchdog(Constants::MODULE_NAME, 'Error while creating fedora object %pid: @e', array('%pid' => $obj->pid(), '@e' => $e->getMessage()), WATCHDOG_WARN);
+      watchdog(Constants::MODULE_NAME, 'Error while creating fedora object @pid: @e', array('@pid' => $obj->pid(), '@e' => $e->getMessage()), WATCHDOG_WARN);
       $obj = null;
     }
     
@@ -471,7 +471,7 @@ class DMPurchaseOrder extends DMObject {
     $po->dmXml->owner = $user->name;
     $po->updateDMDatastream();
     
-    drupal_set_message(t('Changed owner to %s', array('%s' => $user->name)));
+    drupal_set_message(t('Changed owner to @s', array('@s' => $user->name)));
     drupal_goto('islandora_dm/po/' . $po_number . '/view');
   }
 
