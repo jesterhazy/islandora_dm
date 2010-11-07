@@ -2,7 +2,7 @@ Islandora DM todo list.
 
 - apply ad_novus fluid theme [DONE]
 - apply islandimagined theme, do css fixes [DONE].
-- integrate Fedora Attach module. ASAP.
+- build attachment functionality [DONE].
 - doc/page import proceeds when po import fails
 - multi-po import needs PO# validation before attempting import
 - multi-po import needs to skip doc import if ANY po import fails 
