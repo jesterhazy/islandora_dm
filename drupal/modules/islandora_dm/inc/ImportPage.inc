@@ -70,7 +70,6 @@ class ImportPage {
          '#description' => t('Enter one or more purchase order numbers, separated by commas or spaces.'),
          '#size' => 80,
          '#maxlength' => 255,
-         '#required' => TRUE
       );
       
       $form['step2'] = array(
@@ -232,6 +231,28 @@ class ImportPage {
     }
     
     return $selected_files;
+  }
+  
+  function unnumberedFormValidate($form, &$form_state) {
+    if (empty($form_state['values']['po_numbers'])) {
+      form_set_error('po_numbers', t('One or more purchase order numbers required.'));
+    }
+    
+    else {
+      $po_numbers = preg_split('/[, ]+/', $form_state['values']['po_numbers']);
+      $i = 0;
+      foreach ($po_numbers as $po_number) {
+        if (!preg_match('/^[0-9]+$/', $po_number)) {
+          form_set_error("po_numbers_$i", t('Invalid purchase order number: %s.', array('%s' => $po_number)));
+          $i++;
+        }
+      }
+    }
+    
+    $selected_files = $this->getSelectedFiles($form, $form_state);
+    if (empty($selected_files)) {
+      form_set_error('files', t('No files selected.'));
+    }
   }
   
   function unnumberedFormSubmit($form, &$form_state) {  
@@ -484,6 +505,11 @@ function islandora_dm_import_invalid() {
 function islandora_dm_import_unnumbered_form_submit($form, &$form_state) {
   $page = new ImportPage();
   return $page->unnumberedFormSubmit($form, $form_state);
+}
+
+function islandora_dm_import_unnumbered_form_validate($form, &$form_state) {
+  $page = new ImportPage();
+  return $page->unnumberedFormValidate($form, $form_state);
 }
 
 function theme_islandora_dm_import_files_checkboxes($form) {

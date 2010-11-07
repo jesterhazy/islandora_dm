@@ -4,7 +4,7 @@ Islandora DM todo list.
 - apply islandimagined theme, do css fixes [DONE].
 - build attachment functionality [DONE].
 - doc/page import proceeds when po import fails
-- multi-po import needs PO# validation before attempting import
+- multi-po import needs PO# validation before attempting import [DONE]
 - multi-po import needs to skip doc import if ANY po import fails 
 - md5 compare MAY not be working on test site against live uis service (works w/ mock)
 - add 'no notes' message [DONE] 
