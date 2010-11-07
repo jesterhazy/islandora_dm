@@ -130,6 +130,7 @@ class DMPurchaseOrder extends DMObject {
      
     $view .= "\n\n";
     $view .= '<h3>Details</h3>';
+    
     // construct view
     $rows = array(
       array(array('data' => t('Date:'), 'class' => 'label'), check_plain($this->getDate()), null),
@@ -191,30 +192,28 @@ class DMPurchaseOrder extends DMObject {
   }
   
   function addButtons() {
-    
-    if (!user_access(Constants::PERMISSION_EDIT)) {
-      return '';
-    }
-    
     $view = "\n\n"; 
-   
-    $view .= '<div class="buttons">';
     
-    global $user;
-    if ($this->dmXml->owner != $user->name) {
-      $view .= $this->addButton('claim', 'Claim Ownership'); 
+    if (user_access(Constants::PERMISSION_EDIT)) {
+      $view .= '<div class="buttons">';
+    
+      global $user;
+      if ($this->dmXml->owner != $user->name) {
+        $view .= $this->addButton('claim', 'Claim Ownership'); 
+      }
+    
+      $view .= $this->addButton('add_note', 'Add Note');
+    
+      $view .= $this->addButton('add_attachment', 'Add Attachment');
+    
+      if (!$this->synchedWithUIS()) {
+        drupal_set_message(t('This record is out of date. Update before proceeding.'), Constants::DRUPAL_MESSAGE_WARNING);
+        $view .= $this->addButton('update', 'Update from UIS');
+      }
+    
+      $view .= '</div>';
     }
     
-    $view .= $this->addButton('add_note', 'Add Note');
-    
-    $view .= $this->addButton('add_attachment', 'Add Attachment');
-    
-    if (!$this->synchedWithUIS()) {
-      drupal_set_message(t('This record is out of date. Update before proceeding.'), Constants::DRUPAL_MESSAGE_WARNING);
-      $view .= $this->addButton('update', 'Update from UIS');
-    }
-    
-    $view .= '</div>';
     return $view;
   }
   

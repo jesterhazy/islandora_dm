@@ -1,12 +1,34 @@
 Islandora DM todo list.
 
+-- todo:
+
+- global xacml enforcement
+- ldap integration
+- 192 - updated uis service and corresponding module updates
+- trigger jms conversions again (to recover from failures)
+- purge functions (all kinds of objects)
+- enhanced search page (paging, filters, sorting etc)
+- figure out purpose of owner/status data, how to update etc, and update the behaviour behind those links
+- read only view restricted to departments
+- finalize disposition/classification stuff
+- metadata edit features - what metadata to be edited? just owner/status?
+
+-- uncertain features:
+
+- email attachments ??
+- theming?
+- scanning documentation, training?
+- dm training?
+
+-- completed:
+
 - apply ad_novus fluid theme [DONE]
 - apply islandimagined theme, do css fixes [DONE].
 - build attachment functionality [DONE].
 - doc/page import proceeds when po import fails [FIXED]
 - multi-po import needs PO# validation before attempting import [DONE]
 - multi-po import needs to skip doc import if ANY po import fails [FIXED]
-- role checks for new features
+- role checks for new po view actions [DONE]
 - md5 compare MAY not be working on test site against live uis service (works w/ mock)
 - add 'no notes' message [DONE] 
 - ingest against multiple pos - updated document pid generation? maybe page pids, too? [DONE]
@@ -14,22 +36,6 @@ Islandora DM todo list.
 - real uis service on test.islandlives.ca [DONE]
 - fix spurious validation error on add note form's cancel button [DONE]
 - claim ownership function [DONE]
-- global xacml enforcement
-- ldap integration
-- 192 - updated uis service and corresponding module updates
 - checksumming uis data, detecting out of sync, allow updates (with reindexing) [DONE]
 - allow downloads of pdf streams? [DONE (via viewer print feature)]
-- trigger jms conversions again (to recover from failures)
-- purge functions (all kinds of objects)
-- enhanced search page (paging, filters, sorting etc)
-- figure out purpose of owner/status data, how to update etc, and update the behaviour behind those links
-- read only view restricted to departments
 - iiv integation [DONE]
-- email attachments ??
-- finalize disposition/classification stuff
-- metadata edit features - what metadata to be edited? just owner/status?
-
-
-- theming
-- scanning documentation, training?
-- dm training?
