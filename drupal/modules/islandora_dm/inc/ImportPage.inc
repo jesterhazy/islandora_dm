@@ -402,7 +402,7 @@ class ImportPage {
         array('@p' => $file->basename, '@d' => $document_pid)));
 
     // archive the file
-    if (!variable_get(Constants::IMPORT_ARCHIVE_PATH, false)) {
+    if (!variable_get(Constants::IMPORT_ARCHIVE_DISABLED, false)) {
       $archived = $this->archiveFile($file);
       if (!$archived) {
         drupal_set_message(
