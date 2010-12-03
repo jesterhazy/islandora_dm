@@ -1,7 +1,8 @@
 Islandora DM todo list.
 
 -- todo:
-
+- github migration
+- fedora34?
 - global xacml enforcement
 - ldap integration
 - 192 - updated uis service and corresponding module updates
