@@ -1,8 +1,21 @@
 Islandora DM todo list.
 
 -- todo:
-- github migration
+-- related to new (unknown) workflow requirements
+- move notes and attachments to pages or documents
+- update ui to allow notes/attachments on pages
+- embed actions in iiv view? which ones?
+- claim ownership of "batch" of scanned files
+- import electronic documents?
+- import original po image file from uis somehow (may need difficult changes on their end)
+- pdf annotations?? download, annotate offline, re-upload??
+- how to attach emails?
+- ingest pdfs directly?
+
+- allow search by pid?
+- track fiscal year in fedora record?
 - fedora34?
+- add 'closed' po feature
 - global xacml enforcement
 - ldap integration
 - 192 - updated uis service and corresponding module updates
@@ -22,7 +35,7 @@ Islandora DM todo list.
 - dm training?
 
 -- completed:
-
+- github migration [DONE]
 - apply ad_novus fluid theme [DONE]
 - apply islandimagined theme, do css fixes [DONE].
 - build attachment functionality [DONE].
