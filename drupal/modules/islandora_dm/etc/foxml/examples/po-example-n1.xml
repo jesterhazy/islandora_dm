@@ -49,7 +49,7 @@
     <foxml:datastreamVersion CREATED="2010-11-07T17:48:55.855Z" ID="note.0" LABEL="note" MIMETYPE="text/xml" SIZE="79">
       <foxml:xmlContent>
         <note>
-          <text>Example note text.</text>
+          <text>Example note.</text>
           <creator>fedoraAdmin</creator>
         </note>
       </foxml:xmlContent>
