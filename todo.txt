@@ -11,12 +11,10 @@ Islandora DM todo list.
 - pdf annotations?? download, annotate offline, re-upload??
 - how to attach emails?
 - ingest pdfs directly?
-
 - allow search by pid?
 - track fiscal year in fedora record?
 - fedora34?
 - add 'closed' po feature
-- global xacml enforcement
 - ldap integration
 - 192 - updated uis service and corresponding module updates
 - trigger jms conversions again (to recover from failures)
@@ -35,6 +33,7 @@ Islandora DM todo list.
 - dm training?
 
 -- completed:
+- global xacml enforcement [DONE]
 - github migration [DONE]
 - apply ad_novus fluid theme [DONE]
 - apply islandimagined theme, do css fixes [DONE].
