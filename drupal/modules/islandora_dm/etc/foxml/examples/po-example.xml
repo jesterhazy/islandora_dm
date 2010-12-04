@@ -39,6 +39,7 @@
       MIMETYPE="text/xml">
       <foxml:xmlContent>
         <dm>
+          <status>new</status>
           <owner>unassigned</owner>
         </dm>
       </foxml:xmlContent>

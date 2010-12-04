@@ -24,13 +24,10 @@ Islandora DM todo list.
 - read only view restricted to departments
 - finalize disposition/classification stuff
 - metadata edit features - what metadata to be edited? just owner/status?
+- finalize ui theme for purchasing
+- documentation (user)
+- documentation (system)
 
--- uncertain features:
-
-- email attachments ??
-- theming?
-- scanning documentation, training?
-- dm training?
 
 -- completed:
 - global xacml enforcement [DONE]

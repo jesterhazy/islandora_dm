@@ -32,12 +32,9 @@
 > 							<xsl:attribute name="name">islandora-dm.po.owner</xsl:attribute>
 > 							<xsl:value-of select="normalize-space(owner)"/>
 > 						</field>
-> 					</xsl:if>
-> 			
-> 					<xsl:if test="$dsid = 'uis'">
 > 						<field>
 > 							<xsl:attribute name="name">islandora-dm.po.status</xsl:attribute>
-> 							<xsl:value-of select="normalize-space(processed)"/>
+> 							<xsl:value-of select="normalize-space(status)"/>
 > 						</field>
 > 					</xsl:if>
 > 				</xsl:if>

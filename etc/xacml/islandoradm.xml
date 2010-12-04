@@ -54,7 +54,7 @@
   <Rule RuleId="2" Effect="Permit">
     <Target>
       <Subjects>
-       <Subject>
+        <Subject>
           <SubjectMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
             <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">islandora_dm_view</AttributeValue>
             <SubjectAttributeDesignator AttributeId="fedoraRole" MustBePresent="false" DataType="http://www.w3.org/2001/XMLSchema#string"/>
@@ -81,6 +81,40 @@
     </Target>
   </Rule>
   
+  <!-- let local ip addresses use api-a (for djatoka) -->
+  <Rule RuleId="3" Effect="Permit">
+    <Target>
+      <Subjects>
+        <AnySubject/>
+      </Subjects>
+      <Resources>
+        <AnyResource/>
+      </Resources>
+      <Actions>
+        <Action>
+          <ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">urn:fedora:names:fedora:2.1:action:api-a</AttributeValue>
+            <ActionAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string" AttributeId="urn:fedora:names:fedora:2.1:action:api"/>
+          </ActionMatch>
+        </Action>
+        <Action>
+          <ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:regexp-string-match">
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">rn:fedora:names:fedora:2.1:action:id-getData.*</AttributeValue>
+            <ActionAttributeDesignator AttributeId="urn:fedora:names:fedora:2.1:action:id" DataType="http://www.w3.org/2001/XMLSchema#string"/>
+          </ActionMatch>
+        </Action>
+      </Actions>
+    </Target>
+    <Condition FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-at-least-one-member-of">
+      <EnvironmentAttributeDesignator AttributeId="urn:fedora:names:fedora:2.1:environment:httpRequest:clientIpAddress" DataType="http://www.w3.org/2001/XMLSchema#string"/>
+      <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-bag">
+        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">137.149.200.4</AttributeValue>
+        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">127.0.0.1</AttributeValue>
+        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">::1</AttributeValue>
+      </Apply>
+    </Condition>
+  </Rule>
+  
   <!-- deny everything else -->
-  <Rule RuleId="0" Effect="Deny"/>
+  <Rule RuleId="4" Effect="Deny"/>
 </Policy>

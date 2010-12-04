@@ -107,9 +107,9 @@ function islandora_dm_menu() {
   );
   
   // processed
-  $items['islandora_dm/search/status/processed'] = array (
-      'title' => 'Processed',
-      'page callback' => 'islandora_dm_search_status_processed',
+  $items['islandora_dm/search/status/new'] = array (
+      'title' => 'New',
+      'page callback' => 'islandora_dm_search_status_new',
       'access arguments' => array(Constants::PERMISSION_VIEW),
       'weight' => 3,
   );

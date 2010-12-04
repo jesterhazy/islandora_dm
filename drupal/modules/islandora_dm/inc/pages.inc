@@ -61,8 +61,8 @@ function islandora_dm_search_owner_unassigned() {
   return $search->getSearchResultsView();
 }
 
-function islandora_dm_search_status_processed() {
-  $search = Search::searchByStatus('processed');
+function islandora_dm_search_status_new() {
+  $search = Search::searchByStatus('new');
   return $search->getSearchResultsView();
 }
 

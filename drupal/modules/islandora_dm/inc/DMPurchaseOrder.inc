@@ -72,7 +72,7 @@ class DMPurchaseOrder extends DMObject {
   }
   
   function addDMDatastream() {
-    $xml = '<dm><owner>unassigned</owner></dm>';
+    $xml = '<dm><status>new</status><owner>unassigned</owner></dm>';
     $this->fedora->add_datastream_from_string($xml, Constants::DSID_DM, Constants::DSLABEL_DM, Constants::MIME_TYPE_XML, 'X');
   }
   
@@ -98,7 +98,7 @@ class DMPurchaseOrder extends DMObject {
   }
   
   function getStatus() {
-    return 'processed';
+    return $this->dmXml->status;
   }
   
   function getOwner() {
