@@ -171,8 +171,10 @@ class DMPurchaseOrder extends DMObject {
       $view .= '<div class="document">';
       $view .= '<div class="thumbnail">';
 
-      if ($showlink) {
-        $view .= '<a href="' . fedora_base_url() . '/objects/' . $document_pid . '/methods/ilives:viewerSdef/getViewer" target="' . $document_pid . '">';
+      if ($showlink) {    
+        $qs =  '?uid=' . base64_encode($user->name . ':' . $user->pass);
+        $url = fedora_base_url() . '/objects/' . $document_pid . '/methods/ilives:viewerSdef/getViewer' . $qs;
+        $view .= '<a href="' . $url . '" target="' . $document_pid . '">';
       }
 
       $view .= $thumbnail;
