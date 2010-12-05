@@ -66,6 +66,11 @@ function islandora_dm_search_status_new() {
   return $search->getSearchResultsView();
 }
 
+function islandora_dm_search_status_closed() {
+  $search = Search::searchByStatus('closed');
+  return $search->getSearchResultsView();
+}
+
 function islandora_dm_po_view($po_number) {
   return DMPurchaseOrder::fetchByNumber($po_number)->getView();
 }

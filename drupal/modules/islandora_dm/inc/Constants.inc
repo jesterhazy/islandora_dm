@@ -66,5 +66,7 @@ class Constants {
   const DSLABEL_NOTE_CREATOR = 'note creator';
   
   const DSID_ATTACHMENT = 'attachment';
+  
+  const PO_STATUS_CLOSED = 'closed';
 }
 

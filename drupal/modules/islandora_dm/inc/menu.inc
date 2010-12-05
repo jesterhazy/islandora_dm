@@ -106,10 +106,18 @@ function islandora_dm_menu() {
       'weight' => 2,
   );
   
-  // processed
+  // new
   $items['islandora_dm/search/status/new'] = array (
       'title' => 'New',
       'page callback' => 'islandora_dm_search_status_new',
+      'access arguments' => array(Constants::PERMISSION_VIEW),
+      'weight' => 3,
+  );
+  
+  // closed
+  $items['islandora_dm/search/status/closed'] = array (
+      'title' => 'Closed',
+      'page callback' => 'islandora_dm_search_status_closed',
       'access arguments' => array(Constants::PERMISSION_VIEW),
       'weight' => 3,
   );
@@ -160,6 +168,16 @@ function islandora_dm_menu() {
       'title' => 'Update Purchase Order !id',
       'title arguments' => array('!id' => 2),
       'page callback' => 'DMPurchaseOrder::update',
+      'page arguments' => array(2),
+      'access arguments' => array(Constants::PERMISSION_EDIT),
+  );
+  
+  // change purchase order status to completed
+  $items['islandora_dm/po/%/close'] = array (
+      'type' => MENU_CALLBACK,
+      'title' => 'Close Purchase Order !id',
+      'title arguments' => array('!id' => 2),
+      'page callback' => 'DMPurchaseOrder::close',
       'page arguments' => array(2),
       'access arguments' => array(Constants::PERMISSION_EDIT),
   );

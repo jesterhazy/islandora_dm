@@ -213,6 +213,8 @@ class DMPurchaseOrder extends DMObject {
         drupal_set_message(t('This record is out of date. Update before proceeding.'), Constants::DRUPAL_MESSAGE_WARNING);
         $view .= $this->addButton('update', 'Update from UIS');
       }
+      
+      $view .= $this->addButton('close', 'Mark Closed');
     
       $view .= '</div>';
     }
@@ -479,6 +481,16 @@ class DMPurchaseOrder extends DMObject {
     $po->updateDMDatastream();
     
     drupal_set_message(t('Changed owner to @s', array('@s' => $user->name)));
+    drupal_goto('islandora_dm/po/' . $po_number . '/view');
+  }
+  
+  static function close($po_number) {
+    $po = self::fetchByNumber($po_number);
+    
+    $po->dmXml->status = Constants::PO_STATUS_CLOSED;
+    $po->updateDMDatastream();
+    
+    drupal_set_message(t('Changed status to @s', array('@s' => Constants::PO_STATUS_CLOSED)));
     drupal_goto('islandora_dm/po/' . $po_number . '/view');
   }
 
