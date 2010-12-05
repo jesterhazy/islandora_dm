@@ -29,6 +29,7 @@ Islandora DM todo list.
   - documentation (system)
 
 -- completed:
+  - made 'closed' po reversable [DONE]
   - add 'closed' po feature [DONE]
   - global xacml enforcement [DONE]
   - github migration [DONE]
