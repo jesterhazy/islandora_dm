@@ -214,7 +214,13 @@ class DMPurchaseOrder extends DMObject {
         $view .= $this->addButton('update', 'Update from UIS');
       }
       
-      $view .= $this->addButton('close', 'Mark Closed');
+      if ($this->dmXml->status == Constants::PO_STATUS_CLOSED) {
+        $view .= $this->addButton('change_status/new', 'Mark New');
+      }
+      
+      else {
+        $view .= $this->addButton('change_status/closed', 'Mark Closed');
+      }
     
       $view .= '</div>';
     }
@@ -437,7 +443,7 @@ class DMPurchaseOrder extends DMObject {
       // load documents/pages pid map
       $po->documents = fetch_documents($po->pid());
     }
-    
+
     return $po;
   }
   
@@ -484,13 +490,13 @@ class DMPurchaseOrder extends DMObject {
     drupal_goto('islandora_dm/po/' . $po_number . '/view');
   }
   
-  static function close($po_number) {
+  static function change_status($po_number, $status) {
     $po = self::fetchByNumber($po_number);
-    
-    $po->dmXml->status = Constants::PO_STATUS_CLOSED;
+  
+    $po->dmXml->status = $status;
     $po->updateDMDatastream();
     
-    drupal_set_message(t('Changed status to @s', array('@s' => Constants::PO_STATUS_CLOSED)));
+    drupal_set_message(t('Changed status to @s', array('@s' => $status)));
     drupal_goto('islandora_dm/po/' . $po_number . '/view');
   }
 

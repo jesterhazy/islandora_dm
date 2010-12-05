@@ -173,12 +173,12 @@ function islandora_dm_menu() {
   );
   
   // change purchase order status to completed
-  $items['islandora_dm/po/%/close'] = array (
+  $items['islandora_dm/po/%/change_status/%'] = array (
       'type' => MENU_CALLBACK,
-      'title' => 'Close Purchase Order !id',
-      'title arguments' => array('!id' => 2),
-      'page callback' => 'DMPurchaseOrder::close',
-      'page arguments' => array(2),
+      'title' => 'Change Status of Purchase Order !id to !status',
+      'title arguments' => array('!id' => 2, '!status' => 4),
+      'page callback' => 'DMPurchaseOrder::change_status',
+      'page arguments' => array(2, 4),
       'access arguments' => array(Constants::PERMISSION_EDIT),
   );
   

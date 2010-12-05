@@ -68,5 +68,6 @@ class Constants {
   const DSID_ATTACHMENT = 'attachment';
   
   const PO_STATUS_CLOSED = 'closed';
+  const PO_STATUS_NEW = 'new';
 }
 
