@@ -166,7 +166,7 @@ function islandora_dm_import_incomplete_form() {
 			'#name' => 'documents',
 			'#options' => $options,
 			'#theme' => 'islandora_dm_import_incomplete_documents_checkboxes',
-			'#description' => t('Select the documents to fix, or click the <i>Fix All</i> button.')
+			'#description' => t('Select the documents to reschedule, or click the <i>Reschedule All</i> button.')
 		);
 	}
 	
