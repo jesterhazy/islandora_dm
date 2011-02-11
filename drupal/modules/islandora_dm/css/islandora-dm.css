@@ -1,119 +1,147 @@
 /* ------------------------------------
-   global 
+	global 
 */
 .thumbnail {
-  border: 1px solid #ccc; 
-  margin: 10px 0;
-  height: 110px;
-  width: 85px;
+	border: 1px solid #ccc; 
+	margin: 0px;
+	height: 110px;
+	width: 85px;
 }
 
 .thumbnail.right {
-  margin-left: 20px;
-  float: right;
+	margin-left: 20px;
+	float: right;
 }
 
 div.clickable.active {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 div.clickable.active:hover {
-  background-color: #eee;
+	background-color: #eee;
+}
+
+.clear {
+	clear: both;
 }
 
 /* end global */
 
 /* ------------------------------------
-   /search 
+	/search 
 */
 
 #islandora-dm-search-form div {
-  display: inline;  
+	display: inline;	
 }
 
 #islandora-dm-search-form label {
-  display: none;
+	display: none;
 }
 
-.islandora-dm-search-results div.po {
-  margin: 10px 0;
-  padding: 10px;
-  border: 1px solid #ccc;
+.search-result {
+	margin: 10px 0;
+	padding: 10px;
+	border: 1px solid #ccc;
+	overflow: auto;
 }
 
-.islandora-dm-search-results .po-number {
-  font-weight: bold;
+.search-result .title {
+	font-weight: bold;
 }
 
-.islandora-dm-search-results table {
-  width: auto;
+.search-result table {
+	width: auto;
 }
 
-.islandora-dm-search-results tbody {
-  border: none;
+.search-result tbody {
+	border: none;
 }
 
-.islandora-dm-search-results td {
-  padding: 0 1em;
+.search-result td {
+	padding: 0 1em;
 }
 
-.islandora-dm-search-results .no-results  {
-  margin: 1em 0;
+.search-result .odd, .search-result .even {
+	background-color: inherit;
+	border: none;
+}
+
+.islandora-dm-search-results-summary	{
+	margin: 1em 0;
+}
+
+.islandora-dm-search-results-pager	{
+	float: right;
 }
 
 /* end /search */
 
 /* ------------------------------------
-   /po/-/view 
+	/po/-/view 
 */
 
 .islandora-dm-po-view td.label {
-  width: 15em;
-}
-
-.islandora-dm-po-view tr.odd, .islandora-dm-po-view tr.even {
-  background-color: inherit;
-  border: none;
+	width: 15em;
 }
 
 .islandora-dm-po-view tbody {
-  border: none;
+	border: none;
+}
+
+.islandora-dm-po-view tr.odd, .islandora-dm-po-view tr.even {
+	background-color: inherit;
+	border: none;
 }
 
 .islandora-dm-po-view .note {
-  margin: .5em;
+	margin: .5em;
 }
 
 .islandora-dm-po-view .attachment .file {
-  margin: .5em;
+	margin: .5em;
 }
 
 .islandora-dm-po-view .attachment .file a {
-  font-weight: bold;
+	font-weight: bold;
 }
 
 .islandora-dm-po-view .button {
-  margin: .5em;
-  display: inline;
+	margin: .5em;
+	display: inline;
 }
 
 .islandora-dm-po-view .buttons {
-  margin: 1em 0 1em 0;
+	margin: 1em 0 1em 0;
 }
 
 .islandora-dm-po-view .caption {
-  font-style: italic;
-  font-size: 80%;
+	font-style: italic;
+	font-size: 80%;
 }
 
 .islandora-dm-po-view .document {
-  float: left;
-  margin: 0 20px 0.5em 0;
-  padding: 0 0.5em;
+	float: left;
+	margin-right: 0.5em;
+	margin-bottom: 0.5em;
+	padding: 0 0.5em 0.5em 0.5em;
+	line-height: 120%;
+	text-align: center;
+}
+
+.islandora-dm-po-view .document div {
+	margin-top: 0.5em;
 }
 
 .islandora-dm-po-view .document:hover {
-  background-color: #eee;
+	background-color: #eee;
 }
 
 /* end /po/-/view */
+
+/* import forms */
+
+.islandora-dm-import-link-document.search-result .form-submit {
+	margin: 0px;
+}
+

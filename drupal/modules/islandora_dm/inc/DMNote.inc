@@ -4,105 +4,159 @@
  * DMNote - methods for retrieving, displaying, and manipulating notes.
  */
 class DMNote extends DMObject {
-  public $noteXml;
-  public $created;
-  
-  function typeLabel() {
-    return 'Note';
-  }
-  
-  function createFedoraItem() {
-    parent::createFedoraItem();
-    $this->fedora->add_relationship('hasModel', Constants::PID_PO_NOTE_CMODEL, FEDORA_MODEL_URI);
-  }
-  
-  function addNoteDatastream($text, $username) {
-    $noteXml = '<note><text>' . $text . '</text><creator>' . $username . '</creator></note>';    
-    $this->fedora->add_datastream_from_string($noteXml, Constants::DSID_NOTE, Constants::DSLABEL_NOTE, Constants::MIME_TYPE_XML, 'X');
-  }
-  
-  function view() {
-    $view = '';
-    $view .= '<div class="note">';
-    $view .= '<div class="text">' . preg_replace('/\n/', '<br>', check_plain($this->noteXml->text)) . '</div>';
-    $view .= '<div class="caption">Added ' . check_plain($this->created) . ' by ' . check_plain($this->noteXml->creator) . '</div>';
-    $view .= '</div>';
-    return $view;
-  }
-  
-  static function createNote($po_number, $text, $username) {
-    $po_pid = DMPurchaseOrder::number2pid($po_number);
-    try {
-        $obj = new DMNote();
-        $obj->createFedoraItem();
-        $obj->joinCollection($po_pid);
-        $obj->addNoteDatastream($text, $username);        
-      }
-      catch (Exception $e) {
-          watchdog(Constants::MODULE_NAME, 'Error while creating fedora object @pid: @e', array('@pid' => $obj->pid(), '@e' => $e->getMessage()), WATCHDOG_WARN);
-          $obj = null; 
-      }
+	protected $noteXml;
+	
+	function typeLabel() {
+		return 'Note';
+	}
+	
+	function pidPrefix() {
+		return 'n-';
+	}
+	
+	function createFedoraObject() {
+		parent::createFedoraObject();
+		$this->addModel(Constants::PID_CMODEL_NOTE, FEDORA_MODEL_URI);
+	}
+	
+	function text() {
+		return $this->noteXml->text;
+	}
+	
+	function creator() {
+		return $this->noteXml->creator;
+	}
+	
+	function attachmentLink() {
+		return $this->datastreamLink(Constants::DSID_ATTACHMENT);
+	}
 
-      return $obj;
-  }
-  
-  static function fetchByPid($pid) {
-    $note = new DMNote();
-    $note->fedora = fetch_fedora_item($pid);
-    $note->noteXml = datastream_to_xml(Constants::DSID_NOTE, $note->fedora);
-    $note->created = format_date(strtotime($note->fedora->objectProfile->objCreateDate));
-    return $note;
-  }
+	function purchaseOrder() {
+		return new DMPurchaseOrder(DMObject::findPurchaseOrderPid($this));
+	}
+	
+	function addNoteDatastream($text, $username) {
+		$noteXml = '<note><text>' . $text . '</text><creator>' . $username . '</creator></note>';		
+		$this->fedora->add_datastream_from_string($noteXml, Constants::DSID_NOTE, Constants::DSLABEL_NOTE, Constants::MIME_TYPE_XML, 'X');
+	}
+	
+	function addAttachmentDatastream($file) {
+		$label = $file->filename;
+		$this->addDatastreamFromFile($file->filepath, Constants::DSID_ATTACHMENT, $label, NULL, 'M');
+	}
+
+	static function createNote($username, $po_number, $text, $file = '') {
+		$po_pid = DMPurchaseOrder::number2pid($po_number);
+		try {
+				$obj = new DMNote();
+				$obj->createFedoraObject();
+				$obj->addMembership($po_pid);
+				$obj->addNoteDatastream($text, $username);
+				$obj->addAttachmentDatastream($file, $username);
+			}
+			catch (Exception $e) {
+					watchdog(Constants::MODULE_NAME, 'Error while creating fedora object @pid: @e', array('@pid' => $obj->pid(), '@e' => $e->getMessage()), WATCHDOG_WARN);
+					$obj = null; 
+			}
+
+			return $obj;
+	}
+	
+	function load() {
+		if ($this->loaded()) return;
+		
+		parent::load();
+		$this->noteXml = $this->datastreamAsXml(Constants::DSID_NOTE);
+	}
+	
+	static function findRelatedNotes($parent_pid) {
+		$notes = array();
+		
+		$pids = DMObject::findRelatedPids($parent_pid, Constants::PID_CMODEL_NOTE);
+		foreach($pids as $pid) {
+			$notes[] = new DMNote($pid);
+		}
+		
+		return $notes;
+	}
 }
 
 /*
  * Drupal callback handlers
  */
-function islandora_dm_add_note_form(&$form_state, $po_number) {
-  $form = array();
-      
-  $form['po_number'] = array(
-    '#type' => 'value',
-    '#value' => $po_number,
+function islandora_dm_add_note_form(&$form_state, $po_number, $document_number = NULL) {
+	$form = array();
+	$form['#attributes'] = array('enctype' => 'multipart/form-data');
+			
+	$form['po_number'] = array(
+		'#type' => 'value',
+		'#value' => $po_number,
+	);
+	
+	if ($document_number) {
+		$form['document_number'] = array(
+			'#type' => 'value',
+			'#value' => $document_number,
+		);
+	}
+	
+	$form['note'] = array(
+		'#type' => 'textarea',
+		'#title' => t('Note'),
+		'#required' => TRUE,
+	);
+	
+	$form['attachment'] = array(
+    '#title' => t('Add attachment'),
+    '#type'  => 'file',
+		'#description' => 'Attach a file to this note (optional).',
   );
+  
+	$form['submit'] = array(
+		'#type' => 'submit',
+		'#name' => 'save',
+		'#value' => t('Save'),
+	);
 
-  $form['text'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Note'),
-  );
+	$form['cancel'] = array(
+		'#type' => 'submit',
+		'#name' => 'cancel',
+		'#value' => t('Cancel'),
+	);
 
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#name' => 'save',
-    '#value' => t('Save'),
-  );
-
-  $form['cancel'] = array(
-    '#type' => 'submit',
-    '#name' => 'cancel',
-    '#value' => t('Cancel'),
-  );
-
-  return $form;
-}
-
-function islandora_dm_add_note_form_validate($form, &$form_state) {
-  if ($form_state['clicked_button']['#name'] == 'save' ) {
-    if ($form_state['values']['text'] == '') {
-      form_set_error('text', t('Note field is required.'));
-    }
-  }
+	return $form;
 }
 
 function islandora_dm_add_note_form_submit($form, &$form_state) {
-  if ($form_state['clicked_button']['#name'] == 'save' ) {
-    global $user;
-    $po_number = $form_state['values']['po_number'];
-    $text = $form_state['values']['text'];
-
-    $note = DMNote::createNote($po_number, $text, $user->name);
-    drupal_set_message(t('Added note @n to purchase order @p.', array('@n' => $note->pid(), '@p' => $po_number)));
-  }
-  
-  $form_state['redirect'] = array('islandora_dm/po/' . $form_state['values']['po_number'] . '/view');
+	if ($form_state['clicked_button']['#name'] == 'save' ) {
+		global $user;
+				
+		$number = $form_state['values']['document_number'];
+		if ($number) {
+			$type = 'document';
+			$pid = DMDocument::number2pid($number);
+		}
+		
+		else {
+			$number = $form_state['values']['po_number'];
+			$type = 'purchase order';
+			$pid = DMPurchaseOrder::number2pid($number);
+		}	
+		
+		$text = $form_state['values']['note'];
+		$file = file_save_upload('attachment');
+		
+		$note = new DMNote();
+		$note->createFedoraObject();
+		$note->addMembership($pid);
+		$note->addNoteDatastream($text, $user->name);
+		
+		if ($file != 0) {
+			$note->addAttachmentDatastream($file);
+		}
+		
+		drupal_set_message(t('Added note @pid to @type @number', array('@pid' => $note->pid(), '@type' => $type, '@number' => $number)));
+	}
+	
+	$form_state['redirect'] = array('islandora_dm/po/' . $form_state['values']['po_number'] . '/view');
 }

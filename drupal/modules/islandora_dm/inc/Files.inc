@@ -8,7 +8,7 @@ class Files {
   const FILE_SIZE_UNIT_LABELS = 'bytes, KB, MB, GB';
   const DATE_FORMAT_MINUTE_PRECISION = '%Y-%m-%d at %H:%M';
   
-  static function listFiles($dir, $pattern = self::FILENAME_PATTERN_ALL, $addMetadata = true) {
+  static function listFiles($dir, $pattern = self::FILENAME_PATTERN_ALL, $addMetadata = TRUE) {
     $files = file_scan_directory($dir, $pattern);
     
     if ($addMetadata) {

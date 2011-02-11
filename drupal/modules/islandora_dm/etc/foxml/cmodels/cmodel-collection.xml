@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<foxml:digitalObject PID="islandora-dm:po-cmodel" VERSION="1.1" xmlns:foxml="info:fedora/fedora-system:def/foxml#"
+<foxml:digitalObject PID="islandora-dm:cmodel-collection" VERSION="1.1" xmlns:foxml="info:fedora/fedora-system:def/foxml#"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd">
   <foxml:objectProperties>
     <foxml:property NAME="info:fedora/fedora-system:def/model#state" VALUE="Active"/>
-    <foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="Purchase Order Content Model"/>
+    <foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="Purchase Order Collection Content Model"/>
     <foxml:property NAME="info:fedora/fedora-system:def/model#ownerId" VALUE="fedoraAdmin"/>
     <foxml:property NAME="info:fedora/fedora-system:def/model#createdDate" VALUE="2010-06-01T00:00:00.000Z"/>
     <foxml:property NAME="info:fedora/fedora-system:def/view#lastModifiedDate" VALUE="2010-06-01T00:00:00.000Z"/>
@@ -13,7 +13,7 @@
       ID="RELS-EXT1.0" LABEL="RDF Statements about this object" MIMETYPE="application/rdf+xml">
       <foxml:xmlContent>
         <rdf:RDF xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-          <rdf:Description rdf:about="info:fedora/islandora-dm:po-cmodel">
+          <rdf:Description rdf:about="info:fedora/islandora-dm:cmodel-collection">
             <fedora-model:hasModel rdf:resource="info:fedora/fedora-system:ContentModel-3.0"/>
           </rdf:Description>
         </rdf:RDF>
@@ -27,8 +27,8 @@
         <oai_dc:dc xmlns:dc="http://purl.org/dc/elements/1.1/"
           xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
-          <dc:title>Purchase Order Content Model</dc:title>
-          <dc:identifier>islandora-dm:po-cmodel</dc:identifier>
+          <dc:title>islandora-dm:cmodel-collection</dc:title>
+          <dc:identifier>islandora-dm:cmodel-collection</dc:identifier>
         </oai_dc:dc>
       </foxml:xmlContent>
     </foxml:datastreamVersion>
@@ -39,16 +39,10 @@
       LABEL="Datastream Composite Model" MIMETYPE="text/xml">
       <foxml:xmlContent>
         <dsCompositeModel xmlns="info:fedora/fedora-system:def/dsCompositeModel#">
-          <dsTypeModel ID="dm">
+          <dsTypeModel ID="defaultClassification">
             <form MIME="text/xml"/>
           </dsTypeModel>
-          <dsTypeModel ID="uis">
-            <form MIME="text/xml"/>
-          </dsTypeModel>
-          <dsTypeModel ID="classification">
-            <form MIME="text/xml"/>
-          </dsTypeModel>
-          <dsTypeModel ID="disposition">
+          <dsTypeModel ID="defaultDisposition">
             <form MIME="text/xml"/>
           </dsTypeModel>
         </dsCompositeModel>

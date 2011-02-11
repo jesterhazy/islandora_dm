@@ -10,6 +10,7 @@ class Search {
   protected $offset;
   protected $limit;
   protected $results;
+  protected $url;
   
   function __construct($offset, $limit) {
     $this->offset = $offset;
@@ -17,10 +18,30 @@ class Search {
   }
   
   /**
+   * Execute a term search, and return a Search instance containing the results.
+   */
+  static function createSearchUsingTerms($terms, $offset = 0, $limit = 10) {
+    $search = new Search($offset, $limit);
+    $search->setQueryFromTerms($terms);
+    return $search;
+  }
+  
+  /**
+   * Set query from search terms.
+   */
+  function setQueryFromTerms($terms) {    
+    // split terms    
+    $split = split(' ', $terms);
+    $joined = join(" and ", $split);
+    $escaped = Apache_Solr_Service::escape($joined);
+    $query = 'islandora-dm.po:(' . $escaped . ')';
+    $this->query = $query;
+  }
+  
+  /**
    * Execute the search. Can only be called once. Does nothing on subsequent calls.
    */
   function execute() {
-    
     // log warning if execute is called more than once
     if ($this->results) {
       watchdog(Constants::MODULE_NAME, t('ignoring invalid call to Search::execute'), null, WATCHDOG_WARNING);
@@ -34,138 +55,89 @@ class Search {
   }
   
   /**
-   * Set query from search terms.
-   */
-  function queryTerms($terms) {
-    
-    // split terms    
-    $split = split(' ', $terms);
-    $joined = join(" and ", $split);
-    $escaped = Apache_Solr_Service::escape($joined);
-    $query = 'islandora-dm.po:(' . $escaped . ')';
-    $this->query = $query;
-  }
-  
-  /**
-   * Set query from user.
-   */
-  function queryUser($user) {
-    $this->setQuery('islandora-dm.po.owner', $user);
-  }
-  
-  /**
-   * Set query from status.
-   */
-  function queryStatus($status) {
-    $this->setQuery('islandora-dm.po.status', $status);
-  }
-  
-  protected function setQuery($field, $term) {
-    // TODO if isarray (term)...
-    
-    if (empty($term)) {
-      $term = '';
-    }
-    
-    $this->query = $field . ':' . Apache_Solr_Service::phrase($term);
-  }
-  
-  /**
    * Prepare a solr service instance for use.
    */
   function getSolrService() {
-    // TODO add vars from islandora conf
-    $solr = new Apache_Solr_Service('localhost', 8080, '/solr');
+    $solr_url = variable_get(Constants::SETTING_SOLR_URL, Constants::SETTING_SOLR_URL_DEFAULT);
+    $parts = parse_url($solr_url);
+    
+    $solr = new Apache_Solr_Service($parts['host'], $parts['port'], $parts['path']);
     return $solr;
   }
   
-  protected function resultsToPids() {
-    $pids = array();
-    
-    if ($this->results) {
-      foreach ($this->results->response->docs as $doc) {
-        $this->resultToPid($doc, $pids);
-      }
-    }
-    
-    return array_unique($pids);
+  function results() {
+    return $this->results;
   }
   
-  function resultToPid(&$doc, &$pids) {
-    if (Constants::PID_PO_CMODEL == $doc->{'rels.hasModel'}) {
-      $pids[] = $doc->PID;
-    }
-    
-    elseif (strpos($doc->{'rels.hasModel'}, 'islandora-dm:') !== FALSE) {
-      $collections = is_array($doc->{'rels.isMemberOf'}) 
-        ? $doc->{'rels.isMemberOf'} 
-          : array($doc->{'rels.isMemberOf'});
-      
-      foreach ($collections as $collection) {
-        if ($this->isPurchaseOrderPid($collection)) {
-          $pids[] = $collection;
-        }
-      }
-    }
-    
-    else {
-      // unexpected cmodel
-      watchdog(Constants::MODULE_NAME, 
-        'unexpected content model in search results. pid: @pid, cmodel: @cmodel', 
-        array('@pid' => $doc->PID, '@cmodel' => $doc->{'rels.hasModel'}), 
-        WATCHDOG_WARN);
-    }
-  }
   
-  function isPurchaseOrderPid($pid) {
-    return preg_match('/^islandora-dm:po-[^\-]+$/', $pid);
-  }
   
-  /**
-   * Convert the search results into a page fragment. 
-   */
-  function getSearchResultsView() {
-    $pids = $this->resultsToPids();
+  
+  
+   // 
+   // 
+   // function getSearchResultsSummary() {
+   //   $hits = $this->hits();
+   //   $html .= '<div class="islandora-dm-search-results-summary">';
+   //   
+   //   if ($hits == 0) {
+   //     $html .= t('Nothing found.');
+   //   }
+   //  
+   //   elseif ($hits <= $this->limit) {
+   //     $html .= t('Showing all results.');
+   //   }
+   //   
+   //   else {
+   //     $end = min($this->offset + $this->limit, $hits);
+   //     $html .= t('Showing @start - @end of @hits results.', 
+   //       array('@start' => $this->offset + 1, '@end' => $end, '@hits' => $hits));
+   //   }
+   //   
+   //       
+   //   if ($hits > $this->limit) {
+   //     $html .= '<div class="islandora-dm-search-results-pager">';
+   //     
+   //     $url = $this->url;
+   //     $url .= (strstr($url, '?')) ? '&' : '?';
+   //     $url .= 'start=';
+   // 
+   //     
+   //     if ($this->offset > $this->limit) {
+   //       $html .= '<a href="' . $url . '0">&lt;</a>';
+   //     }
+   //     
+   //     $offset = 0;
+   //     $ellipse1 = FALSE;
+   //     $ellipse2 = FALSE;
+   //     while($offset < $hits) {
+   //       $page = (int) ($offset / $this->limit) + 1;
+   //       if ($offset == 1 || $offset + $this->limit >= $hits || abs($offset - $this->offset) < (3 * $this->limit)) {
+   //         $html .= ' <a href="' . $url . $offset . '">' . $page . '</a>';
+   //       }
+   //       
+   //       elseif(!$ellipse1 && $offset - $this->offset <= -3) {
+   //         $html .= ' ...';
+   //         $ellipse1 = TRUE;
+   //       }
+   //       
+   //       elseif(!$ellipse2 && $offset - $this->offset >= 3) {
+   //         $html .= ' ...';
+   //         $ellipse2 = TRUE;
+   //       }
+   // 
+   //       $offset += $this->limit;
+   //     }
+   //     
+   //     if ($this->offset + $this->limit < $hits) {
+   //       $html .= ' <a href="' . $url . $last_page . '">&gt;</a>';
+   //     }
+   //     
+   //     $html .= '</div>';
+   //   }
+   //   
+   //   $html .= '</div>';
+   //   return $html;
+   // }
 
-    $page = '<div class="islandora-dm-search-results">';
-        
-    if (empty($pids)) {
-      $page .= '<div class="no-results">' . t('Nothing found.') . '</div>';
-    }
-    
-    else {
-      foreach ($pids as $pid) {
-        $po = DMPurchaseOrder::fetchByPID($pid);
-        $page .= $po->getSearchResultView();
-      }
-    }
-    
-    $page .= '</div>';
-    
-    return $page;
-  }
 
-  /**
-   * Execute a term search, and return a Search instance containing the results.
-   */
-  static function searchByTerms($terms, $offset = 0, $limit = 10) {
-    $search = new Search($offset, $limit);
-    $search->queryTerms($terms);
-    $search->execute();
-    return $search;
-  }
-  
-  static function searchByUser($user, $offset = 0, $limit = 10) {
-    $search = new Search($offset, $limit);
-    $search->queryUser($user);
-    $search->execute();
-    return $search;
-  }
-  
-  static function searchByStatus($status, $offset = 0, $limit = 10) {
-    $search = new Search($offset, $limit);
-    $search->queryStatus($status);
-    $search->execute();
-    return $search;
-  }
 }

@@ -1,56 +1,55 @@
 <?php
 
 array_walk(
- glob(dirname(__FILE__) . '/inc/*'),
- create_function('$v,$i', 'return require_once($v);')
+	glob(dirname(__FILE__) . '/inc/*'),
+	create_function('$v,$i', 'return require_once($v);')
 ); 
 
 // need to add if using class inheritance
 function __autoload($class_name) {
-  require_once dirname(__FILE__) . '/inc/' . $class_name . '.inc';
+	require_once dirname(__FILE__) . '/inc/' . $class_name . '.inc';
 }
 
 function islandora_dm_init() {
-  $module_path = drupal_get_path('module', Constants::MODULE_NAME);
-  $module_css = $module_path .'/css/islandora-dm.css';
-  drupal_add_css($module_css);
+	$module_path = drupal_get_path('module', Constants::MODULE_NAME);
+	$module_css = $module_path .'/css/islandora-dm.css';
+	drupal_add_css($module_css);
 }
 
 /**
  * TODO: Display help and module information.
  */
 function islandora_dm_help($path, $arg) {
-  $output = '';
-  
-  switch ($path) {
-    case "admin/help#islandora_dm":
-      $output = '<p>' . t("todo: implement help text") . '</p>';
-      break;
-  }
-  
-  return $output;
+	$output = '';
+	
+	switch ($path) {
+		case "admin/help#islandora_dm":
+			$output = '<p>' . t("todo: implement help text") . '</p>';
+			break;
+	}
+	
+	return $output;
 }
 
 /**
  * Valid permissions for this module.
  */
 function islandora_dm_perm() {
-  return array(
-    // configure module settings
-    Constants::PERMISSION_ADMIN, 
-    
-    // import new documents
-    Constants::PERMISSION_EDIT,
-    
-    // view module pages and documents (subject to fedora authorization)
-    Constants::PERMISSION_VIEW 
-    );
+	return array(
+		// configure module settings
+		Constants::PERMISSION_ADMIN, 
+		
+		// import new documents
+		Constants::PERMISSION_EDIT,
+		
+		// view module pages and documents (subject to fedora authorization)
+		Constants::PERMISSION_VIEW 
+		);
 }
 
 function islandora_dm_theme($existing, $type, $theme, $path) {
-  return array(
-    'islandora_dm_import_files_checkboxes' => array(
-      'arguments' => array('form' => NULL),
-    ),
-  );
+	return array(
+		'islandora_dm_import_files_checkboxes' => array('arguments' => array('form' => NULL)),
+		'islandora_dm_import_incomplete_documents_checkboxes' => array('arguments' => array('form' => NULL)),
+	);
 }

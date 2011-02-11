@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<foxml:digitalObject PID="islandora-dm:po-example-a1" VERSION="1.1" xmlns:foxml="info:fedora/fedora-system:def/foxml#"
+<foxml:digitalObject PID="islandora-dm:n-example-2" VERSION="1.1" xmlns:foxml="info:fedora/fedora-system:def/foxml#"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd">
   <foxml:objectProperties>
     <foxml:property NAME="info:fedora/fedora-system:def/model#state" VALUE="Active"/>
-    <foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="Purchase Order Example Attachment 1"/>
+    <foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="Purchase Order Example Note 1"/>
     <foxml:property NAME="info:fedora/fedora-system:def/model#ownerId" VALUE="fedoraAdmin"/>
     <foxml:property NAME="info:fedora/fedora-system:def/model#createdDate" VALUE="2010-11-07T17:48:55.522Z"/>
     <foxml:property NAME="info:fedora/fedora-system:def/view#lastModifiedDate" VALUE="2010-11-07T17:53:18.176Z"/>
@@ -13,7 +13,7 @@
       MIMETYPE="text/xml" SIZE="583">
       <foxml:xmlContent>
         <oai_dc:dc xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/">
-          <dc:title>Purchase Order Example Attachment 1</dc:title>
+          <dc:title>Example Note 2</dc:title>
           <dc:creator/>
           <dc:subject/>
           <dc:description/>
@@ -22,7 +22,7 @@
           <dc:date/>
           <dc:type/>
           <dc:format/>
-          <dc:identifier>islandora-dm:po-example-a1</dc:identifier>
+          <dc:identifier>islandora-dm:n-example-2</dc:identifier>
           <dc:source/>
           <dc:language/>
           <dc:relation/>
@@ -37,9 +37,9 @@
       LABEL="Fedora Object-to-Object Relationship Metadata" MIMETYPE="text/xml" SIZE="425">
       <foxml:xmlContent>
         <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-          <rdf:Description rdf:about="info:fedora/islandora-dm:po-example-a1">
-            <hasModel rdf:resource="info:fedora/islandora-dm:po-attachment-cmodel" xmlns="info:fedora/fedora-system:def/model#"/>
-            <isMemberOf rdf:resource="info:fedora/islandora-dm:po-example" xmlns="info:fedora/fedora-system:def/relations-external#"/>
+          <rdf:Description rdf:about="info:fedora/islandora-dm:n-example-2">
+            <hasModel rdf:resource="info:fedora/islandora-dm:cmodel-note" xmlns="info:fedora/fedora-system:def/model#"/>
+            <isMemberOf rdf:resource="info:fedora/islandora-dm:po-example-1" xmlns="info:fedora/fedora-system:def/relations-external#"/>
           </rdf:Description>
         </rdf:RDF>
       </foxml:xmlContent>
@@ -49,15 +49,15 @@
     <foxml:datastreamVersion CREATED="2010-11-07T17:48:55.855Z" ID="note.0" LABEL="note" MIMETYPE="text/xml" SIZE="79">
       <foxml:xmlContent>
         <note>
-          <text>Example attachment note.</text>
+          <text>Example note.</text>
           <creator>fedoraAdmin</creator>
         </note>
       </foxml:xmlContent>
     </foxml:datastreamVersion>
   </foxml:datastream>
-  <foxml:datastream CONTROL_GROUP="M" ID="attachment" STATE="A" VERSIONABLE="false">
-    <foxml:datastreamVersion CREATED="2010-11-07T17:53:18.176Z" ID="attachment.0" LABEL="a.pdf" MIMETYPE="application/pdf">
-      <foxml:binaryContent> 
+    <foxml:datastream CONTROL_GROUP="M" ID="attachment" STATE="A" VERSIONABLE="false">
+      <foxml:datastreamVersion CREATED="2010-11-07T17:53:18.176Z" ID="attachment.0" LABEL="a.pdf" MIMETYPE="application/pdf">
+        <foxml:binaryContent> 
               JVBERi0xLjMKJcTl8uXrp/Og0MTGCjQgMCBvYmoKPDwgL0xlbmd0aCA1IDAgUiAvRmlsdGVyIC9GbGF0
               ZURlY29kZSA+PgpzdHJlYW0KeAEtjjEKAjEURHtP8Uotkv0/2URSqmi/kBsEFxS2iLk/+FdkmoF5M0xn
               oSM+82K6DaUN9KfRcOKTZYmsgXMJfJ6sOxZ2TDBErNeNF5NTomRiyYe2ca3oPP8DMy6pLyVLIUWbrBvT
@@ -175,7 +175,7 @@
               SUQgWzxhYWRjMWVmYzJkOWMzZTQwYTI4MThiY2QwM2I3OGY0Yz4gPGFhZGMxZWZjMmQ5YzNlNDBhMjgx
               OGJjZDAzYjc4ZjRjPl0gL0luZm8gMSAwIFIgL1ByZXYgNjA0OCAvUm9vdCAxNCAwIFIgL1NpemUgMjE+
               PgpzdGFydHhyZWYKNjgwMAolJUVPRgo=
-</foxml:binaryContent>
+      </foxml:binaryContent>
     </foxml:datastreamVersion>
   </foxml:datastream>
 </foxml:digitalObject>

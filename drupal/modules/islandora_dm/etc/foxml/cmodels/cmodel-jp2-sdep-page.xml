@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<foxml:digitalObject PID="islandora-dm:jp2-sdep-po-page-cmodel" VERSION="1.1" xmlns:foxml="info:fedora/fedora-system:def/foxml#"
+<foxml:digitalObject PID="islandora-dm:cmodel-jp2-sdep-page" VERSION="1.1" xmlns:foxml="info:fedora/fedora-system:def/foxml#"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd">
   <foxml:objectProperties>
     <foxml:property NAME="info:fedora/fedora-system:def/model#state" VALUE="Active"/>
-    <foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="islandora-dm:jp2-sdep-po-page-cmodel"/>
+    <foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="islandora-dm:cmodel-jp2-sdep-page"/>
     <foxml:property NAME="info:fedora/fedora-system:def/model#ownerId" VALUE="fedoraAdmin"/>
     <foxml:property NAME="info:fedora/fedora-system:def/model#createdDate" VALUE="2009-05-21T03:24:05.906Z"/>
     <foxml:property NAME="info:fedora/fedora-system:def/view#lastModifiedDate" VALUE="2009-05-21T03:27:46.103Z"/>
@@ -13,10 +13,10 @@
       ID="RELS-EXT.1" LABEL="RDF Statements about this object" MIMETYPE="application/rdf+xml" SIZE="562">
       <foxml:xmlContent>
         <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-          <rdf:Description rdf:about="info:fedora/islandora-dm:jp2-sdep-po-page-cmodel">
+          <rdf:Description rdf:about="info:fedora/islandora-dm:cmodel-jp2-sdep-page">
             <hasModel rdf:resource="info:fedora/fedora-system:ServiceDeployment-3.0" xmlns="info:fedora/fedora-system:def/model#"/>
             <isDeploymentOf rdf:resource="info:fedora/ilives:jp2Sdef" xmlns="info:fedora/fedora-system:def/model#"/>
-            <isContractorOf rdf:resource="info:fedora/islandora-dm:po-page-cmodel" xmlns="info:fedora/fedora-system:def/model#"/>
+            <isContractorOf rdf:resource="info:fedora/islandora-dm:cmodel-page" xmlns="info:fedora/fedora-system:def/model#"/>
           </rdf:Description>
         </rdf:RDF>
       </foxml:xmlContent>
@@ -29,8 +29,8 @@
         <oai_dc:dc xmlns:dc="http://purl.org/dc/elements/1.1/"
           xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
-          <dc:title>islandora-dm:jp2-sdep-po-page-cmodel</dc:title>
-          <dc:identifier>islandora-dm:jp2-sdep-po-page-cmodel</dc:identifier>
+          <dc:title>islandora-dm:cmodel-jp2-sdep-page</dc:title>
+          <dc:identifier>islandora-dm:cmodel-jp2-sdep-page</dc:identifier>
         </oai_dc:dc>
       </foxml:xmlContent>
     </foxml:datastreamVersion>

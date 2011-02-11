@@ -54,4 +54,4 @@ cp /var/www/html/drupal/sites/test.islandlives.ca.jesterhazy/modules/css/islando
 ssh 137.149.200.15
 sudo su - abbyy
 python2.7 fedora_listener/fedora_listener.py -H test.islandlives.ca -P 61613 -U fedoraAdmin -W <pw> -R http://test.islandlives.ca:8080/fedora >/tmp/fedora_listener.log&
-python2.7 content_model_listeners/content_model_listener.py -H test.islandlives.ca -P 61613 -U fedoraAdmin -W <pw> -R http://test.islandlives.ca:8080/fedora -M islandora-dm:po-page-cmodel >/tmp/content-model-listener.log&
+python2.7 content_model_listeners/content_model_listener.py -H test.islandlives.ca -P 61613 -U fedoraAdmin -W <pw> -R http://test.islandlives.ca:8080/fedora -M islandora-dm:cmodel-page >/tmp/content-model-listener.log&

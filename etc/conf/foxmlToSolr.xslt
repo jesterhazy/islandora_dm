@@ -6,7 +6,7 @@
     - index xacml so results can be limited by access rules
     - index po record and documents differently
     - capture ocr text etc. from scanned docs
-    - skip po-collection object
+    - skip purchase-orders object
 -->
 
 <!-- add this to "/" template, as sibling of <xsl:if test="starts-with($PID,'demo')">... --> 

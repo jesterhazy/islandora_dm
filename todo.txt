@@ -1,7 +1,6 @@
 Islandora DM todo list.
 
 -- related to new (unknown) workflow requirements:
-
   - move notes and attachments to pages or documents
   - update ui to allow notes/attachments on pages
   - embed actions in iiv view? which ones?
@@ -14,7 +13,7 @@ Islandora DM todo list.
 
 -- other features - some need clarification or confirmation
   - trigger jms conversions again (to recover from failures) - depends on workflow
-  - ldap integration
+  - ldap integration [in progress]
   - 192 - updated uis service and corresponding module updates
   - allow search by pid?
   - track fiscal year in fedora record?
