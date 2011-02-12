@@ -199,7 +199,7 @@ class DMObject {
 	}
 	
 	function fedoraBaseUrl() {
-		variable_get('fedora_base_url', 'http://localhost:8080/fedora');
+		return variable_get('fedora_base_url', 'http://localhost:8080/fedora');
 	}
 	
 	/**

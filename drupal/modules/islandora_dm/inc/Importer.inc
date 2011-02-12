@@ -284,12 +284,10 @@ class Importer {
 	function loadUnlinkedDocuments($incomplete = FALSE) {
 		$documents = array();
 		$pids = DMObject::findRelatedPids(Constants::PID_COLLECTION_PURCHASE_ORDERS_UNLINKED_DOCUMENTS, Constants::PID_CMODEL_DOCUMENT);
-		
 		foreach($pids as $pid) {
 			$document = new DMDocument($pid);
-			$document->load();
-			
-			if ($incomplete & $document->incompleteImport(FALSE)) {
+			$document->load();			
+			if ($incomplete == $document->incompleteImport(FALSE)) {
 				$documents[] = $document;
 			}
 		}		
