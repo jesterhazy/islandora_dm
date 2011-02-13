@@ -1,0 +1,105 @@
+<!--**************************************START Islandora-DM**********************************************************************************************************-->
+
+		<xsl:if test="starts-with($PID,'islandora-dm')">
+
+			<!-- rels-ext handling added here, because the stuff around line 128 doesn't seem to work -->
+			<xsl:for-each select="foxml:datastream/foxml:datastreamVersion[last()]/foxml:xmlContent/rdf:RDF/rdf:Description/*">
+				<field>
+					<xsl:attribute name="name">
+						<xsl:value-of select="concat('rels.', name())"/>
+					</xsl:attribute>
+					<xsl:value-of select="substring-after(@rdf:resource, '/')"/>
+				</field>
+			</xsl:for-each>
+
+			<xsl:for-each select="foxml:objectProperties/foxml:property">
+				<field >
+					<xsl:attribute name="name"> 
+						<xsl:value-of select="concat('fgs.', substring-after(@NAME,'#'))"/>
+					</xsl:attribute>
+					<xsl:value-of select="@VALUE"/>
+				</field>
+			</xsl:for-each>
+
+			<!-- created and modified dates, so we can sort on them -->
+			<xsl:for-each select="foxml:objectProperties/foxml:property[@NAME='info:fedora/fedora-system:def/model#createdDate']">
+				<field >
+					<xsl:attribute name="name">islandora-dm.date.created</xsl:attribute>
+					<xsl:value-of select="@VALUE"/>
+				</field>
+			</xsl:for-each>
+
+			<xsl:for-each select="foxml:objectProperties/foxml:property[@NAME='info:fedora/fedora-system:def/view#lastModifiedDate']">
+				<field >
+					<xsl:attribute name="name">islandora-dm.date.modified</xsl:attribute>
+					<xsl:value-of select="@VALUE"/>
+				</field>
+			</xsl:for-each>
+	
+			<!--  which dm-specific dsids are indexed (across all content models)? -->
+			<xsl:variable name="indexed-dsids" select="'/uis/note/xml/text/'" />
+	
+			<!-- indexing for inline xml streams -->
+			<xsl:for-each select="foxml:datastream/foxml:datastreamVersion[last()]/foxml:xmlContent/*">
+				<xsl:variable name="dsid" select="../../../@ID" />
+				<xsl:if test="contains($indexed-dsids, concat('/', $dsid, '/'))">
+					<field>
+						<xsl:attribute name="name">islandora-dm.text</xsl:attribute>
+						<xsl:value-of select="normalize-space(.)"/>
+					</field>
+
+					<!-- special handling for specific streams -->
+					<xsl:if test="$dsid = 'uis'">
+						<field>
+							<xsl:attribute name="name">islandora-dm.query.po.department</xsl:attribute>
+							<xsl:value-of select="normalize-space(buddept/dept)"/>
+						</field>
+						<field>
+							<xsl:attribute name="name">islandora-dm.sort.po.department</xsl:attribute>
+							<xsl:value-of select="normalize-space(buddept/dept)"/>
+						</field>
+						<field>
+							<xsl:attribute name="name">islandora-dm.query.po.supplier</xsl:attribute>
+							<xsl:value-of select="normalize-space(supplier/name)"/>
+						</field>
+						<field>
+							<xsl:attribute name="name">islandora-dm.sort.po.supplier</xsl:attribute>
+							<xsl:value-of select="normalize-space(supplier/name)"/>
+						</field>
+						<field>
+							<xsl:attribute name="name">islandora-dm.query.po.requisition</xsl:attribute>
+							<xsl:value-of select="normalize-space(substring-after(re,'#'))"/>
+						</field>
+						<field>
+							<xsl:attribute name="name">islandora-dm.sort.po.requisition</xsl:attribute>
+							<xsl:value-of select="normalize-space(substring-after(re,'#'))"/>
+						</field>
+					</xsl:if>
+				</xsl:if>
+			</xsl:for-each>
+			
+			<!-- indexing for external text streams (plain or xml) -->
+			<xsl:for-each select="foxml:datastream[@CONTROL_GROUP = 'M']">
+				<xsl:variable name="dsid" select="@ID" />
+				<xsl:variable name="mime" select="./foxml:datastreamVersion[last()]/@MIMETYPE" />
+				
+				<xsl:if test="contains($indexed-dsids, concat('/', $dsid, '/'))">
+				
+					<xsl:variable name="content">
+						<xsl:if test="$mime = 'text/plain'">
+							<xsl:value-of select="islandora-exts:getDatastreamTextRaw($PID, $REPOSITORYNAME, $dsid, $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)" />
+						</xsl:if>
+						<xsl:if test="$mime = 'text/xml'">
+							<xsl:value-of select="islandora-exts:getXMLDatastreamASNodeList($PID, $REPOSITORYNAME, $dsid, $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)" />
+						</xsl:if>
+					</xsl:variable>
+				
+					<field>
+						<xsl:attribute name="name">islandora-dm.text</xsl:attribute>
+						<xsl:value-of select="normalize-space($content)"/>
+					</field>
+				</xsl:if>
+			</xsl:for-each>
+		</xsl:if>
+
+<!--**************************************END Islandora-DM************************************************************************************************************-->
