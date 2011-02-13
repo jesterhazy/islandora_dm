@@ -1,12 +1,15 @@
 1. solr configuration
 
-- make solr schema.xml has dynamic indexing enabled for islandora-dm* (or just *):
 
-  <dynamicField name="*" type="text_fgs" indexed="true"  stored="true" multiValued="true"/>
-  
+- add these to <fields> section of active solr schema.xml file (<solr_home>/conf/schema.xml):
+<!-- islandora-dm fields-->
+<dynamicField name="islandora-dm.date.*" type="date" indexed="true" stored="true"/>
+<dynamicField name="islandora-dm.sort.*" type="string" indexed="true" stored="true"/>
+<dynamicField name="*" type="text_fgs" indexed="true" stored="true" multiValued="true"/>
+
 2. gsearch configuration
 
-- see foxmlToSolr.xslt.
+- add xslt fragment in gsearch-solr-config.txt to the active gsearch foxmlToSolr.xslt file.
 
 3. fedora_repository
 
