@@ -144,10 +144,15 @@ class DMPurchaseOrder extends DMObject {
 	}
 	
 	function synchedWithUIS() {
-		$uis_hash = md5(strstr($this->uis->asXML(), '<po>'));
-		$fedora_hash = md5(strstr($this->fedoraUis->asXML(), '<po>'));
-
-		return $uis_hash == $fedora_hash;
+		// assume synched, if uis data is missing
+		$synched = TRUE;
+		if ($this->uis) {
+			$uis_hash = md5(strstr($this->uis->asXML(), '<po>'));
+			$fedora_hash = md5(strstr($this->fedoraUis->asXML(), '<po>'));
+			$uis_hash == $fedora_hash;
+		}
+		
+		return $synched;
 	}
 
 	function linkUrl() {
