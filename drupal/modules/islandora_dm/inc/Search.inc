@@ -2,56 +2,97 @@
 
 module_load_include('php', 'fedora_repository', 'Solr/Service');
 
-/**
- * Search - performs purchase order searches, and hold results.
- */ 
 class Search {
-  protected $query;
-  protected $offset;
-  protected $limit;
-  protected $results;
-  protected $url;
-  
-  function __construct($offset, $limit) {
-    $this->offset = $offset;
-    $this->limit = $limit;
+  function searchPage() {
+    $page = '<div class="islandora-dm-search-page">';
+	  $page .= drupal_get_form('islandora_dm_search_form');
+		
+		if ($this->hasQuery()) {
+			$results = $this->executeSearch();
+			$page .= $this->renderResults($results);
+		}
+	  
+	  $page .= '</div>';
+	  return $page;
   }
   
-  /**
-   * Execute a term search, and return a Search instance containing the results.
-   */
-  static function createSearchUsingTerms($terms, $offset = 0, $limit = 10) {
-    $search = new Search($offset, $limit);
-    $search->setQueryFromTerms($terms);
-    return $search;
+  function hasQuery() {
+  	return isset($_REQUEST['f']) && isset($_REQUEST['s']) && isset($_REQUEST['t']);
   }
   
-  /**
-   * Set query from search terms.
-   */
-  function setQueryFromTerms($terms) {    
-    // split terms    
-    $split = split(' ', $terms);
-    $joined = join(" and ", $split);
-    $escaped = Apache_Solr_Service::escape($joined);
-    $query = 'islandora-dm.po:(' . $escaped . ')';
-    $this->query = $query;
-  }
-  
-  /**
-   * Execute the search. Can only be called once. Does nothing on subsequent calls.
-   */
-  function execute() {
-    // log warning if execute is called more than once
-    if ($this->results) {
-      watchdog(Constants::MODULE_NAME, t('ignoring invalid call to Search::execute'), null, WATCHDOG_WARNING);
-      return;
+  function buildSolrOptions() {
+    // TODO this parameter should probably be pulled from solr block config
+  	$solr_options = array('qt' => 'standard');
+    
+    // set up sort
+    $sort_options = array(
+      '1' => NULL,
+      '2' => 'islandora-dm.date.created desc',
+      '3' => 'islandora-dm.date.modified desc',
+      '4' => 'islandora-dm.sort.po.department asc',
+      '5' => 'islandora-dm.sort.po.supplier asc',
+      );
+      
+    $sort = $sort_options[$_REQUEST['s']];
+    
+    if ($sort) {
+    	$solr_options['sort'] = $sort;
     }
     
-    $solr = $this->getSolrService();
+    return $solr_options;
+  }
+  
+  function isSortOnPurchaseOrderField() {
+  	return in_array($_REQUEST['s'], array('4', '5'));
+  }
+  
+  function buildSolrQuery() {
+  	$t = $_REQUEST['t'];
+  	
+ 		// set up field
+    $field_options = array(
+      '1' => 'islandora-dm.text',
+      '2' => 'PID',
+      '3' => 'islandora-dm.query.po.department',
+      '4' => 'islandora-dm.query.po.supplier',
+      '5' => 'islandora-dm.query.po.requisition',
+      );
+      
+    $field = $field_options[$_REQUEST['f']];
+    
+    if ($field == 'PID') {
+    	$t = DMPurchaseOrder::number2pid($t);
+    }
+    
+    // set up term. 
+    // allow for space-delimited multiple terms even though these 
+    // should only be used on searches against islandora-dm.text 
+    $split = split(' ', $t);
+    $joined = join(" and ", $split);
+    $term = Apache_Solr_Service::escape($joined);
+    
+    $query = $field . ':(' . $term . ')';
+    
+    if ($this->isSortOnPurchaseOrderField()) {
+    	$query.= ' and rels.hasModel:(' . Apache_Solr_Service::escape(Constants::PID_CMODEL_PURCHASE_ORDER) . ')';
+    }
+    
+    return $query;
+  }
+  
+  function executeSearch() {
+  	$query = $this->buildSolrQuery();
+  	$options = $this->buildSolrOptions();
+  
+  	// no paging yet
+		$offset = 0;
+		$limit = NULL;
 
-    // TODO 'qt' param s/b from solr block config (maybe default limit, too)
-    $this->results = $solr->search($this->query, $offset, $limit, array('qt' => 'standard'));
+    $solr = $this->getSolrService();
+    
+    $results = $solr->search($query, $offset, $limit, $options);
+    
+    return $results;
   }
   
   /**
@@ -65,15 +106,91 @@ class Search {
     return $solr;
   }
   
-  function results() {
-    return $this->results;
+  function renderResults($results) {
+  	$view = new ViewSearchResults($results);
+  	return $view->view();
+  }
+
+  function searchForm() {
+    $form = array();
+    
+    $field_options = array(
+      '1' => 'All fields',
+      '2' => 'PO Number',
+      '3' => 'Department',
+      '4' => 'Supplier',
+      '5' => 'Requisition',
+      );
+      
+    $sort_options = array(
+      '1' => 'Relevance',
+      '2' => 'Imported date',
+      '3' => 'Updated date',
+      '4' => 'Department',
+      '5' => 'Supplier',
+      );
+    
+	  $form['f'] = array(
+      '#type' => 'select',
+      '#options' => $field_options,
+      '#default_value' => isset($_REQUEST['f']) ? $_REQUEST['f'] : '1',
+      '#required' => TRUE
+	  );
+		
+	  $form['t'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Search terms',
+		  '#attributes' => array('placeholder' => 'search terms'),
+		  '#default_value' => isset($_REQUEST['t']) ? $_REQUEST['t'] : '',
+		  '#size' => 30,
+		  '#required' => TRUE
+	  );
+
+	  $form['submit'] = array(
+		  '#type' => 'submit',
+		  '#name' => 'search',
+		  '#value' => t('Search')
+	  );
+	  
+	  $form['s'] = array(
+      '#type' => 'select',
+      '#options' => $sort_options,
+      '#default_value' => isset($_REQUEST['s']) ? $_REQUEST['s'] : '1',
+		  '#required' => TRUE
+	  );
+
+	  return $form;
   }
   
-  
-  
-  
-  
-   // 
+  function submitForm(&$form_state) {
+  	$form_state['redirect'] = array('islandora_dm/search',
+  		array('f' => t($form_state['values']['f']),
+  			's' => t($form_state['values']['s']),
+	  		't' => t($form_state['values']['t']),
+	  		) 
+  		);
+  }
+}
+
+function islandora_dm_search_page() {	
+  $search = new Search();
+  return $search->searchPage();
+}
+
+function islandora_dm_search_form() {
+  $search = new Search();
+  return $search->searchForm();
+}
+
+function islandora_dm_search_form_submit($form, &$form_state) {
+	$search = new Search();
+	$search->submitForm($form_state);
+}
+
+
+
+
+// 
    // 
    // function getSearchResultsSummary() {
    //   $hits = $this->hits();
@@ -140,4 +257,3 @@ class Search {
    // }
 
 
-}

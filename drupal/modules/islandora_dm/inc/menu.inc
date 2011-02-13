@@ -84,7 +84,7 @@ function islandora_dm_menu() {
 	// search
 	$items['islandora_dm/search'] = array (
 		'title' => 'Search',
-		'page callback' => 'islandora_dm_search',
+		'page callback' => 'islandora_dm_search_page',
 		'access arguments' => array(Constants::PERMISSION_VIEW),
 	);
 
@@ -130,4 +130,22 @@ function islandora_dm_menu() {
 
 	return $items;
 }
+
+
+function unimplemented_page($name) {
+	$output = <<<END
+<p>todo: implement $name page</p>
+END;
+
+	return $output;
+}
+
+function islandora_dm_home() {
+	return unimplemented_page('home');
+}
+
+function islandora_dm_about() {	
+	return unimplemented_page('about');
+}
+
 ?>
