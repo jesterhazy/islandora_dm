@@ -185,3 +185,21 @@ class DMPurchaseOrder extends DMObject {
 			Constants::MIME_TYPE_XML, 'X');
 	}
 }
+
+
+function islandora_dm_po_view($po_number) {
+	$pid = DMPurchaseOrder::number2pid($po_number);
+	$purchase_order = new DMPurchaseOrder($pid);
+	$purchase_order->load();
+	$view = new ViewPurchaseOrder($purchase_order);
+	return $view->view();
+}
+
+function islandora_dm_update_uis_data($po_number) {
+	$pid = DMPurchaseOrder::number2pid($po_number);
+	$purchase_order = new DMPurchaseOrder($pid);
+	$purchase_order->load();
+	$purchase_order->updateUISDatastream();
+	drupal_set_message(t('Updated record from UIS'));
+	drupal_goto('islandora_dm/po/' . $po_number . '/view');
+}
