@@ -1,7 +1,7 @@
 <?php
 
 function islandora_dm_import_files_form() {
-	$imp = new Importer();
+	$imp = new Import();
 	$form = array();
 
 	$files = $imp->getFilesWithFormKeys();
@@ -15,7 +15,7 @@ function islandora_dm_import_files_form() {
 	else {
 		$form['import_all'] = array(
 			'#type' => 'submit',
-			'#name' => Importer::BTN_IMPORT_ALL,
+			'#name' => Import::BTN_IMPORT_ALL,
 			'#value' => t('Import All')
 		);
 
@@ -64,12 +64,12 @@ function theme_islandora_dm_import_files_checkboxes($form) {
 }
 
 function islandora_dm_import_files_form_submit($form, &$form_state) {
-	$imp = new Importer();
+	$imp = new Import();
 	$imp->importFiles($form, $form_state);
 }
 
 function islandora_dm_import_link_documents_form() {
-	$imp = new Importer();
+	$imp = new Import();
 	$form = array();
 	
 	$documents = $imp->loadUnlinkedDocuments();
@@ -108,7 +108,7 @@ function islandora_dm_import_link_documents_form() {
 }
 
 function islandora_dm_import_link_documents_form_validate($form, &$form_state) {
-	$imp = new Importer();
+	$imp = new Import();
 	$document_number = $imp->getLinkFormDocumentNumber($form_state);
 	$purchase_order_number_field = $imp->getLinkFormPurchaseOrderNumbers($form_state);
 	
@@ -128,12 +128,12 @@ function islandora_dm_import_link_documents_form_validate($form, &$form_state) {
 }
 
 function islandora_dm_import_link_documents_form_submit($form, &$form_state) {
-	$imp = new Importer();
+	$imp = new Import();
 	$imp->linkDocuments($form, $form_state);
 }
 
 function islandora_dm_import_incomplete_form() {
-	$imp = new Importer();
+	$imp = new Import();
 	$form = array();
 	
 	$form['foo'] = array(
@@ -149,9 +149,9 @@ function islandora_dm_import_incomplete_form() {
 	}
 
 	else {
-		$form[Importer::BTN_RESCHEDULE_ALL] = array(
+		$form[Import::BTN_RESCHEDULE_ALL] = array(
 			'#type' => 'submit',
-			'#name' => Importer::BTN_RESCHEDULE_ALL,
+			'#name' => Import::BTN_RESCHEDULE_ALL,
 			'#value' => t('Reschedule All')
 		);
 
@@ -200,7 +200,7 @@ function theme_islandora_dm_import_incomplete_documents_checkboxes($form) {
 }
 
 function islandora_dm_import_incomplete_form_submit($form, &$form_state) {
-	$imp = new Importer();
+	$imp = new Import();
 	$imp->rescheduleIncomplete($form, $form_state);
 }
 
