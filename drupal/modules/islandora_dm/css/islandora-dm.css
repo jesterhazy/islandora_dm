@@ -31,6 +31,9 @@ div.clickable.active:hover {
 	/search 
 */
 
+form#islandora-dm-search-form {
+	margin: 1em 0;
+}
 #islandora-dm-search-form div {
 	display: inline;	
 }
@@ -44,6 +47,7 @@ div.clickable.active:hover {
 	padding: 10px;
 	border: 1px solid #ccc;
 	overflow: auto;
+	clear: both;
 }
 
 .search-result .title {
@@ -67,11 +71,21 @@ div.clickable.active:hover {
 	border: none;
 }
 
-.islandora-dm-search-results-summary	{
-	margin: 1em 0;
+.islandora-dm-search-results .summary	{
+	margin-top: 1em;
+	width: auto;
+	text-align: center;
 }
 
-.islandora-dm-search-results-pager	{
+.islandora-dm-search-results .page-previous	{
+	text-align: left;
+	width: 150px;
+	float: left;
+}
+
+.islandora-dm-search-results .page-next	{
+	text-align: right;
+	width: 150px;
 	float: right;
 }
 

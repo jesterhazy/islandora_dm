@@ -1,5 +1,11 @@
 1. solr configuration
 
+on test.islandlives.ca, important solr locations are:
+index: /usr/local/fedora/gsearch_solr/solr/data
+schema: /usr/local/fedora/tomcat/bin/solr/conf/schema.xml
+conf: /usr/local/fedora/tomcat/bin/solr/conf/solrconfig.xml
+xslt: /usr/local/fedora/tomcat/webapps/fedoragsearch/WEB-INF/classes/config/index/gsearch_solr/demoFoxmlToSolr.xslt
+log: (catalina.out)
 
 - add these to <fields> section of active solr schema.xml file (<solr_home>/conf/schema.xml):
 <!-- islandora-dm fields-->

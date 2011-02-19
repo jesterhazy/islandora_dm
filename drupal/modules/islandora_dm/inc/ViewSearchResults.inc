@@ -5,7 +5,8 @@
  */
 class ViewSearchResults {
 	
-	function __construct($results) {
+	function __construct($results, $offset) {
+		$this->offset = $offset;
 		$this->results = $results;
 	}
 	
@@ -115,53 +116,17 @@ class ViewSearchResults {
 		return $view->searchResult();
 	}
 	
-	function fudgeResults() {
-		// hack results		
-		
-		$results = array();
-		
-		$fake = new stdClass();
-		$fake->PID = 'islandora-dm:n-example-1';
-		$fake->{'rels.hasModel'} = Constants::PID_CMODEL_NOTE;
-		$results[] = $fake;
-		
-		$fake = new stdClass();
-		$fake->PID = 'islandora-dm:n-example-2';
-		$fake->{'rels.hasModel'} = Constants::PID_CMODEL_NOTE;
-		$results[] = $fake;
-		
-		$fake = new stdClass();
-		$fake->PID = 'islandora-dm:p-example-2';
-		$fake->{'rels.hasModel'} = Constants::PID_CMODEL_PAGE;
-		$results[] = $fake;
-		
-		$fake = new stdClass();
-		$fake->PID = 'islandora-dm:d-example-1';
-		$fake->{'rels.hasModel'} = Constants::PID_CMODEL_DOCUMENT;
-		$results[] = $fake;
-		
-		$fake = new stdClass();
-		$fake->PID = 'islandora-dm:po-example-1';
-		$fake->{'rels.hasModel'} = Constants::PID_CMODEL_PURCHASE_ORDER;
-		$results[] = $fake;
-		
-		$this->results->response->numFound = count($results);
-	
-		$this->results->response->docs = $results;
-	}
-	
 	function view() {
 		drupal_add_js(drupal_get_path('module', Constants::MODULE_NAME) . '/js/search.js');
 		$html = '<h3>' . t('Search Results') . '</h3>';
 		$html .= '<div class="islandora-dm-search-results">';
 		
-		// $this->fudgeResults();
-		
 		if ($this->hits() > 0) {
-		  // $view .= $this->getSearchResultsSummary();
+		  $html .= $this->summary();
 		  foreach ($this->results->response->docs as $result) {
 				$html .= $this->renderResult($result);
 		  }
+		  $html .= $this->summary();
 		}
 		
 		else {
@@ -172,4 +137,118 @@ class ViewSearchResults {
 		
 		return $html;
 	}
+	
+	function summary() {
+		$html = '<div class="summary">';
+		
+		
+		$hits = $this->hits();
+		$offset = $this->offset;
+		if ($hits > Search::MAX_RESULTS) {
+
+			$html .= '<div class="page-previous">';
+			if ($offset > 0) {
+				$html .= '<a href="' 
+					. Search::queryStringForOffset($offset - Search::MAX_RESULTS) 
+					. '">&lt; Previous page</a>';
+			}
+			$html .= '&nbsp;</div>';
+			
+			$html .= '<div class="page-next">&nbsp;';
+			if ($offset + Search::MAX_RESULTS < $hits) {
+				$html .= '<a href="' 
+					. Search::queryStringForOffset($offset + Search::MAX_RESULTS) 
+					. '">Next page &gt;</a>';
+			}
+			$html .= '</div>';
+			
+			$html .= 'Showing ' . $this->startNumber() . ' to ' . $this->endNumber() . ' of ' . $this->hits() . '.';
+		}
+		
+		$html .= '</div>';
+		return $html;
+	}
+
+	function startNumber() {
+		return $this->offset + 1;
+	}
+	
+	function endNumber() {
+		$end = $this->offset + Search::MAX_RESULTS;
+		$hits = $this->hits();
+		
+		if ($end > $hits) {
+			$end = $hits;
+		}
+		
+		return $end;
+	}
 }
+
+
+
+// 
+   // 
+   // function getSearchResultsSummary() {
+   //   $hits = $this->hits();
+   //   $html .= '<div class="islandora-dm-search-results-summary">';
+   //   
+   //   if ($hits == 0) {
+   //     $html .= t('Nothing found.');
+   //   }
+   //  
+   //   elseif ($hits <= $this->limit) {
+   //     $html .= t('Showing all results.');
+   //   }
+   //   
+   //   else {
+   //     $end = min($this->offset + $this->limit, $hits);
+   //     $html .= t('Showing @start - @end of @hits results.', 
+   //       array('@start' => $this->offset + 1, '@end' => $end, '@hits' => $hits));
+   //   }
+   //   
+   //       
+   //   if ($hits > $this->limit) {
+   //     $html .= '<div class="islandora-dm-search-results-pager">';
+   //     
+   //     $url = $this->url;
+   //     $url .= (strstr($url, '?')) ? '&' : '?';
+   //     $url .= 'start=';
+   // 
+   //     
+   //     if ($this->offset > $this->limit) {
+   //       $html .= '<a href="' . $url . '0">&lt;</a>';
+   //     }
+   //     
+   //     $offset = 0;
+   //     $ellipse1 = FALSE;
+   //     $ellipse2 = FALSE;
+   //     while($offset < $hits) {
+   //       $page = (int) ($offset / $this->limit) + 1;
+   //       if ($offset == 1 || $offset + $this->limit >= $hits || abs($offset - $this->offset) < (3 * $this->limit)) {
+   //         $html .= ' <a href="' . $url . $offset . '">' . $page . '</a>';
+   //       }
+   //       
+   //       elseif(!$ellipse1 && $offset - $this->offset <= -3) {
+   //         $html .= ' ...';
+   //         $ellipse1 = TRUE;
+   //       }
+   //       
+   //       elseif(!$ellipse2 && $offset - $this->offset >= 3) {
+   //         $html .= ' ...';
+   //         $ellipse2 = TRUE;
+   //       }
+   // 
+   //       $offset += $this->limit;
+   //     }
+   //     
+   //     if ($this->offset + $this->limit < $hits) {
+   //       $html .= ' <a href="' . $url . $last_page . '">&gt;</a>';
+   //     }
+   //     
+   //     $html .= '</div>';
+   //   }
+   //   
+   //   $html .= '</div>';
+   //   return $html;
+   // }

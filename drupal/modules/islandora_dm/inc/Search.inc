@@ -3,6 +3,7 @@
 module_load_include('php', 'fedora_repository', 'Solr/Service');
 
 class Search {
+	const MAX_RESULTS = 10;
   function searchPage() {
     $page = '<div class="islandora-dm-search-page">';
 	  $page .= drupal_get_form('islandora_dm_search_form');
@@ -80,19 +81,26 @@ class Search {
     return $query;
   }
   
+  function offset() {
+  	return $_REQUEST['o'] ? $_REQUEST['o'] : 0;
+  }
+  
   function executeSearch() {
   	$query = $this->buildSolrQuery();
   	$options = $this->buildSolrOptions();
-  
-  	// no paging yet
-		$offset = 0;
-		$limit = NULL;
 
     $solr = $this->getSolrService();
     
-    $results = $solr->search($query, $offset, $limit, $options);
+    $results = $solr->search($query, $this->offset(), self::MAX_RESULTS, $options);
     
     return $results;
+  }
+  
+  static function queryStringForOffset($offset) {
+  	return '?f=' . urlencode($_REQUEST['f']) 
+  		. '&s=' . urlencode($_REQUEST['s']) 
+  		. '&t=' . urlencode($_REQUEST['t']) 
+  		. '&o=' . $offset; 
   }
   
   /**
@@ -107,7 +115,7 @@ class Search {
   }
   
   function renderResults($results) {
-  	$view = new ViewSearchResults($results);
+  	$view = new ViewSearchResults($results, $this->offset());
   	return $view->view();
   }
 
@@ -186,74 +194,4 @@ function islandora_dm_search_form_submit($form, &$form_state) {
 	$search = new Search();
 	$search->submitForm($form_state);
 }
-
-
-
-
-// 
-   // 
-   // function getSearchResultsSummary() {
-   //   $hits = $this->hits();
-   //   $html .= '<div class="islandora-dm-search-results-summary">';
-   //   
-   //   if ($hits == 0) {
-   //     $html .= t('Nothing found.');
-   //   }
-   //  
-   //   elseif ($hits <= $this->limit) {
-   //     $html .= t('Showing all results.');
-   //   }
-   //   
-   //   else {
-   //     $end = min($this->offset + $this->limit, $hits);
-   //     $html .= t('Showing @start - @end of @hits results.', 
-   //       array('@start' => $this->offset + 1, '@end' => $end, '@hits' => $hits));
-   //   }
-   //   
-   //       
-   //   if ($hits > $this->limit) {
-   //     $html .= '<div class="islandora-dm-search-results-pager">';
-   //     
-   //     $url = $this->url;
-   //     $url .= (strstr($url, '?')) ? '&' : '?';
-   //     $url .= 'start=';
-   // 
-   //     
-   //     if ($this->offset > $this->limit) {
-   //       $html .= '<a href="' . $url . '0">&lt;</a>';
-   //     }
-   //     
-   //     $offset = 0;
-   //     $ellipse1 = FALSE;
-   //     $ellipse2 = FALSE;
-   //     while($offset < $hits) {
-   //       $page = (int) ($offset / $this->limit) + 1;
-   //       if ($offset == 1 || $offset + $this->limit >= $hits || abs($offset - $this->offset) < (3 * $this->limit)) {
-   //         $html .= ' <a href="' . $url . $offset . '">' . $page . '</a>';
-   //       }
-   //       
-   //       elseif(!$ellipse1 && $offset - $this->offset <= -3) {
-   //         $html .= ' ...';
-   //         $ellipse1 = TRUE;
-   //       }
-   //       
-   //       elseif(!$ellipse2 && $offset - $this->offset >= 3) {
-   //         $html .= ' ...';
-   //         $ellipse2 = TRUE;
-   //       }
-   // 
-   //       $offset += $this->limit;
-   //     }
-   //     
-   //     if ($this->offset + $this->limit < $hits) {
-   //       $html .= ' <a href="' . $url . $last_page . '">&gt;</a>';
-   //     }
-   //     
-   //     $html .= '</div>';
-   //   }
-   //   
-   //   $html .= '</div>';
-   //   return $html;
-   // }
-
 

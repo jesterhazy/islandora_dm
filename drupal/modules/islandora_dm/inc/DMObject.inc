@@ -188,16 +188,6 @@ class DMObject {
 		return $link;
 	}
 
-	/**
-		* Should only be called on DMDocument and DMPage objects.
-		*/
-	function viewerLinkUrl() {
-		global $user;
-		$qs = '?uid=' . base64_encode($user->name . ':' . $user->pass);
-		$url = $this->fedoraBaseUrl() . '/objects/' . $this->pid() . '/methods/ilives:viewerSdef/getViewer' . $qs;
-		return $url;
-	}
-	
 	function fedoraBaseUrl() {
 		return variable_get('fedora_base_url', 'http://localhost:8080/fedora');
 	}
