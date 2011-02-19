@@ -31,6 +31,9 @@ div.clickable.active:hover {
 	/search 
 */
 
+form#islandora-dm-search-form {
+	margin: 1em 0;
+}
 #islandora-dm-search-form div {
 	display: inline;	
 }
@@ -75,12 +78,14 @@ div.clickable.active:hover {
 }
 
 .islandora-dm-search-results .page-previous	{
-	width: 100px;
+	text-align: left;
+	width: 150px;
 	float: left;
 }
 
 .islandora-dm-search-results .page-next	{
-	width: 100px;
+	text-align: right;
+	width: 150px;
 	float: right;
 }
 
