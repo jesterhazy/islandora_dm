@@ -5,6 +5,8 @@
 <!-- islandora-dm fields-->
 <dynamicField name="islandora-dm.date.*" type="date" indexed="true" stored="true"/>
 <dynamicField name="islandora-dm.sort.*" type="string" indexed="true" stored="true"/>
+
+<!-- this is probably already configured -- if so, it should NOT be added again -->
 <dynamicField name="*" type="text_fgs" indexed="true" stored="true" multiValued="true"/>
 
 2. gsearch configuration
