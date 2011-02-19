@@ -44,6 +44,10 @@ class DMPage extends DMObject {
 		return $url;
 	}
 
+        function viewerLinkUrl() {
+		return $this->document()->viewerLinkUrl();
+        }
+
 	static function findRelatedPages($parent_pid) {
 		$pages = array();
 		

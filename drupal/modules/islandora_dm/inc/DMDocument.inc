@@ -99,7 +99,14 @@ class DMDocument extends DMObject {
 		
 		return $url;
 	}
-	
+
+        function viewerLinkUrl() {
+                global $user;
+         	$qs = '?uid=' . base64_encode($user->name . ':' . $user->pass);
+                $url = $this->fedoraBaseUrl() . '/objects/' . $this->pid() . '/methods/ilives:viewerSdef/getViewer' . $qs;
+                return $url;
+        }
+        	
 	function pageCount() {
 		return count($this->pages);
 	}
