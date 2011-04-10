@@ -100,15 +100,15 @@ class DMPurchaseOrder extends DMObject {
 	}
 	
 	function poDate() {
-		return substr($this->fedoraUis->podate, 0, strpos($this->fedoraUis->podate, 'T'));
+		return substr($this->fedoraUis->podate, 0, strpos($this->fedoraUis->podate, ' '));
 	}
 	
 	function department() {
-		return $this->fedoraUis->dept;
+		return $this->fedoraUis->buddept->dept;
 	}
 	
 	function departmentId() {
-		return $this->fedoraUis->idept;
+		return $this->fedoraUis->buddept->idept;
 	}
 	
 	function supplier() {

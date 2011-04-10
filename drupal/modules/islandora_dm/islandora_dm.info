@@ -2,5 +2,6 @@ name = Islandora Document Management
 description = A document management application built on Islandora
 core = 6.x
 dependencies[] = fedora_repository
+dependencies[] = islandora_solr_search
 package = Fedora Repository
 version = 6.1dev

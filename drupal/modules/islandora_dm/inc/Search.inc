@@ -1,6 +1,6 @@
 <?php
 
-module_load_include('php', 'fedora_repository', 'Solr/Service');
+module_load_include('php', 'islandora_solr_search', 'Solr/Service');
 
 class Search {
 	const MAX_RESULTS = 10;
