@@ -120,7 +120,7 @@ class DMPurchaseOrder extends DMObject {
 	}
 	
 	function requisitionNumber() {
-		return substr($this->fedoraUis->re, strpos($this->fedoraUis->re, '#') + 1);
+		return $this->fedoraUis->reqnum;
 	}
 	
 	function disposition() {
