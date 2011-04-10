@@ -85,7 +85,7 @@ class Import {
 
 	protected function archiveFile($file) {
 		$archive_dir = $this->getArchiveDir();
-		$md = mkdir($archive_dir);
+		$md = (is_dir($archive_dir) or mkdir($archive_dir));
 
 		if ($md) {
 			$dest = $archive_dir . '/' . $file->basename;
@@ -97,7 +97,7 @@ class Import {
 			}
 		}
 
-		$error = $md ? 'make archive directory for' : $cp ? 'copy' : $del ? 'delete' : null;
+		$error = $md ? $cp ? $del ? null : 'delete' : 'copy' : 'make archive directory for';
 
 		if ($error) {
 			watchdog(Constants::MODULE_NAME, t('Failed to ' . $error . ' import file: ' . $file->basename), null, WATCHDOG_WARN);
