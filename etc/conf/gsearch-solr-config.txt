@@ -55,12 +55,20 @@
 							<xsl:value-of select="normalize-space(buddept/dept)"/>
 						</field>
 						<field>
+							<xsl:attribute name="name">islandora-dm.query.po.department</xsl:attribute>
+							<xsl:value-of select="normalize-space(buddept/idept)"/>
+						</field>
+						<field>
 							<xsl:attribute name="name">islandora-dm.sort.po.department</xsl:attribute>
 							<xsl:value-of select="normalize-space(buddept/dept)"/>
 						</field>
 						<field>
 							<xsl:attribute name="name">islandora-dm.query.po.supplier</xsl:attribute>
 							<xsl:value-of select="normalize-space(supplier/name)"/>
+						</field>
+						<field>
+							<xsl:attribute name="name">islandora-dm.query.po.supplier</xsl:attribute>
+							<xsl:value-of select="normalize-space(supplier/isup)"/>
 						</field>
 						<field>
 							<xsl:attribute name="name">islandora-dm.sort.po.supplier</xsl:attribute>
