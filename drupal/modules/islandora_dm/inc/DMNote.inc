@@ -4,6 +4,8 @@
  * DMNote - methods for retrieving, displaying, and manipulating notes.
  */
 class DMNote extends DMObject {
+	const PID_PREFIX = 'n-';
+		
 	protected $noteXml;
 	
 	function typeLabel() {
@@ -11,7 +13,15 @@ class DMNote extends DMObject {
 	}
 	
 	function pidPrefix() {
-		return 'n-';
+		return self::PID_PREFIX;
+	}
+	
+	static function number2pid($number) {
+		return self::pidBase() . $number;
+	}
+	
+	static function pidBase() {
+		return DMObject::pidBase() . self::PID_PREFIX;
 	}
 	
 	function createFedoraObject() {
@@ -84,14 +94,16 @@ class DMNote extends DMObject {
 /*
  * Drupal callback handlers
  */
-function islandora_dm_add_note_form(&$form_state, $po_number, $document_number = NULL) {
+function islandora_dm_add_note_form(&$form_state, $po_number = NULL, $document_number = NULL) {
 	$form = array();
 	$form['#attributes'] = array('enctype' => 'multipart/form-data');
-			
-	$form['po_number'] = array(
-		'#type' => 'value',
-		'#value' => $po_number,
-	);
+	
+	if ($po_number) {
+		$form['po_number'] = array(
+			'#type' => 'value',
+			'#value' => $po_number,
+		);
+	}
 	
 	if ($document_number) {
 		$form['document_number'] = array(
@@ -155,8 +167,36 @@ function islandora_dm_add_note_form_submit($form, &$form_state) {
 			$note->addAttachmentDatastream($file);
 		}
 		
-		drupal_set_message(t('Added note @pid to @type @number', array('@pid' => $note->pid(), '@type' => $type, '@number' => $number)));
+		drupal_set_message(t('Added note @n1 to @type @n2.', array('@n1' => $note->pidNumber(), '@type' => $type, '@n2' => $number)));
 	}
 	
-	$form_state['redirect'] = array('islandora_dm/po/' . $form_state['values']['po_number'] . '/view');
+	$url_part = ($form_state['values']['po_number']) 
+		? '/po/' . $form_state['values']['po_number']
+		: '/document/' . $form_state['values']['document_number'];
+		
+	$form_state['redirect'] = array('islandora_dm' . $url_part . '/view');
+}
+
+function islandora_dm_delete_note($note_number, $origin, $origin_number) {
+	$note = new DMNote(DMNote::number2Pid($note_number));
+	$note->load();
+	
+	// if this is last note attached to document, and document has no PO, we need to mark it as unlinked
+	$document = $note->document();
+	if ($document) {
+		$document->load();
+		$purchase_orders = $document->purchaseOrders();
+		if (empty($purchase_orders)) {
+			$notes = $document->notes();
+			if (count($notes) <= 1) {
+				$document->addMembership(Constants::PID_COLLECTION_PURCHASE_ORDERS_UNLINKED_DOCUMENTS);
+			}
+		}
+	}
+	
+	// purge note
+	$note->purge();
+	drupal_set_message(t('Deleted note @n', array('@n' => $note_number)))	;
+	
+	drupal_goto('islandora_dm/' . $origin . '/' . $origin_number . '/view');
 }

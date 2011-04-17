@@ -87,6 +87,16 @@ function islandora_dm_menu() {
 		'page callback' => 'islandora_dm_search_page',
 		'access arguments' => array(Constants::PERMISSION_VIEW),
 	);
+	
+	// document view
+	$items['islandora_dm/document/%/view'] = array (
+		'type' => MENU_CALLBACK,
+		'title' => 'Document !id',
+		'title arguments' => array('!id' => 2),
+		'page callback' => 'islandora_dm_document_view',
+		'page arguments' => array(2),
+		'access arguments' => array(Constants::PERMISSION_VIEW),
+	);
 
 	// purchase order view
 	$items['islandora_dm/po/%/view'] = array (
@@ -104,11 +114,11 @@ function islandora_dm_menu() {
 		'title' => 'Add Note to Purchase Order !id',
 		'title arguments' => array('!id' => 2),
 		'page callback' => 'drupal_get_form',
-		'page arguments' => array('islandora_dm_add_note_form', 2),
+		'page arguments' => array('islandora_dm_add_note_form', 2, null),
 		'access arguments' => array(Constants::PERMISSION_EDIT),
 	);
 	
-	// add note to document
+	// add note to document (from the po view)
 	$items['islandora_dm/po/%/document/%/add_note'] = array (
 		'type' => MENU_CALLBACK,
 		'title' => 'Add Note to Document !id',
@@ -117,7 +127,27 @@ function islandora_dm_menu() {
 		'page arguments' => array('islandora_dm_add_note_form', 2, 4),
 		'access arguments' => array(Constants::PERMISSION_EDIT),
 	);
-
+	
+	// add note to document (from the document view)
+	$items['islandora_dm/document/%/add_note'] = array (
+		'type' => MENU_CALLBACK,
+		'title' => 'Add Note to Document !id',
+		'title arguments' => array('!id' => 2),
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('islandora_dm_add_note_form', null, 2),
+		'access arguments' => array(Constants::PERMISSION_EDIT),
+	);
+	
+	// delete note
+	$items['islandora_dm/%/%/note/%/delete'] = array (
+	  'type' => MENU_CALLBACK,
+	  'title' => 'Delete Note !id',
+	  'title arguments' => array('!id' => 4),
+	  'page callback' => 'islandora_dm_delete_note',
+	  'page arguments' => array(4, 1, 2),
+	  'access arguments' => array(Constants::PERMISSION_EDIT),
+	);
+	
 	// update purchase order from uis
 	$items['islandora_dm/po/%/update'] = array (
 		'type' => MENU_CALLBACK,

@@ -25,6 +25,22 @@ div.clickable.active:hover {
 	clear: both;
 }
 
+fieldset {
+	border: 1px solid #555;
+}
+
+.notes .note {
+	margin: .5em 0;
+}
+
+.notes .attachment .file {
+	margin: .5em;
+}
+
+.notes .attachment .file a {
+	font-weight: bold;
+}
+
 /* end global */
 
 /* ------------------------------------
@@ -95,46 +111,51 @@ form#islandora-dm-search-form {
 	/po/-/view 
 */
 
-.islandora-dm-po-view td.label {
+.islandora-dm-view td.label {
 	width: 15em;
 }
 
-.islandora-dm-po-view tbody {
+.islandora-dm-view tbody {
 	border: none;
 }
 
-.islandora-dm-po-view tr.odd, .islandora-dm-po-view tr.even {
+.islandora-dm-view tr.odd, .islandora-dm-view tr.even {
 	background-color: inherit;
 	border: none;
 }
 
-.islandora-dm-po-view .note {
-	margin: .5em;
+.islandora-dm-view table {
+	width: auto;
 }
 
-.islandora-dm-po-view .attachment .file {
-	margin: .5em;
+.islandora-dm-view tbody {
+	border: none;
 }
 
-.islandora-dm-po-view .attachment .file a {
-	font-weight: bold;
+.islandora-dm-view td {
+	padding: 0 1em;
 }
 
-.islandora-dm-po-view .button {
-	margin: .5em;
+.islandora-dm-view .odd, .islandora-dm-view .even {
+	background-color: inherit;
+	border: none;
+}
+
+.islandora-dm-view .button {
+	margin: .5em .5em .5em 0;
 	display: inline;
 }
 
-.islandora-dm-po-view .buttons {
+.islandora-dm-view .buttons {
 	margin: 1em 0 1em 0;
 }
 
-.islandora-dm-po-view .caption {
+.islandora-dm-view .caption {
 	font-style: italic;
 	font-size: 80%;
 }
 
-.islandora-dm-po-view .document {
+.islandora-dm-view .document {
 	float: left;
 	margin-right: 0.5em;
 	margin-bottom: 0.5em;
@@ -143,11 +164,11 @@ form#islandora-dm-search-form {
 	text-align: center;
 }
 
-.islandora-dm-po-view .document div {
+.islandora-dm-view .document div {
 	margin-top: 0.5em;
 }
 
-.islandora-dm-po-view .document:hover {
+.islandora-dm-view .document:hover {
 	background-color: #eee;
 }
 
@@ -158,4 +179,6 @@ form#islandora-dm-search-form {
 .islandora-dm-import-link-document.search-result .form-submit {
 	margin: 0px;
 }
+
+
 

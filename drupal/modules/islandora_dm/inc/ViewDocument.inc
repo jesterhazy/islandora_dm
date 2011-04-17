@@ -17,6 +17,60 @@ class ViewDocument {
 	}
 	
 	function view() {
+		drupal_add_js('misc/collapse.js');
+
+		$view = "\n\n";
+		$view = '<div class="islandora-dm-view">';
+
+		// return an empty view (with errors) if object is empty.
+		// if (!$this->document->loaded()) {
+		// 	return $view;
+		// }
+
+		$view .= "\n\n";
+		$view .= $this->addDocumentSection();
+		// $view .= '<fieldset class="collapsible collapsed"><legend>Details</legend>' . "\n";
+		// $view .= '<div class="plain">';
+		// $view .= theme('table', null, $this->detailsAsTableRows());
+		// $view .= '</div>';
+		// $view .= $this->addNotesSection();
+		// $view .= '</fieldset>' . "\n";
+		$view .= '<h3>Details</h3>' . "\n";
+		$view .= '<div class="plain">';
+		$view .= theme('table', null, $this->detailsAsTableRows());
+		$view .= '</div>';
+		$view .= $this->addNotesSection();
+		$view .= ViewPurchaseOrder::addButton('add_note', 'Add Note');
+		$view .= '</div>';		
+		$view .= "\n\n";
+
+		return $view;
+	}
+	
+	// function addDocumentSection() {
+	// 	$url = $this->document->viewerBaseUrl();
+	// 	$params = $this->document->viewerUrlParameters();
+	// 	$html = "\n\n";
+	// 	$html .= '<fieldset class="collapsible"><legend>Document image</legend><div>';
+	// 	$html .= '<a href="' . $this->document->viewerLinkUrl() . '" target="' . $this->document->pid(). '">Open in new window</a></div>';
+	// 	$html .= '<iframe src="' . $this->document->viewerLinkUrl() . '" frameborder=0 style="height: 800px; width: 100%" scrolling="no">error: unable to load viewer</iframe></fieldset>';
+	// 	$html .= "\n\n";
+	// 	return $html;
+	// }
+	
+	function addDocumentSection() {
+		$html = '<div class="document">';
+		$html .= '<div class="thumbnail">' . $this->thumbnail() . '</div>';
+		$html .= '</div><div class="clear"></div>';
+		return $html;
+	}
+	
+	function addNotesSection() {
+		$notes = $this->document->notes();
+		return ViewNote::pageSectionView($notes);
+	}
+	
+	function embeddedView() {
 		$date = $this->document->createdDate();
 		$pages = $this->document->pageCount();
 	
@@ -70,7 +124,7 @@ class ViewDocument {
 		
 		$html .= "\n\n";
 		$html .= '<div class="search-result clickable">';
-		$html .= '<div class="title">' . t($title) . ' <a href="' . $url . '" target="' . $this->document->pid() . '">' . $id . '</a></div>';
+		$html .= '<div class="title">' . t($title) . ' <a href="' . $url . '">' . $id . '</a></div>';
 		$html .= $this->thumbnailForSearchResult($thumbnailUrl);
 		$html .= theme('table', null, $this->detailsAsTableRows());
 		$html .= '</div>';
@@ -110,7 +164,7 @@ class ViewDocument {
 	function searchResult() {
 		$title = $this->document->typeLabel();
 		$id = $this->document->pidNumber();
-		$url = $this->document->incompleteImport() ? '#' : $this->document->viewerLinkUrl();
+		$url = $this->document->linkUrl();
 		$thumbnailUrl = $this->document->thumbnailUrl();
 
 		return $this->searchResultWithTitle($title, $id, $url, $thumbnailUrl);

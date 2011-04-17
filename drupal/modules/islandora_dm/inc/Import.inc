@@ -348,7 +348,7 @@ class Import {
 		// create note with reference numbers, associate with document
 		global $user;
 		$number_string = join (', ', $numbers);
-		$text = t('Reference Number@s: @n.', array( 
+		$text = t('Reference number@s: @n.', array( 
 			'@s' => (count($numbers) == 1 ? '' : 's'),
 			'@n' => $number_string));
 				

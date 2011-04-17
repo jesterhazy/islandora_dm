@@ -235,6 +235,10 @@ class DMObject {
 	 * Add a log message to the fedora object (via modifyObject).
 	 */
 	function addLogMessage($message) {
-		$this->fedora->modify_object('', null, null, $message);
+		$this->fedora->modify_object(null, null, null, $message);
+	}
+	
+	function purge() {
+		$this->fedora->purge();
 	}
 }

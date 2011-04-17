@@ -15,7 +15,7 @@ class ViewPage {
 
 		$title = $this->page->typeLabel();
 		$id = $this->page->pidNumber();
-		$url = $this->page->incompleteImport() ? '#' : $this->page->viewerLinkUrl();
+		$url = $this->page->incompleteImport() ? '#' : $this->page->linkUrl();
 		return $documentView->searchResultWithTitle($title, $id, $url, $this->page->thumbnailUrl());
 	}
 }

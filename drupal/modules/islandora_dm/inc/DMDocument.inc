@@ -99,14 +99,29 @@ class DMDocument extends DMObject {
 		
 		return $url;
 	}
+	
+	function linkUrl() {
+		$number = $this->pidNumber();
+		return base_path() . 'islandora_dm/document/' . $number . '/view';
+	}
+	
+	function viewerLinkUrl() {
+		return $this->viewerBaseUrl() . $this->viewerQueryString();
+	}
+	
+	function viewerBaseUrl() {
+		return $this->fedoraBaseUrl() . '/objects/' . $this->pid() . '/methods/ilives:viewerSdef/getViewer';
+	}
+	
+	function viewerQueryString() {
+		return '?' . http_build_query($this->viewerUrlParameters());
+	}
+	
+	function viewerUrlParameters() {
+		global $user;
+		return array('uid' => base64_encode($user->name . ':' . $user->pass));
+	}
 
-        function viewerLinkUrl() {
-                global $user;
-         	$qs = '?uid=' . base64_encode($user->name . ':' . $user->pass);
-                $url = $this->fedoraBaseUrl() . '/objects/' . $this->pid() . '/methods/ilives:viewerSdef/getViewer' . $qs;
-                return $url;
-        }
-        	
 	function pageCount() {
 		return count($this->pages);
 	}
@@ -118,5 +133,12 @@ class DMDocument extends DMObject {
 	function notes() {
 		return $this->notes;
 	}
-	
+}
+
+function islandora_dm_document_view($number) {
+	$pid = DMDocument::number2pid($number);
+	$document = new DMDocument($pid);
+	$document->load();
+	$view = new ViewDocument($document);
+	return $view->view();
 }

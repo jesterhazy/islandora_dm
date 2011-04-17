@@ -26,6 +26,6 @@ div.clickable.active:hover {
   padding: 0 1em;
 }
 
-.islandora-dm-po-view .document:hover {
+.islandora-dm-view .document:hover {
   background-color: #b4af9b;
 }
