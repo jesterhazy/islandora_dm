@@ -82,22 +82,30 @@ function islandora_dm_import_link_documents_form() {
 	}
 
 	else {
+		drupal_add_js(drupal_get_path('module', Constants::MODULE_NAME) . '/js/link-documents.js');
 		foreach($documents as $document) {
 			$key = 'd-' . $document->pidNumber();
 			$form[$key]['start'] = array(
 				'#value' => $imp->unlinkedDocumentMarkupStart($document));
+			
+			$form[$key][$key . '-reftype'] = array(
+				'#type' => 'radios', 
+				'#title' => t('Reference type'), 
+				'#default_value' => Import::REFTYPE_PURCHASE_ORDER, 
+				'#options' => array(Import::REFTYPE_PURCHASE_ORDER => t('Purchase order'), Import::REFTYPE_OTHER => t('Other')),
+			);
 		
 			$form[$key][$key . '-numbers'] = array(
 				'#type' => 'textfield',
-				'#title' => t('Purchase Order Number(s)'),
-				'#description' => t('Enter one or more purchase order numbers, separated by commas or spaces.'),
-				);
+				'#title' => t('Purchase order number(s)'),
+				'#description' => t('Enter one or more numbers, separated by commas or spaces.'),
+			);
 			
 			$form[$key][$key . '-submit'] = array(
 				'#type' => 'submit',
 				'#name' => $key . '-submit',
 				'#value' => t('Save'),
-				);
+			);
 			
 			$form[$key]['end'] = array(
 				'#value' => $imp->unlinkedDocumentMarkupEnd($document));
@@ -109,20 +117,31 @@ function islandora_dm_import_link_documents_form() {
 
 function islandora_dm_import_link_documents_form_validate($form, &$form_state) {
 	$imp = new Import();
+	$reftype = $imp->getLinkFormReferenceType($form_state);
 	$document_number = $imp->getLinkFormDocumentNumber($form_state);
-	$purchase_order_number_field = $imp->getLinkFormPurchaseOrderNumbers($form_state);
+	$number_field = $imp->getLinkFormNumbers($form_state);
 	
-	if (empty($purchase_order_number_field)) {
-		form_set_error('error', t('One or more purchase order numbers required.'));
+	if (empty($number_field)) {
+		form_set_error('error', t('One or more numbers required.'));
 	}
 	else {
-		$numbers = $imp->splitLinkFormPurchaseOrderNumbers($purchase_order_number_field);
+		$numbers = $imp->splitLinkFormNumbers($number_field);
 		$i = 0;
+		
 		foreach ($numbers as $number) {
-			if (!preg_match('/^[0-9]+$/', $number)) {
-				form_set_error('error_' . $i, t('Invalid purchase order number: @s.', array('@s' => $number)));
-				$i++;
+			if (Import::REFTYPE_PURCHASE_ORDER == $reftype) {
+				if (!preg_match('/^[0-9]+$/', $number)) {
+					form_set_error('error_' . $i, t('Invalid purchase order number: @s.', array('@s' => $number)));
+				}	
 			}
+			// TODO: any rules for other numbers?
+			// else {
+			// 	if (!preg_match('/^[0-9]+$/', $number)) {
+			// 		form_set_error('error_' . $i, t('Invalid number: @s.', array('@s' => $number)));
+			// 	}					
+			// }
+			
+			$i++;	
 		}
 	}
 }

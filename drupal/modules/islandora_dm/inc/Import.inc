@@ -6,6 +6,8 @@
 class Import {
 	const BTN_IMPORT_ALL = 'import_all';
 	const BTN_RESCHEDULE_ALL = 'reschedule_all';
+	const REFTYPE_PURCHASE_ORDER = '1';
+	const REFTYPE_OTHER = '2';
 	const FILENAME_PATTERN = '/^ *([0-9]{4}-[0-9]{2}-[0-9]{2}) +\(([0-9]+)\) +([0-9]+) *$/';
 	
 	function getFiles() { 
@@ -299,39 +301,38 @@ class Import {
 		return preg_replace('/-submit$/', '', $button);
 	}
 	
-	function getLinkFormPurchaseOrderNumbers(&$form_state) {
+	function getLinkFormNumbers(&$form_state) {
 		$doc = $this->getLinkFormDocumentNumber($form_state);
 		return trim($form_state['values'][$doc . '-numbers']);
 	}
 	
-	function splitLinkFormPurchaseOrderNumbers($number_field) {
+	function splitLinkFormNumbers($number_field) {
 		return preg_split('/[, ]+/', $number_field);
+	}
+	
+	function getLinkFormReferenceType(&$form_state) {
+		$doc = $this->getLinkFormDocumentNumber($form_state);
+		return trim($form_state['values'][$doc . '-reftype']);
 	}
 	
 	function linkDocuments($form, &$form_state) {
 		try {
 			$doc_id = $this->getLinkFormDocumentNumber($form_state);
-			$po_number_field = $this->getLinkFormPurchaseOrderNumbers($form_state);
-			$po_numbers = $this->splitLinkFormPurchaseOrderNumbers($po_number_field);
+			$number_field = $this->getLinkFormNumbers($form_state);
+			$numbers = $this->splitLinkFormNumbers($number_field);
 
 			// load document
 			$document_pid = DMObject::pidBase() . $doc_id;
 			$document = new DMDocument($document_pid);
 			$document->load();
-
-			// load purchase orders
-			$purchase_orders = $this->loadOrImportPurchaseOrders($po_numbers);
-
-			// attach po pid to documents		
-			if (!empty($purchase_orders)) {
-				foreach($purchase_orders as $purchase_order) {
-					$document->addMembership($purchase_order->pid());
-					$document->removeMembership(Constants::PID_COLLECTION_PURCHASE_ORDERS_UNLINKED_DOCUMENTS);
-					drupal_set_message(t('Linked document @d to purchase order @p.', 
-						array(
-							'@d' => $document->pidNumber(), 
-							'@p' => $purchase_order->pidNumber())));
-				}
+			
+			if (Import::REFTYPE_PURCHASE_ORDER == $this->getLinkFormReferenceType($form_state)) {
+				$this->linkDocumentsToPurchaseOrders($document, $numbers);
+			}
+			
+			else {
+				// TODO
+				$this->linkDocumentsToOtherReferenceNumbers($document, $numbers);
 			}
 		}
 		catch (Exception $e) {
@@ -340,6 +341,46 @@ class Import {
 				t("An error occurred while linking document @s.", 
 					array('@s' => $doc_id)), 
 				Constants::DRUPAL_MESSAGE_ERROR);
+		}
+	}
+	
+	function linkDocumentsToOtherReferenceNumbers(&$document, $numbers) {
+		// create note with reference numbers, associate with document
+		global $user;
+		$number_string = join (', ', $numbers);
+		$text = t('Reference Number@s: @n.', array( 
+			'@s' => (count($numbers) == 1 ? '' : 's'),
+			'@n' => $number_string));
+				
+		$note = new DMNote();
+		$note->createFedoraObject();
+		$note->addMembership($document->pid());
+		$note->addNoteDatastream($text, $user->name);
+		
+		// remove unlinked tag
+		$document->removeMembership(Constants::PID_COLLECTION_PURCHASE_ORDERS_UNLINKED_DOCUMENTS);
+		
+		drupal_set_message(t('Linked document @d to @n.', 
+			array(
+				'@d' => $document->pidNumber(), 
+				'@n' => $number_string)));
+	}
+	
+	function linkDocumentsToPurchaseOrders(&$document, $numbers) {
+		// load purchase orders
+		$purchase_orders = $this->loadOrImportPurchaseOrders($numbers);
+
+		// attach po pid to documents		
+		if (!empty($purchase_orders)) {
+			foreach($purchase_orders as $purchase_order) {
+				$document->addMembership($purchase_order->pid());
+				drupal_set_message(t('Linked document @d to purchase order @p.', 
+					array(
+						'@d' => $document->pidNumber(), 
+						'@p' => $purchase_order->pidNumber())));
+			}
+			
+			$document->removeMembership(Constants::PID_COLLECTION_PURCHASE_ORDERS_UNLINKED_DOCUMENTS);
 		}
 	}
 	
